@@ -4,10 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MainActivity">
+    tools:context=".activity.LoadingActivity">
 
     <ImageView
-        android:id="@+id/iv_text_and_pic"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/loading_logo"
+        android:layout_centerInParent="true"/>
+
 </RelativeLayout>
