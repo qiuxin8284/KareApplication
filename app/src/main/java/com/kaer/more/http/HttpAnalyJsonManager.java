@@ -3,6 +3,12 @@ package com.kaer.more.http;
 
 import android.content.Context;
 
+import com.kaer.more.R;
+import com.kaer.more.entitiy.PropellingMovementData;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class HttpAnalyJsonManager {
     public static String lastError;
@@ -79,6 +85,28 @@ public class HttpAnalyJsonManager {
 //		}
 //	}
 
+    public static PropellingMovementData propellingMovementFunction (String json, Context context) throws JSONException {
+        PropellingMovementData mPropellingMovementData = new PropellingMovementData();
+        mPropellingMovementData.setOK(false);
+        if (!lastError.equals("")) {
+            lastError = context.getResources().getString(R.string.upload_failed);
+            return mPropellingMovementData;
+        }
+        JSONObject resultJson = new JSONObject(json);
+        String funtion = resultJson.getString("funtion");
+        mPropellingMovementData.setFunction(funtion);
+        if(funtion.equals("1")||funtion.equals("2")||funtion.equals("3")||funtion.equals("4")){
+            //funtion 1、2、3、4包含state和value
+            String state = resultJson.getString("state");
+            String value = resultJson.getString("value");
+            mPropellingMovementData.setState(state);
+            mPropellingMovementData.setValue(value);
+        }
+        //funtion 5、6、7直接全跳过
+        mPropellingMovementData.setOK(true);
+        android.util.Log.e("propellingMovementFunction", "mPropellingMovementData:"+mPropellingMovementData.toString());
+        return mPropellingMovementData;
+    }
 
 
 }
