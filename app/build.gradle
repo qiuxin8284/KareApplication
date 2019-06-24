@@ -16,11 +16,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets{
-        main{
-            jniLibs.srcDirs = ['libs']
-        }
-    }
 }
 
 dependencies {
@@ -31,6 +26,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation files('libs/scifly.android.jar')
-    implementation files('libs/jcore-android-2.1.0.jar')
-    implementation files('libs/jpush-android-3.3.2.jar')
 }
