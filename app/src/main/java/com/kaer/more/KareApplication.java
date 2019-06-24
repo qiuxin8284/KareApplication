@@ -52,6 +52,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpUtils;
 
+import cn.jpush.android.api.JPushInterface;
+
 //import com.iflytek.cloud.SpeechConstant;
 //import com.iflytek.cloud.SpeechUtility;
 
@@ -70,7 +72,7 @@ public class KareApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        JPushInterface.init(this);
         mInstance = this;
         context = getApplicationContext();
         createSpeech();
