@@ -6,17 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
-    <ImageView
-        android:id="@+id/iv_text_and_pic"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-
-
     <com.tencent.liteav.demo.play.SuperPlayerView
         android:id="@+id/video_player_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"/>
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/iv_text_and_pic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
+
+    <TextView
+        android:id="@+id/tv_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:scaleType="fitXY"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
 
 </RelativeLayout>
