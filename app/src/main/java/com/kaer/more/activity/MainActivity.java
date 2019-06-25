@@ -14,13 +14,16 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kaer.more.KareApplication;
 import com.kaer.more.R;
+import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementData;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mIvTextPic;
     private TextView mTvText;
     private ArrayList<AdvertisementData> list = new ArrayList<AdvertisementData>();
+    private HashMap<String, AdRemarkData> mAdRemarkMap = new HashMap<String, AdRemarkData>();//获取新的任务队列的时候清空一次
     private int nowPosition = 0;
     private static final int GO_AD = 0;
     private Handler mHandler = new Handler() {
@@ -58,6 +62,19 @@ public class MainActivity extends AppCompatActivity {
                             mIvTextPic.setVisibility(View.GONE);
                             mSuperPlayerView.setVisibility(View.VISIBLE);
                             playVideo(advertisementData.getMedia());
+                        }
+
+                        if(mAdRemarkMap.containsKey(advertisementData.getAdId())) {
+                            AdRemarkData adRemarkData = mAdRemarkMap.get(advertisementData.getAdId());
+                            adRemarkData.setAllCount(adRemarkData.getAllCount()+1);
+                            adRemarkData.setAllTime(adRemarkData.getAllTime()+advertisementData.getDuration());
+                            mAdRemarkMap.put(advertisementData.getAdId(),adRemarkData);
+                        }else{
+                            AdRemarkData adRemarkData = new AdRemarkData();
+                            adRemarkData.setAdId(advertisementData.getAdId());
+                            adRemarkData.setAllCount(1);
+                            adRemarkData.setAllTime(advertisementData.getDuration());
+                            mAdRemarkMap.put(advertisementData.getAdId(),adRemarkData);
                         }
                         nowPosition = nowPosition + 1;
                         mHandler.sendEmptyMessageDelayed(GO_AD, advertisementData.getDuration() * 1000);

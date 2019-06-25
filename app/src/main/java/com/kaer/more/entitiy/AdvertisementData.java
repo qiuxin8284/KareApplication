@@ -1,6 +1,7 @@
 package com.kaer.more.entitiy;
 
 public class AdvertisementData {
+    private String adId;//广告ID
     private int mediaType;//1文本，2图片，3视频
     private int adType;//1商业广告，2公益广告
     private int duration;//时长
@@ -11,6 +12,14 @@ public class AdvertisementData {
     private String content;//广告内容
     private String media;//媒体文件
     private int level;//优先级
+
+    public String getAdId() {
+        return adId;
+    }
+
+    public void setAdId(String adId) {
+        this.adId = adId;
+    }
 
     public int getMediaType() {
         return mediaType;
@@ -95,7 +104,8 @@ public class AdvertisementData {
     @Override
     public String toString() {
         return "AdvertisementData{" +
-                "mediaType=" + mediaType +
+                "adId=" + adId +
+                ", mediaType=" + mediaType +
                 ", adType=" + adType +
                 ", duration=" + duration +
                 ", liveCount=" + liveCount +
