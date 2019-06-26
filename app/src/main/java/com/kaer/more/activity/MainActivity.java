@@ -1,13 +1,20 @@
 package com.kaer.more.activity;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -32,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTvText;
     private ArrayList<AdvertisementData> list = new ArrayList<AdvertisementData>();
     private HashMap<String, AdRemarkData> mAdRemarkMap = new HashMap<String, AdRemarkData>();//获取新的任务队列的时候清空一次
+    private LocationManager locationManager;
     private int nowPosition = 0;
     private static final int GO_AD = 0;
     private Handler mHandler = new Handler() {
@@ -64,17 +72,17 @@ public class MainActivity extends AppCompatActivity {
                             playVideo(advertisementData.getMedia());
                         }
 
-                        if(mAdRemarkMap.containsKey(advertisementData.getAdId())) {
+                        if (mAdRemarkMap.containsKey(advertisementData.getAdId())) {
                             AdRemarkData adRemarkData = mAdRemarkMap.get(advertisementData.getAdId());
-                            adRemarkData.setAllCount(adRemarkData.getAllCount()+1);
-                            adRemarkData.setAllTime(adRemarkData.getAllTime()+advertisementData.getDuration());
-                            mAdRemarkMap.put(advertisementData.getAdId(),adRemarkData);
-                        }else{
+                            adRemarkData.setAllCount(adRemarkData.getAllCount() + 1);
+                            adRemarkData.setAllTime(adRemarkData.getAllTime() + advertisementData.getDuration());
+                            mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
+                        } else {
                             AdRemarkData adRemarkData = new AdRemarkData();
                             adRemarkData.setAdId(advertisementData.getAdId());
                             adRemarkData.setAllCount(1);
                             adRemarkData.setAllTime(advertisementData.getDuration());
-                            mAdRemarkMap.put(advertisementData.getAdId(),adRemarkData);
+                            mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
                         }
                         nowPosition = nowPosition + 1;
                         mHandler.sendEmptyMessageDelayed(GO_AD, advertisementData.getDuration() * 1000);
@@ -103,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         initView();
 
         initList();
+        initLocation();
     }
 
     private void initList() {
@@ -183,4 +192,78 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         mSuperPlayerView.resetPlayer();
     }
+
+    private void initLocation() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //获取所有可用的位置提供器
+        List<String> providers = locationManager.getProviders(true);
+        String locationProvider = null;
+        if (providers.contains(LocationManager.GPS_PROVIDER)) {
+            //如果是GPS
+            locationProvider = LocationManager.GPS_PROVIDER;
+        } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+            //如果是Network
+            locationProvider = LocationManager.NETWORK_PROVIDER;
+        } else {
+            Intent i = new Intent();
+            i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(i);
+        }
+        //获取Location
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Location location = locationManager.getLastKnownLocation(locationProvider);
+        //监视地理位置变化
+        locationManager.requestLocationUpdates(locationProvider, 1000, 100, locationListener);
+    }
+
+
+    public LocationListener locationListener = new LocationListener() {
+        // Provider的状态在可用、暂时不可用和无服务三个状态直接切换时触发此函数
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        // Provider被enable时触发此函数，比如GPS被打开
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        // Provider被disable时触发此函数，比如GPS被关闭
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+
+        //当坐标改变时触发此函数，如果Provider传进相同的坐标，它就不会被触发
+        @Override
+        public void onLocationChanged(Location location) {
+//            String string = "纬度为：" + location.getLatitude() + ",经度为："
+//                    + location.getLongitude();
+            //遍历广告中有经纬度定位的广告
+            for(int i = 0;i<list.size();i++){
+                AdvertisementData advertisementData = list.get(i);
+                if(!TextUtils.isEmpty(advertisementData.getLocation())){
+                    //拆分advertisementData.getLocation();
+                    double latitude = 0.0;
+                    double longitude = 0.0;
+                    //判断上下距离 1km等于经纬度多少。1/111 1/111 0.009
+                    double laDistance = location.getLatitude() - latitude;
+                    double lgDistance = location.getLongitude() - longitude;
+                    if(laDistance<-0.009*Double.valueOf(advertisementData.getLimits())&&laDistance>0.009*Double.valueOf(advertisementData.getLimits())){
+                        //重新获取新的广告
+                    }
+                    if(longitude<-0.009*Double.valueOf(advertisementData.getLimits())&&longitude>0.009*Double.valueOf(advertisementData.getLimits())){
+                        //重新获取新的广告
+                    }
+                }
+            }
+            //如果有判断是否符合在距离之内，否则发送广播请求新的广告
+        }
+    };
 }

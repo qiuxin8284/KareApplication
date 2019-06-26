@@ -81,7 +81,6 @@ public class KareApplication extends Application {
         httpManager = HttpManager.getInstance(this);
         initImageLoader(this);
 
-
     }
 
 
@@ -128,5 +127,6 @@ public class KareApplication extends Application {
 
         return true;
     }
+
 
 }
