@@ -71,7 +71,8 @@ public class HttpAnalyJsonManager {
 //			HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.safari_error_code_1016);
 //		}
     }
-//	public static boolean onlyResult(String json,Context context) throws JSONException{
+
+    //	public static boolean onlyResult(String json,Context context) throws JSONException{
 //		if(!lastError.equals("")) return false;
 //		JSONObject resultJson= new JSONObject(json);
 //		if(resultJson.getString("result").equals("0"))
@@ -84,8 +85,13 @@ public class HttpAnalyJsonManager {
 //			return false;
 //		}
 //	}
+    public static boolean onResult(String json, Context context) throws JSONException {
+        if (!lastError.equals("")) return false;
 
-    public static PropellingMovementData propellingMovementFunction (String json, Context context) throws JSONException {
+        return true;
+    }
+
+    public static PropellingMovementData propellingMovementFunction(String json, Context context) throws JSONException {
         PropellingMovementData mPropellingMovementData = new PropellingMovementData();
         mPropellingMovementData.setOK(false);
         if (!lastError.equals("")) {
@@ -95,7 +101,7 @@ public class HttpAnalyJsonManager {
         JSONObject resultJson = new JSONObject(json);
         String funtion = resultJson.getString("funtion");
         mPropellingMovementData.setFunction(funtion);
-        if(funtion.equals("1")||funtion.equals("2")||funtion.equals("3")||funtion.equals("4")){
+        if (funtion.equals("1") || funtion.equals("2") || funtion.equals("3") || funtion.equals("4")) {
             //funtion 1、2、3、4包含state和value
             String state = resultJson.getString("state");
             String value = resultJson.getString("value");
@@ -104,7 +110,7 @@ public class HttpAnalyJsonManager {
         }
         //funtion 5、6、7直接全跳过
         mPropellingMovementData.setOK(true);
-        android.util.Log.e("propellingMovementFunction", "mPropellingMovementData:"+mPropellingMovementData.toString());
+        android.util.Log.e("propellingMovementFunction", "mPropellingMovementData:" + mPropellingMovementData.toString());
         return mPropellingMovementData;
     }
 
