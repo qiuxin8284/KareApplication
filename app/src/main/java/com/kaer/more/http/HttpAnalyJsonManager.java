@@ -72,19 +72,19 @@ public class HttpAnalyJsonManager {
 //		}
     }
 
-    //	public static boolean onlyResult(String json,Context context) throws JSONException{
-//		if(!lastError.equals("")) return false;
-//		JSONObject resultJson= new JSONObject(json);
-//		if(resultJson.getString("result").equals("0"))
-//		{
-//
-//			return true;
-//		}
-//		else
-//		{
-//			return false;
-//		}
-//	}
+    	public static boolean bindDevice(String json,Context context) throws JSONException{
+		if(!lastError.equals("")) return false;
+		JSONObject resultJson= new JSONObject(json);
+		if(resultJson.getString("msg").equals("0"))
+		{
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
     public static boolean onResult(String json, Context context) throws JSONException {
         if (!lastError.equals("")) return false;
 

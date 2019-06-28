@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kaer.more.entitiy.PropellingMovementData;
+import com.kaer.more.http.HttpAnalyJsonManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,6 +30,9 @@ public class PushStatusReceiver extends BroadcastReceiver {
                 Logger.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
             } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
                 Logger.d(TAG, "[MyReceiver] 接收到推送下来的自定义消息: " + bundle.getString(JPushInterface.EXTRA_MESSAGE));
+                PropellingMovementData propellingMovementData = HttpAnalyJsonManager.propellingMovementFunction(bundle.getString(JPushInterface.EXTRA_MESSAGE),context);
+                //推送广播给到service做不同的事情
+
             } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
                 Logger.d(TAG, "[MyReceiver] 接收到推送下来的通知");
                 int notifactionId = bundle.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);

@@ -68,7 +68,7 @@ public class HttpSendJsonManager {
             LogUtil.println("bindDevice" + json);
             String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
             LogUtil.println("bindDevice synchronousResult1" + synchronousResult);
-            return HttpAnalyJsonManager.onResult(synchronousResult, context);
+            return HttpAnalyJsonManager.bindDevice(synchronousResult, context);
         } catch (Exception e) {
             HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
             e.printStackTrace();

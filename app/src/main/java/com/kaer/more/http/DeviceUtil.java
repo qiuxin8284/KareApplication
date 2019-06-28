@@ -55,6 +55,7 @@ public class DeviceUtil {
 		}
 	}
 
+
 	public DeviceData getDeviceData() {
 		return mDeviceData;
 	}
