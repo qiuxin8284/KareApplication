@@ -25,6 +25,7 @@ import com.kaer.more.KareApplication;
 import com.kaer.more.R;
 import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementData;
+import com.kaer.more.service.KaerService;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerView;
@@ -112,6 +113,10 @@ public class MainActivity extends AppCompatActivity {
 
         initList();
         initLocation();
+
+        Intent intent = new Intent(MainActivity.this, KaerService.class);
+        startService(intent);
+
     }
 
     private void initList() {

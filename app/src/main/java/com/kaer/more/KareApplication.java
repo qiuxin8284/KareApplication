@@ -116,8 +116,8 @@ public class KareApplication extends Application {
         //获取推送token
         String token = JPushInterface.getRegistrationID(this);
         mDeviceUtil.setToken(token);
-        mCheckDeviceTask = new CheckDeviceTask();
-        mCheckDeviceTask.execute();
+//        mCheckDeviceTask = new CheckDeviceTask();
+//        mCheckDeviceTask.execute();
     }
 
     private CheckDeviceTask mCheckDeviceTask;
@@ -127,7 +127,8 @@ public class KareApplication extends Application {
         @Override
         protected Void doInBackground(String... params) {
             //读取设备识别号跟常规android系统读取有区别吗？
-            String deviceID = mDeviceUtil.getDeviceData().getDeviceId();
+            //String deviceID = mDeviceUtil.getDeviceData().getDeviceId();
+            String deviceID = "0bebf5bfc9554";
             //上传检测是否存在这个设备号
             boolean flag = HttpSendJsonManager.checkDevice(mInstance,deviceID);
             LogUtil.println("checkDevice flag:" + flag);
@@ -147,8 +148,11 @@ public class KareApplication extends Application {
         @Override
         protected Void doInBackground(String... params) {
             //读取设备识别号跟常规android系统读取有区别吗？
-            String deviceID = mDeviceUtil.getDeviceData().getDeviceId();
+            //String deviceID = mDeviceUtil.getDeviceData().getDeviceId();
+            String deviceID = "0bebf5bfc9554";
             String token = mDeviceUtil.getDeviceData().getToken();
+            token = "123456789012345";
+            LogUtil.println("bindDevice token:" + token);
             if(!TextUtils.isEmpty(token)) {
                 //上传检测是否存在这个设备号
                 boolean flag = HttpSendJsonManager.bindDevice(mInstance, deviceID,token);

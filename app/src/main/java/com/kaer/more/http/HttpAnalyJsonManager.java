@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.kaer.more.R;
 import com.kaer.more.entitiy.PropellingMovementData;
+import com.kaer.more.entitiy.UploadData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,7 +73,7 @@ public class HttpAnalyJsonManager {
 //		}
     }
 
-    	public static boolean bindDevice(String json,Context context) throws JSONException{
+    	public static boolean checkDevice(String json,Context context) throws JSONException{
 		if(!lastError.equals("")) return false;
 		JSONObject resultJson= new JSONObject(json);
 		if(resultJson.getString("msg").equals("0"))
@@ -89,6 +90,25 @@ public class HttpAnalyJsonManager {
         if (!lastError.equals("")) return false;
 
         return true;
+    }
+    public static UploadData uploadMedia(String json, Context context) throws JSONException {
+        UploadData uploadData = new UploadData();
+        uploadData.setOK(false);
+        JSONObject resultJson = new JSONObject(json);
+        String result = resultJson.getString("result");
+        if(result.equals("0")){
+            lastError = context.getResources().getString(R.string.upload_failed);
+            return uploadData;
+        }
+//        String id = resultJson.getString("id");
+//        String name = resultJson.getString("name");
+        String url = resultJson.getString("path");
+//        uploadData.setId(id);
+//        uploadData.setName(name);
+        uploadData.setUrl(url);
+        uploadData.setOK(true);
+        android.util.Log.e("uploadData", "uploadData:"+uploadData.toString());
+        return uploadData;
     }
 
     public static PropellingMovementData propellingMovementFunction(String json, Context context) throws JSONException {
