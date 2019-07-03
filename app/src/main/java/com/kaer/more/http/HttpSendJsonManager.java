@@ -127,7 +127,7 @@ public class HttpSendJsonManager {
      * @return
      */
     public static boolean locationDevice(Context context,
-                                     String longitude,String latitude,String imei) {
+                                     String longitude,String latitude,String imei,String address) {
         String url = "v0/device/location.htm";
         try {
             JSONObject sendJSONObject = new JSONObject();
@@ -136,6 +136,7 @@ public class HttpSendJsonManager {
             mainJSONObject.put("longitude", longitude);
             mainJSONObject.put("latitude", latitude);
             mainJSONObject.put("imei", imei);
+            mainJSONObject.put("address", address);
             RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
@@ -268,5 +269,30 @@ public class HttpSendJsonManager {
             e.printStackTrace();
         }
         return uploadData;
+    }
+
+    public static boolean imgDevice(Context context,
+                                     String img,String imei) {
+        String url = "v0/device/img.htm";
+        try {
+            JSONObject sendJSONObject = new JSONObject();
+            JSONObject mainJSONObject = new JSONObject();
+
+            mainJSONObject.put("img", img);
+            mainJSONObject.put("imei", imei);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
+
+            String json = sendJSONObject.toString();
+
+            LogUtil.println("imgDevice" + json);
+            String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
+            LogUtil.println("imgDevice synchronousResult1" + synchronousResult);
+            return HttpAnalyJsonManager.onResult(synchronousResult, context);
+        } catch (Exception e) {
+            HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
+            e.printStackTrace();
+            return false;
+        }
     }
 }

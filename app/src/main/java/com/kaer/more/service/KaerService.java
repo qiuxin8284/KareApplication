@@ -10,11 +10,13 @@ import android.os.Message;
 import android.text.TextUtils;
 
 import com.kaer.more.KareApplication;
+import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.http.HttpSendJsonManager;
 import com.kaer.more.utils.LogUtil;
 
 public class KaerService extends Service {
 
+    private int mConnectRepeatTime = 1000*60*30;//半小时
     @Override
     public void onCreate() {
         super.onCreate();
@@ -26,8 +28,10 @@ public class KaerService extends Service {
 //        mNoticeDeviceTask.execute();
 //        mLocationDeviceTask = new LocationDeviceTask();
 //        mLocationDeviceTask.execute();
-        mExcpDeviceTask = new ExcpDeviceTask();
-        mExcpDeviceTask.execute();
+//        mExcpDeviceTask = new ExcpDeviceTask();
+//        mExcpDeviceTask.execute();
+        mUploadMediaTask = new UploadMediaTask();
+        mUploadMediaTask.execute();
 
 
         //收到广播-处理推送
@@ -46,6 +50,11 @@ public class KaerService extends Service {
     private static final int LOCATION_DEVICE_FALSE = 4;
     private static final int EXCP_DEVICE_SUCCESS = 5;
     private static final int EXCP_DEVICE_FALSE = 6;
+
+    private static final int IMG_DEVICE_SUCCESS = 7;
+    private static final int IMG_DEVICE_FALSE = 8;
+    private static final int UPLOAD_IMG_SUCCESS = 9;
+    private static final int UPLOAD_IMG_FALSE = 10;
     public static final int REPEAT_CONNECT_TIME = 30000;//30s重试
     private Handler mHandler = new Handler() {
         @Override
@@ -63,6 +72,18 @@ public class KaerService extends Service {
                 case EXCP_DEVICE_SUCCESS:
                     break;
                 case EXCP_DEVICE_FALSE:
+                    break;
+                case IMG_DEVICE_SUCCESS:
+                    break;
+                case IMG_DEVICE_FALSE:
+                    break;
+                case UPLOAD_IMG_SUCCESS:
+                    if(uploadData!=null&&TextUtils.isEmpty(uploadData.getUrl())){
+                        mImgDeviceTask = new ImgDeviceTask();
+                        mImgDeviceTask.execute(uploadData.getUrl());
+                    }
+                    break;
+                case UPLOAD_IMG_FALSE:
                     break;
             }
         }
@@ -101,11 +122,13 @@ public class KaerService extends Service {
             String deviceID = "0bebf5bfc9554";
             String longitude = "100.00";
             String latitude = "100.00";
+            String address = "深圳市南山区";
             LogUtil.println("locationDevice longitude:" + longitude);
             LogUtil.println("locationDevice latitude:" + latitude);
-            if(!TextUtils.isEmpty(longitude)&&!TextUtils.isEmpty(latitude)&&!TextUtils.isEmpty(deviceID)) {
+            LogUtil.println("locationDevice address:" + address);
+            if(!TextUtils.isEmpty(longitude)&&!TextUtils.isEmpty(latitude)&&!TextUtils.isEmpty(deviceID)&&!TextUtils.isEmpty(address)) {
                 //上传检测是否存在这个设备号
-                boolean flag = HttpSendJsonManager.locationDevice(KareApplication.mInstance, longitude, latitude,deviceID);
+                boolean flag = HttpSendJsonManager.locationDevice(KareApplication.mInstance, longitude, latitude,deviceID,address);
                 LogUtil.println("locationDevice flag:" + flag);
                 if (flag) {
                     mHandler.sendEmptyMessage(LOCATION_DEVICE_SUCCESS);
@@ -136,6 +159,55 @@ public class KaerService extends Service {
                     mHandler.sendEmptyMessage(EXCP_DEVICE_SUCCESS);
                 } else {
                     mHandler.sendEmptyMessage(EXCP_DEVICE_FALSE);
+                }
+            }
+            return null;
+        }
+    }
+    //图像回传
+    private ImgDeviceTask mImgDeviceTask;
+    private class ImgDeviceTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            String deviceID = "0bebf5bfc9554";
+            String img = params[0];
+            LogUtil.println("imgDevice img:" + img);
+            if(!TextUtils.isEmpty(img)&&!TextUtils.isEmpty(deviceID)) {
+                //上传检测是否存在这个设备号
+                boolean flag = HttpSendJsonManager.imgDevice(KareApplication.mInstance,img,deviceID);
+                LogUtil.println("imgDevice flag:" + flag);
+                if (flag) {
+                    mHandler.sendEmptyMessage(IMG_DEVICE_SUCCESS);
+                } else {
+                    mHandler.sendEmptyMessage(IMG_DEVICE_FALSE);
+                }
+            }
+            return null;
+        }
+    }
+    //上传图片
+    private UploadMediaTask mUploadMediaTask;
+    private UploadData uploadData;
+    private class UploadMediaTask extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... params) {
+            int type = 0;
+            String name = "";
+            String file = "";
+            String time = "";
+            LogUtil.println("uploadMedia type:" + type);
+            LogUtil.println("uploadMedia name:" + name);
+            LogUtil.println("uploadMedia file:" + file);
+            LogUtil.println("uploadMedia time:" + time);
+            if(!TextUtils.isEmpty(name)&&!TextUtils.isEmpty(file)&&!TextUtils.isEmpty(time)) {
+                //上传检测是否存在这个设备号
+                uploadData = HttpSendJsonManager.uploadMedia(KareApplication.mInstance,type,name,file,time);
+                LogUtil.println("excpDevice flag:" + uploadData.isOK());
+                if (uploadData.isOK()) {
+                    mHandler.sendEmptyMessage(UPLOAD_IMG_SUCCESS);
+                } else {
+                    mHandler.sendEmptyMessage(UPLOAD_IMG_FALSE);
                 }
             }
             return null;
