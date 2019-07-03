@@ -1,6 +1,8 @@
 package com.kaer.more.service;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
@@ -42,8 +44,38 @@ public class KaerService extends Service {
 
 
         //收到广播-处理推送
-
+        mKaerReceiver = new KaerReceiver();//广播接受者实例
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(KareApplication.ACTION_TUISONG_JSON);
+        registerReceiver(mKaerReceiver, intentFilter);
         //main横屏展示
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mKaerReceiver);
+    }
+
+    private KaerReceiver mKaerReceiver;
+
+    public class KaerReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(KareApplication.ACTION_TUISONG_JSON)) {
+               //解析
+                String funtion = intent.getStringExtra("funtion");
+                if (funtion.equals("1") || funtion.equals("2") || funtion.equals("3") || funtion.equals("4")) {
+                    //funtion 1、2、3、4包含state和value
+                    String state = intent.getStringExtra("state");
+                    String value = intent.getStringExtra("value");
+                }else{
+
+                }
+            }
+        }
     }
 
     @Override
@@ -99,8 +131,8 @@ public class KaerService extends Service {
                 case GET_AD_SUCCESS:
                     //记录当前地理位置&&记得请求成功的时间开启定时器清0
                     mConnectTime = 0;
-                    mNowLongitude = "100.00";
-                    mNowLatitude = "100.00";
+                    mNowLongitude = "0.00";
+                    mNowLatitude = "0.00";
                     //发送定时
                     mHandler.sendEmptyMessageDelayed(TIME_ADD,1000);
                     //地址监听
@@ -154,9 +186,9 @@ public class KaerService extends Service {
         @Override
         protected Void doInBackground(String... params) {
             String deviceID = "0bebf5bfc9554";
-            String longitude = "100.00";
-            String latitude = "100.00";
-            String address = "深圳市南山区";
+            String longitude = "0.00";
+            String latitude = "0.00";
+            String address = "中国";
             LogUtil.println("locationDevice longitude:" + longitude);
             LogUtil.println("locationDevice latitude:" + latitude);
             LogUtil.println("locationDevice address:" + address);

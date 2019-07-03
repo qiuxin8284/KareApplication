@@ -1,6 +1,7 @@
 package com.kaer.more.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -203,7 +204,9 @@ public class MainActivity extends AppCompatActivity {
         mSuperPlayerView.resetPlayer();
     }
 
+    @SuppressLint("MissingPermission")
     private void initLocation() {
+        LogUtil.println("initLocation");
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //获取所有可用的位置提供器
         List<String> providers = locationManager.getProviders(true);
@@ -220,12 +223,15 @@ public class MainActivity extends AppCompatActivity {
 //            startActivity(i);
         }
         //获取Location
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            return;
+//        }
         Location location = locationManager.getLastKnownLocation(locationProvider);
+        String string = "纬度为：" + location.getLatitude() + ",经度为："
+                + location.getLongitude();
+        LogUtil.println("location:" + string);
         //监视地理位置变化
         locationManager.requestLocationUpdates(locationProvider, 1000, 100, locationListener);
     }
@@ -253,8 +259,9 @@ public class MainActivity extends AppCompatActivity {
         //当坐标改变时触发此函数，如果Provider传进相同的坐标，它就不会被触发
         @Override
         public void onLocationChanged(Location location) {
-//            String string = "纬度为：" + location.getLatitude() + ",经度为："
-//                    + location.getLongitude();
+            String string = "纬度为：" + location.getLatitude() + ",经度为："
+                    + location.getLongitude();
+            LogUtil.println("locationListener:" + string);
             //遍历广告中有经纬度定位的广告
             for(int i = 0;i<list.size();i++){
                 AdvertisementData advertisementData = list.get(i);

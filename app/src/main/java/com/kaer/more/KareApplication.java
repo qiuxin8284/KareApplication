@@ -78,6 +78,7 @@ public class KareApplication extends Application {
     private static final int BIND_DEVICE_SUCCESS = 3;
     private static final int BIND_DEVICE_FALSE = 4;
     public static final int REPEAT_CONNECT_TIME = 30000;//30s重试
+    public static final String ACTION_TUISONG_JSON = "com.kaer.tuisong.action.json";
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
