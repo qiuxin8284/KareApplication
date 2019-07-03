@@ -26,6 +26,7 @@ import com.kaer.more.R;
 import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.service.KaerService;
+import com.kaer.more.utils.LogUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerView;
@@ -156,8 +157,12 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         //String videoUrl = "http://www.jmzsjy.com/UploadFile/微课/地方风味小吃——宫廷香酥牛肉饼.mp4";
         mSuperPlayerView = (SuperPlayerView) findViewById(R.id.video_player_item);
+        LogUtil.println("initView mSuperPlayerViewId:"+(mSuperPlayerView.getId()));
         mIvTextPic = (ImageView) findViewById(R.id.iv_text_and_pic);
-        mTvText = (TextView) findViewById(R.id.tv_text);
+        LogUtil.println("initView mIvTextPicId:"+(mIvTextPic.getId()));
+        mTvText = (TextView) this.findViewById(R.id.tv_text);
+        LogUtil.println("initView mTvTextgetId:"+(mTvText.getId()));
+
     }
 
     /**
@@ -210,9 +215,9 @@ public class MainActivity extends AppCompatActivity {
             //如果是Network
             locationProvider = LocationManager.NETWORK_PROVIDER;
         } else {
-            Intent i = new Intent();
-            i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(i);
+//            Intent i = new Intent();
+//            i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//            startActivity(i);
         }
         //获取Location
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)

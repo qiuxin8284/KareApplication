@@ -10,6 +10,7 @@
         android:id="@+id/video_player_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scaleType="fitXY"
         android:visibility="visible" />
 
     <ImageView
@@ -25,6 +26,7 @@
         android:layout_centerInParent="true"
         android:scaleType="fitXY"
         android:textColor="@color/black"
+        android:text="text"
         android:textSize="18sp" />
 
 </RelativeLayout>
