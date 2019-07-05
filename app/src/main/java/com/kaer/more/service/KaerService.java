@@ -16,6 +16,8 @@ import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.http.HttpSendJsonManager;
 import com.kaer.more.utils.LogUtil;
 
+import scifly.device.Device;
+
 public class KaerService extends Service {
 
     private static final int CONNECT_REPEAT_TIME = 1000 * 60 * 30;//半小时
@@ -35,12 +37,8 @@ public class KaerService extends Service {
         //发送接口
 //        mNoticeDeviceTask = new NoticeDeviceTask();
 //        mNoticeDeviceTask.execute();
-//        mLocationDeviceTask = new LocationDeviceTask();
-//        mLocationDeviceTask.execute();
 //        mExcpDeviceTask = new ExcpDeviceTask();
 //        mExcpDeviceTask.execute();
-//        mUploadMediaTask = new UploadMediaTask();
-//        mUploadMediaTask.execute();
 
 
         //收到广播-处理推送
@@ -65,14 +63,63 @@ public class KaerService extends Service {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(KareApplication.ACTION_TUISONG_JSON)) {
-               //解析
+                //解析
                 String funtion = intent.getStringExtra("funtion");
                 if (funtion.equals("1") || funtion.equals("2") || funtion.equals("3") || funtion.equals("4")) {
                     //funtion 1、2、3、4包含state和value
                     String state = intent.getStringExtra("state");
                     String value = intent.getStringExtra("value");
-                }else{
+                    if (funtion.equals("1")) {//推送 1：梯形调整
+                        int valueInt = Integer.parseInt(value);
+                        if (state.equals("1")) {//1设置自动梯形
+                            if(valueInt == 0){
+                                Device.setAutoKeyStone(true);
+                            }else if(valueInt == 1){
+                                Device.setAutoKeyStone(false);
+                            }
+                        } else if (state.equals("2")) {//2设置垂直手动
+                            Device.setManualHorizontalKeyStone(valueInt);
+                        } else if (state.equals("3")) {//3设置水平手动
+                            Device.setManualVerticalKeyStone(valueInt);
+                        }
+                    } else if (funtion.equals("2")) {//画面转向
+                        int valueInt = Integer.parseInt(value);
+                        if (state.equals("1")) {//1设置自动投影方位
+                            if(valueInt == 0){
+                                Device.setAutoProject(KareApplication.mInstance,true);
+                            }else if(valueInt == 1){
+                                Device.setAutoProject(KareApplication.mInstance,false);
+                            }
+                        } else if (state.equals("2")) {//2设置投影方位
+                            Device.setProjectorDirect(KareApplication.mInstance,valueInt);
+                        }
+                    } else if (funtion.equals("3")) {//开关光机（直接or定时）
+                        //获取定时时间启动个定时器
+                        if (state.equals("1")) {//1设置开机 //1是开 0是关
+                            Device.setProjectorLedPower(1);
+                        } else if (state.equals("2")) {//2设置关闭
+                            Device.setProjectorLedPower(0);
+                        }
+                    } else if (funtion.equals("4")) {//机器重启
+                        if (state.equals("1")) {//1重启
 
+                        } else if (state.equals("2")) {//2时间
+
+                        }
+                    }
+                } else {
+                    if (funtion.equals("5")) {//图像回传
+                        mUploadMediaTask = new UploadMediaTask();
+                        mUploadMediaTask.execute();
+                    } else if (funtion.equals("6")) {//插播广告
+                        mGetAdTask = new GetAdTask();
+                        mGetAdTask.execute();
+                    } else if (funtion.equals("7")) {//上传定位
+                        mLocationDeviceTask = new LocationDeviceTask();
+                        mLocationDeviceTask.execute();
+                    } else if (funtion.equals("8")) {//暂未定义
+
+                    }
                 }
             }
         }
@@ -117,6 +164,11 @@ public class KaerService extends Service {
                 case EXCP_DEVICE_FALSE:
                     break;
                 case IMG_DEVICE_SUCCESS:
+                    //更新list
+                    //发广播
+                    Intent kaerIntent = new Intent();
+                    kaerIntent.setAction(KareApplication.ACTION_UPDATE_AD);
+                    sendBroadcast(kaerIntent);
                     break;
                 case IMG_DEVICE_FALSE:
                     break;
@@ -134,19 +186,19 @@ public class KaerService extends Service {
                     mNowLongitude = "0.00";
                     mNowLatitude = "0.00";
                     //发送定时
-                    mHandler.sendEmptyMessageDelayed(TIME_ADD,1000);
+                    mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
                     //地址监听
                     break;
                 case GET_AD_FALSE:
                     break;
                 case TIME_ADD:
                     mConnectTime = mConnectTime + 1000;
-                    if(mConnectTime>=CONNECT_REPEAT_TIME){
+                    if (mConnectTime >= CONNECT_REPEAT_TIME) {
                         mConnectTime = 0;
                         mGetAdTask = new GetAdTask();
                         mGetAdTask.execute();
-                    }else{
-                        mHandler.sendEmptyMessageDelayed(TIME_ADD,1000);
+                    } else {
+                        mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
                     }
                     break;
             }

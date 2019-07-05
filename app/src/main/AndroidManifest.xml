@@ -185,7 +185,7 @@
             android:value="developer-default" />
         <meta-data
             android:name="JPUSH_APPKEY"
-            android:value="Appkey" />
+            android:value="69a32253a031dd5a678dcfff" />
     </application>
 
 </manifest>

@@ -2,8 +2,10 @@ package com.kaer.more.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -36,11 +38,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import scifly.device.Device;
+
 public class MainActivity extends AppCompatActivity {
     private SuperPlayerView mSuperPlayerView;
     private ImageView mIvTextPic;
     private TextView mTvText;
-    private ArrayList<AdvertisementData> list = new ArrayList<AdvertisementData>();
     private HashMap<String, AdRemarkData> mAdRemarkMap = new HashMap<String, AdRemarkData>();//获取新的任务队列的时候清空一次
     private LocationManager locationManager;
     private int nowPosition = 0;
@@ -51,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case GO_AD:
-                    if (list.size() != 0) {
-                        if (nowPosition == list.size()) nowPosition = 0;
-                        AdvertisementData advertisementData = list.get(nowPosition);
+                    if (KareApplication.mAdvertisementList.size() != 0) {
+                        if (nowPosition == KareApplication.mAdvertisementList.size()) nowPosition = 0;
+                        AdvertisementData advertisementData = KareApplication.mAdvertisementList.get(nowPosition);
                         //播放广告
                         if (advertisementData.getMediaType() == 1) {//文本
                             mTvText.setVisibility(View.VISIBLE);
@@ -119,33 +122,50 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, KaerService.class);
         startService(intent);
 
+        mMainReceiver = new MainReceiver();//广播接受者实例
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(KareApplication.ACTION_TUISONG_JSON);
+        registerReceiver(mMainReceiver, intentFilter);
     }
 
+    private MainReceiver mMainReceiver;
+
+    public class MainReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(KareApplication.ACTION_UPDATE_AD)) {
+                //开始执行第一条
+                nowPosition = 0;
+            }
+        }
+    }
     private void initList() {
         //获取网络数据
-        //先模拟数据
-        list = new ArrayList<AdvertisementData>();
+        //先模拟数据-默认广告
+        KareApplication.mAdvertisementList = new ArrayList<AdvertisementData>();
         AdvertisementData advertisementData = new AdvertisementData();//模拟文本
         advertisementData.setMediaType(1);
         advertisementData.setContent("广告测试文本1");
         advertisementData.setMedia("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561396474168&di=f209408b5f8bcbfdcd27dec8ff9a7c9a&imgtype=0&src=http%3A%2F%2Fpic25.nipic.com%2F20121112%2F9252150_150552938000_2.jpg");
         advertisementData.setDuration(10);
-        list.add(advertisementData);
+        KareApplication.mAdvertisementList.add(advertisementData);
         advertisementData = new AdvertisementData();//模拟视频
         advertisementData.setMediaType(3);
         advertisementData.setDuration(30);
         advertisementData.setMedia("http://www.jmzsjy.com/UploadFile/微课/地方风味小吃——宫廷香酥牛肉饼.mp4");
-        list.add(advertisementData);
+        KareApplication.mAdvertisementList.add(advertisementData);
         advertisementData = new AdvertisementData();//模拟图片
         advertisementData.setMediaType(2);
         advertisementData.setDuration(10);
         advertisementData.setMedia("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561396439119&di=b52f8459a8c209324c638503b4c9005c&imgtype=0&src=http%3A%2F%2Fimg.redocn.com%2Fsheji%2F20141219%2Fzhongguofengdaodeliyizhanbanzhijing_3744115.jpg");
-        list.add(advertisementData);
+        KareApplication.mAdvertisementList.add(advertisementData);
         advertisementData = new AdvertisementData();//模拟视频
         advertisementData.setMediaType(3);
         advertisementData.setDuration(30);
         advertisementData.setMedia("http://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4");
-        list.add(advertisementData);
+        KareApplication.mAdvertisementList.add(advertisementData);
         //开始执行第一条
         nowPosition = 0;
         mHandler.sendEmptyMessage(GO_AD);
@@ -201,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(mMainReceiver);
         mSuperPlayerView.resetPlayer();
     }
 
@@ -263,8 +284,8 @@ public class MainActivity extends AppCompatActivity {
                     + location.getLongitude();
             LogUtil.println("locationListener:" + string);
             //遍历广告中有经纬度定位的广告
-            for(int i = 0;i<list.size();i++){
-                AdvertisementData advertisementData = list.get(i);
+            for(int i = 0;i<KareApplication.mAdvertisementList.size();i++){
+                AdvertisementData advertisementData = KareApplication.mAdvertisementList.get(i);
                 if(!TextUtils.isEmpty(advertisementData.getLocation())){
                     //拆分advertisementData.getLocation();
                     double latitude = 0.0;

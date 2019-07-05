@@ -32,6 +32,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.kaer.more.activity.MainActivity;
+import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.http.Communicator;
 import com.kaer.more.http.DeviceUtil;
 import com.kaer.more.http.HttpAnalyJsonManager;
@@ -79,6 +80,8 @@ public class KareApplication extends Application {
     private static final int BIND_DEVICE_FALSE = 4;
     public static final int REPEAT_CONNECT_TIME = 30000;//30s重试
     public static final String ACTION_TUISONG_JSON = "com.kaer.tuisong.action.json";
+    public static final String ACTION_UPDATE_AD = "com.kaer.update.action.ad";
+    public static ArrayList<AdvertisementData> mAdvertisementList = new ArrayList<AdvertisementData>();
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
