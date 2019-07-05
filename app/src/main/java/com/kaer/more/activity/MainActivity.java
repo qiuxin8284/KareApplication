@@ -249,12 +249,12 @@ public class MainActivity extends AppCompatActivity {
 //                this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 //            return;
 //        }
-        Location location = locationManager.getLastKnownLocation(locationProvider);
-        String string = "纬度为：" + location.getLatitude() + ",经度为："
-                + location.getLongitude();
-        LogUtil.println("location:" + string);
-        //监视地理位置变化
-        locationManager.requestLocationUpdates(locationProvider, 1000, 100, locationListener);
+//        Location location = locationManager.getLastKnownLocation(locationProvider);
+//        String string = "纬度为：" + location.getLatitude() + ",经度为："
+//                + location.getLongitude();
+//        LogUtil.println("location:" + string);
+//        //监视地理位置变化
+//        locationManager.requestLocationUpdates(locationProvider, 1000, 100, locationListener);
     }
 
 

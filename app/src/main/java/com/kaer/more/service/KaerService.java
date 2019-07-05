@@ -15,12 +15,15 @@ import com.kaer.more.KareApplication;
 import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.http.HttpSendJsonManager;
 import com.kaer.more.utils.LogUtil;
+import com.kaer.more.utils.TimeUtil;
 
 import scifly.device.Device;
 
 public class KaerService extends Service {
 
     private static final int CONNECT_REPEAT_TIME = 1000 * 60 * 30;//半小时
+    private static final String STATE_OPEN = "O";
+    private static final String STATE_CLOSE = "F";
     private int mConnectTime = 0;
     private String mNowLongitude = "";
     private String mNowLatitude = "";
@@ -35,8 +38,8 @@ public class KaerService extends Service {
 //        mGetAdTask.execute();
 
         //发送接口
-//        mNoticeDeviceTask = new NoticeDeviceTask();
-//        mNoticeDeviceTask.execute();
+        mNoticeDeviceTask = new NoticeDeviceTask();
+        mNoticeDeviceTask.execute(STATE_OPEN);
 //        mExcpDeviceTask = new ExcpDeviceTask();
 //        mExcpDeviceTask.execute();
 
@@ -52,6 +55,8 @@ public class KaerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mNoticeDeviceTask = new NoticeDeviceTask();
+        mNoticeDeviceTask.execute(STATE_CLOSE);
         unregisterReceiver(mKaerReceiver);
     }
 
@@ -93,12 +98,16 @@ public class KaerService extends Service {
                         } else if (state.equals("2")) {//2设置投影方位
                             Device.setProjectorDirect(KareApplication.mInstance,valueInt);
                         }
-                    } else if (funtion.equals("3")) {//开关光机（直接or定时）
+                    } else if (funtion.equals("3")) {//开关光机（直接or定时）//时间以 8：00格式吧
                         //获取定时时间启动个定时器
-                        if (state.equals("1")) {//1设置开机 //1是开 0是关
-                            Device.setProjectorLedPower(1);
-                        } else if (state.equals("2")) {//2设置关闭
-                            Device.setProjectorLedPower(0);
+                        if(!TextUtils.isEmpty(value)){
+                           new TimeUtil(value,state);
+                        }else {
+                            if (state.equals("1")) {//1设置开机 //1是开 0是关
+                                Device.setProjectorLedPower(1);
+                            } else if (state.equals("2")) {//2设置关闭
+                                Device.setProjectorLedPower(0);
+                            }
                         }
                     } else if (funtion.equals("4")) {//机器重启
                         if (state.equals("1")) {//1重启
@@ -214,7 +223,7 @@ public class KaerService extends Service {
         protected Void doInBackground(String... params) {
             //读取设备识别号跟常规android系统读取有区别吗？
             String deviceID = "0bebf5bfc9554";
-            String type = "O";
+            String type = params[0];
             LogUtil.println("noticeDevice type:" + type);
             if (!TextUtils.isEmpty(type) && !TextUtils.isEmpty(deviceID)) {
                 //上传检测是否存在这个设备号
