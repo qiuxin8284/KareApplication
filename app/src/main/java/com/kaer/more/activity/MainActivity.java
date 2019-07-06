@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what) {
                 case GO_AD:
                     if (KareApplication.mAdvertisementList.size() != 0) {
-                        if (nowPosition == KareApplication.mAdvertisementList.size()) nowPosition = 0;
+                        if (nowPosition == KareApplication.mAdvertisementList.size())
+                            nowPosition = 0;
                         AdvertisementData advertisementData = KareApplication.mAdvertisementList.get(nowPosition);
                         //播放广告
                         if (advertisementData.getMediaType() == 1) {//文本
@@ -92,6 +93,32 @@ public class MainActivity extends AppCompatActivity {
                         }
                         nowPosition = nowPosition + 1;
                         mHandler.sendEmptyMessageDelayed(GO_AD, advertisementData.getDuration() * 1000);
+//                        Intent kaerIntent = new Intent();
+//                        kaerIntent.setAction(KareApplication.ACTION_TUISONG_JSON);
+//                        kaerIntent.putExtra("funtion", "1");
+//                        kaerIntent.putExtra("state", "3");
+//                        kaerIntent.putExtra("value", "-30");
+//                        sendBroadcast(kaerIntent);
+//                        //推送广播给到service做不同的事情
+//                        Intent kaerIntent = new Intent();
+//                        String funtion = String.valueOf(nowPosition);
+//                        kaerIntent.putExtra("funtion",funtion);
+//                        if (funtion.equals("1")) {
+//                            kaerIntent.putExtra("state","1");
+//                            kaerIntent.putExtra("value","0");
+//                        } else if (funtion.equals("2")) {
+//                            kaerIntent.putExtra("state","1");
+//                            kaerIntent.putExtra("value","0");
+//                        }
+//                        else if (funtion.equals("3")) {
+//                            kaerIntent.putExtra("state","1");
+//                            kaerIntent.putExtra("value","");
+//                        }else if (funtion.equals("4")) {
+//                            kaerIntent.putExtra("state","1");
+//                            kaerIntent.putExtra("value","");
+//                        }
+//                        kaerIntent.setAction(KareApplication.ACTION_TUISONG_JSON);
+//                        sendBroadcast(kaerIntent);
                     }
                     break;
             }
@@ -141,34 +168,52 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     private void initList() {
-        //获取网络数据
-        //先模拟数据-默认广告
+        //("drawable://" + imageId）
+        //assets://image.png
         KareApplication.mAdvertisementList = new ArrayList<AdvertisementData>();
-        AdvertisementData advertisementData = new AdvertisementData();//模拟文本
-        advertisementData.setMediaType(1);
-        advertisementData.setContent("广告测试文本1");
-        advertisementData.setMedia("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561396474168&di=f209408b5f8bcbfdcd27dec8ff9a7c9a&imgtype=0&src=http%3A%2F%2Fpic25.nipic.com%2F20121112%2F9252150_150552938000_2.jpg");
+        AdvertisementData advertisementData = new AdvertisementData();//模拟图片
+        advertisementData.setMediaType(2);
         advertisementData.setDuration(10);
+        advertisementData.setMedia("assets://ad_001.jpg");
         KareApplication.mAdvertisementList.add(advertisementData);
-        advertisementData = new AdvertisementData();//模拟视频
-        advertisementData.setMediaType(3);
-        advertisementData.setDuration(30);
-        advertisementData.setMedia("http://www.jmzsjy.com/UploadFile/微课/地方风味小吃——宫廷香酥牛肉饼.mp4");
-        KareApplication.mAdvertisementList.add(advertisementData);
+
         advertisementData = new AdvertisementData();//模拟图片
         advertisementData.setMediaType(2);
         advertisementData.setDuration(10);
-        advertisementData.setMedia("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561396439119&di=b52f8459a8c209324c638503b4c9005c&imgtype=0&src=http%3A%2F%2Fimg.redocn.com%2Fsheji%2F20141219%2Fzhongguofengdaodeliyizhanbanzhijing_3744115.jpg");
-        KareApplication.mAdvertisementList.add(advertisementData);
-        advertisementData = new AdvertisementData();//模拟视频
-        advertisementData.setMediaType(3);
-        advertisementData.setDuration(30);
-        advertisementData.setMedia("http://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4");
+        advertisementData.setMedia("assets://ad_002.jpg");
         KareApplication.mAdvertisementList.add(advertisementData);
         //开始执行第一条
         nowPosition = 0;
         mHandler.sendEmptyMessage(GO_AD);
+        //获取网络数据
+        //先模拟数据-默认广告
+//        KareApplication.mAdvertisementList = new ArrayList<AdvertisementData>();
+//        AdvertisementData advertisementData = new AdvertisementData();//模拟文本
+//        advertisementData.setMediaType(1);
+//        advertisementData.setContent("广告测试文本1");
+//        advertisementData.setMedia("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561396474168&di=f209408b5f8bcbfdcd27dec8ff9a7c9a&imgtype=0&src=http%3A%2F%2Fpic25.nipic.com%2F20121112%2F9252150_150552938000_2.jpg");
+//        advertisementData.setDuration(10);
+//        KareApplication.mAdvertisementList.add(advertisementData);
+//        advertisementData = new AdvertisementData();//模拟视频
+//        advertisementData.setMediaType(3);
+//        advertisementData.setDuration(30);
+//        advertisementData.setMedia("http://www.jmzsjy.com/UploadFile/微课/地方风味小吃——宫廷香酥牛肉饼.mp4");
+//        KareApplication.mAdvertisementList.add(advertisementData);
+//        advertisementData = new AdvertisementData();//模拟图片
+//        advertisementData.setMediaType(2);
+//        advertisementData.setDuration(10);
+//        advertisementData.setMedia("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1561396439119&di=b52f8459a8c209324c638503b4c9005c&imgtype=0&src=http%3A%2F%2Fimg.redocn.com%2Fsheji%2F20141219%2Fzhongguofengdaodeliyizhanbanzhijing_3744115.jpg");
+//        KareApplication.mAdvertisementList.add(advertisementData);
+//        advertisementData = new AdvertisementData();//模拟视频
+//        advertisementData.setMediaType(3);
+//        advertisementData.setDuration(30);
+//        advertisementData.setMedia("http://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4");
+//        KareApplication.mAdvertisementList.add(advertisementData);
+//        //开始执行第一条
+//        nowPosition = 0;
+//        mHandler.sendEmptyMessage(GO_AD);
 
     }
 
@@ -178,11 +223,11 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         //String videoUrl = "http://www.jmzsjy.com/UploadFile/微课/地方风味小吃——宫廷香酥牛肉饼.mp4";
         mSuperPlayerView = (SuperPlayerView) findViewById(R.id.video_player_item);
-        LogUtil.println("initView mSuperPlayerViewId:"+(mSuperPlayerView.getId()));
+        LogUtil.println("initView mSuperPlayerViewId:" + (mSuperPlayerView.getId()));
         mIvTextPic = (ImageView) findViewById(R.id.iv_text_and_pic);
-        LogUtil.println("initView mIvTextPicId:"+(mIvTextPic.getId()));
+        LogUtil.println("initView mIvTextPicId:" + (mIvTextPic.getId()));
         mTvText = (TextView) this.findViewById(R.id.tv_text);
-        LogUtil.println("initView mTvTextgetId:"+(mTvText.getId()));
+        LogUtil.println("initView mTvTextgetId:" + (mTvText.getId()));
 
     }
 
@@ -284,19 +329,19 @@ public class MainActivity extends AppCompatActivity {
                     + location.getLongitude();
             LogUtil.println("locationListener:" + string);
             //遍历广告中有经纬度定位的广告
-            for(int i = 0;i<KareApplication.mAdvertisementList.size();i++){
+            for (int i = 0; i < KareApplication.mAdvertisementList.size(); i++) {
                 AdvertisementData advertisementData = KareApplication.mAdvertisementList.get(i);
-                if(!TextUtils.isEmpty(advertisementData.getLocation())){
+                if (!TextUtils.isEmpty(advertisementData.getLocation())) {
                     //拆分advertisementData.getLocation();
                     double latitude = 0.0;
                     double longitude = 0.0;
                     //判断上下距离 1km等于经纬度多少。1/111 1/111 0.009
                     double laDistance = location.getLatitude() - latitude;
                     double lgDistance = location.getLongitude() - longitude;
-                    if(laDistance<-0.009*Double.valueOf(advertisementData.getLimits())&&laDistance>0.009*Double.valueOf(advertisementData.getLimits())){
+                    if (laDistance < -0.009 * Double.valueOf(advertisementData.getLimits()) && laDistance > 0.009 * Double.valueOf(advertisementData.getLimits())) {
                         //重新获取新的广告
                     }
-                    if(longitude<-0.009*Double.valueOf(advertisementData.getLimits())&&longitude>0.009*Double.valueOf(advertisementData.getLimits())){
+                    if (longitude < -0.009 * Double.valueOf(advertisementData.getLimits()) && longitude > 0.009 * Double.valueOf(advertisementData.getLimits())) {
                         //重新获取新的广告
                     }
                 }

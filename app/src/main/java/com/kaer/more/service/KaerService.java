@@ -66,6 +66,7 @@ public class KaerService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            LogUtil.i("KaerReceiver","KaerReceiver");
             String action = intent.getAction();
             if (action.equals(KareApplication.ACTION_TUISONG_JSON)) {
                 //解析
@@ -78,6 +79,7 @@ public class KaerService extends Service {
                         int valueInt = Integer.parseInt(value);
                         if (state.equals("1")) {//1设置自动梯形
                             if(valueInt == 0){
+                                LogUtil.i("KaerReceiver","setAutoKeyStone true");
                                 Device.setAutoKeyStone(true);
                             }else if(valueInt == 1){
                                 Device.setAutoKeyStone(false);
@@ -91,6 +93,7 @@ public class KaerService extends Service {
                         int valueInt = Integer.parseInt(value);
                         if (state.equals("1")) {//1设置自动投影方位
                             if(valueInt == 0){
+                                LogUtil.i("KaerReceiver","setAutoProject 0");
                                 Device.setAutoProject(KareApplication.mInstance,true);
                             }else if(valueInt == 1){
                                 Device.setAutoProject(KareApplication.mInstance,false);
@@ -104,6 +107,7 @@ public class KaerService extends Service {
                            new TimeUtil(value,state);
                         }else {
                             if (state.equals("1")) {//1设置开机 //1是开 0是关
+                                LogUtil.i("KaerReceiver","setProjectorLedPower 1");
                                 Device.setProjectorLedPower(1);
                             } else if (state.equals("2")) {//2设置关闭
                                 Device.setProjectorLedPower(0);
@@ -111,6 +115,7 @@ public class KaerService extends Service {
                         }
                     } else if (funtion.equals("4")) {//机器重启
                         if (state.equals("1")) {//1重启
+                            LogUtil.i("KaerReceiver","机器重启 1");
 
                         } else if (state.equals("2")) {//2时间
 
