@@ -12,6 +12,15 @@ public class AdvertisementData {
     private String content;//广告内容
     private String media;//媒体文件
     private int level;//优先级
+    private boolean isOK;
+
+    public boolean isOK() {
+        return isOK;
+    }
+
+    public void setOK(boolean OK) {
+        isOK = OK;
+    }
 
     public String getAdId() {
         return adId;

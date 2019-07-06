@@ -4,6 +4,7 @@ package com.kaer.more.http;
 import android.content.Context;
 
 import com.kaer.more.R;
+import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.entitiy.PropellingMovementData;
 import com.kaer.more.entitiy.UploadData;
 
@@ -111,6 +112,14 @@ public class HttpAnalyJsonManager {
         return uploadData;
     }
 
+    public static AdvertisementData adSearch(String json, Context context) throws JSONException {
+        AdvertisementData advertisementData = new AdvertisementData();
+        advertisementData.setOK(false);
+        JSONObject resultJson = new JSONObject(json);
+        advertisementData.setOK(true);
+        android.util.Log.e("adSearch", "advertisementData:"+advertisementData.toString());
+        return advertisementData;
+    }
     public static PropellingMovementData propellingMovementFunction(String json, Context context) throws JSONException {
         PropellingMovementData mPropellingMovementData = new PropellingMovementData();
         mPropellingMovementData.setOK(false);

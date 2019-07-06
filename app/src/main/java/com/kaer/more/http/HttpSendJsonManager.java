@@ -295,4 +295,31 @@ public class HttpSendJsonManager {
             return false;
         }
     }
+
+
+    public static boolean adSearch(Context context,
+                                     String imei,String longitude,String latitude) {
+        String url = "v0/ad/search.htm";
+        try {
+            JSONObject sendJSONObject = new JSONObject();
+            JSONObject mainJSONObject = new JSONObject();
+
+            mainJSONObject.put("imei", imei);
+            mainJSONObject.put("longitude", longitude);
+            mainJSONObject.put("latitude", latitude);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
+
+            String json = sendJSONObject.toString();
+
+            LogUtil.println("adSearch" + json);
+            String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
+            LogUtil.println("adSearch synchronousResult1" + synchronousResult);
+            return HttpAnalyJsonManager.onResult(synchronousResult, context);
+        } catch (Exception e) {
+            HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
