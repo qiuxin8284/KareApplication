@@ -115,11 +115,22 @@ public class HttpAnalyJsonManager {
     public static AdvertisementData adSearch(String json, Context context) throws JSONException {
         AdvertisementData advertisementData = new AdvertisementData();
         advertisementData.setOK(false);
-        JSONObject resultJson = new JSONObject(json);
+        JSONObject dataJson = new JSONObject(json);
+        advertisementData.setAdId(dataJson.getString("id"));
+        advertisementData.setName(dataJson.getString("name"));
+        advertisementData.setAdType(dataJson.getInt("adType"));
+        advertisementData.setMediaType(dataJson.getInt("mediaType"));
+        advertisementData.setMedia(dataJson.getString("media"));
+        advertisementData.setContent(dataJson.getString("content"));
+        advertisementData.setDuration(dataJson.getInt("duration"));
+        advertisementData.setBigImage(dataJson.getString("bigImage"));
+        advertisementData.setLocation(dataJson.getString("location"));
+        advertisementData.setLimits(dataJson.getString("limits"));
         advertisementData.setOK(true);
         android.util.Log.e("adSearch", "advertisementData:"+advertisementData.toString());
         return advertisementData;
     }
+
     public static PropellingMovementData propellingMovementFunction(String json, Context context) throws JSONException {
         PropellingMovementData mPropellingMovementData = new PropellingMovementData();
         mPropellingMovementData.setOK(false);

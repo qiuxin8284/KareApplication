@@ -12,10 +12,13 @@ import android.os.Message;
 import android.text.TextUtils;
 
 import com.kaer.more.KareApplication;
+import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.http.HttpSendJsonManager;
 import com.kaer.more.utils.LogUtil;
 import com.kaer.more.utils.TimeUtil;
+
+import java.util.ArrayList;
 
 import scifly.device.Device;
 
@@ -34,8 +37,8 @@ public class KaerService extends Service {
         LogUtil.println("KaerService onCreate");
         //开启定时服务
 //        //第一次触发广告
-//        mGetAdTask = new GetAdTask();
-//        mGetAdTask.execute();
+        mGetAdTask = new GetAdTask();
+        mGetAdTask.execute();
 
         //发送接口
         mNoticeDeviceTask = new NoticeDeviceTask();
@@ -57,6 +60,8 @@ public class KaerService extends Service {
         super.onDestroy();
         mNoticeDeviceTask = new NoticeDeviceTask();
         mNoticeDeviceTask.execute(STATE_CLOSE);
+        mDeviceUploadTask = new DeviceUploadTask();
+        mDeviceUploadTask.execute();
         unregisterReceiver(mKaerReceiver);
     }
 
@@ -357,7 +362,32 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
-            mHandler.sendEmptyMessage(IMG_DEVICE_SUCCESS);
+            String deviceID = "e6287682d8422";
+            String longitude = "0.00";
+            String latitude = "0.00";
+            ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
+            AdRemarkData adRemarkData = new AdRemarkData();
+            adRemarkData.setAdId("e29ff2a8c727db3ebb2780541f4aa99d");
+            adRemarkData.setAllCount(1);
+            list.add(adRemarkData);
+            HttpSendJsonManager.adSearch(KareApplication.mInstance,  deviceID, longitude, latitude,  list);
+            return null;
+        }
+    }
+    private DeviceUploadTask mDeviceUploadTask;
+
+    private class DeviceUploadTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            String deviceID = "e6287682d8422";
+            ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
+            AdRemarkData adRemarkData = new AdRemarkData();
+            adRemarkData = new AdRemarkData();
+            adRemarkData.setAdId("e29ff2a8c727db3ebb2780541f4aa99d");
+            adRemarkData.setAllCount(1000);
+            list.add(adRemarkData);
+            HttpSendJsonManager.deviceUpload(KareApplication.mInstance, deviceID,  list);
             return null;
         }
     }

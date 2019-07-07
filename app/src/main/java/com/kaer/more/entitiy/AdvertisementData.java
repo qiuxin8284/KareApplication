@@ -2,6 +2,7 @@ package com.kaer.more.entitiy;
 
 public class AdvertisementData {
     private String adId;//广告ID
+    private String name;//名称
     private int mediaType;//1文本，2图片，3视频
     private int adType;//1商业广告，2公益广告
     private int duration;//时长
@@ -11,8 +12,46 @@ public class AdvertisementData {
     private String limits;//范围（单位km)
     private String content;//广告内容
     private String media;//媒体文件
+
+    @Override
+    public String toString() {
+        return "AdvertisementData{" +
+                "adId='" + adId + '\'' +
+                ", name='" + name + '\'' +
+                ", mediaType=" + mediaType +
+                ", adType=" + adType +
+                ", duration=" + duration +
+                ", liveCount=" + liveCount +
+                ", liveTime='" + liveTime + '\'' +
+                ", location='" + location + '\'' +
+                ", limits='" + limits + '\'' +
+                ", content='" + content + '\'' +
+                ", media='" + media + '\'' +
+                ", bigImage='" + bigImage + '\'' +
+                ", level=" + level +
+                ", isOK=" + isOK +
+                '}';
+    }
+
+    public String getBigImage() {
+        return bigImage;
+    }
+
+    public void setBigImage(String bigImage) {
+        this.bigImage = bigImage;
+    }
+
+    private String bigImage;//媒体文件
     private int level;//优先级
     private boolean isOK;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public boolean isOK() {
         return isOK;
@@ -110,20 +149,4 @@ public class AdvertisementData {
         this.level = level;
     }
 
-    @Override
-    public String toString() {
-        return "AdvertisementData{" +
-                "adId=" + adId +
-                ", mediaType=" + mediaType +
-                ", adType=" + adType +
-                ", duration=" + duration +
-                ", liveCount=" + liveCount +
-                ", liveTime='" + liveTime + '\'' +
-                ", location='" + location + '\'' +
-                ", limits='" + limits + '\'' +
-                ", content='" + content + '\'' +
-                ", media='" + media + '\'' +
-                ", level=" + level +
-                '}';
-    }
 }

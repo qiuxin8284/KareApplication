@@ -119,7 +119,7 @@ public class KareApplication extends Application {
     private void initDevice() {
         //获取推送token
         String token = JPushInterface.getRegistrationID(this);
-//        mDeviceUtil.setToken(token);
+        mDeviceUtil.setToken(token);
 //        mCheckDeviceTask = new CheckDeviceTask();
 //        mCheckDeviceTask.execute();
     }

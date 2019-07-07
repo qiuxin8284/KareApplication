@@ -8,10 +8,13 @@ import com.jordan.httplibrary.utils.Base64;
 import com.jordan.httplibrary.utils.CommonUtils;
 import com.kaer.more.KareApplication;
 import com.kaer.more.R;
+import com.kaer.more.entitiy.AdRemarkData;
+import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.utils.LogUtil;
 import com.safari.core.protocol.RequestMessage;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -21,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class HttpSendJsonManager {
@@ -297,13 +301,24 @@ public class HttpSendJsonManager {
     }
 
 
-    public static boolean adSearch(Context context,
-                                     String imei,String longitude,String latitude) {
+    public static AdvertisementData adSearch(Context context,
+                                     String imei,String longitude,String latitude, ArrayList<AdRemarkData> list) {
+        AdvertisementData advertisementData = new AdvertisementData();
+        advertisementData.setOK(false);
         String url = "v0/ad/search.htm";
         try {
             JSONObject sendJSONObject = new JSONObject();
             JSONObject mainJSONObject = new JSONObject();
 
+            JSONArray deviceAdsJsonArray = new JSONArray();
+            for(int i=0;i<list.size();i++){
+                AdRemarkData adRemarkData = list.get(i);
+                JSONObject deviceAdsJSONObject = new JSONObject();
+                deviceAdsJSONObject.put("adId", adRemarkData.getAdId());
+                deviceAdsJSONObject.put("count", adRemarkData.getAllCount());
+                deviceAdsJsonArray.put(deviceAdsJSONObject);
+            }
+            mainJSONObject.put("deviceAds", deviceAdsJsonArray);
             mainJSONObject.put("imei", imei);
             mainJSONObject.put("longitude", longitude);
             mainJSONObject.put("latitude", latitude);
@@ -315,6 +330,39 @@ public class HttpSendJsonManager {
             LogUtil.println("adSearch" + json);
             String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
             LogUtil.println("adSearch synchronousResult1" + synchronousResult);
+            return HttpAnalyJsonManager.adSearch(synchronousResult, context);
+        } catch (Exception e) {
+            HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
+            e.printStackTrace();
+            return advertisementData;
+        }
+    }
+
+    public static boolean deviceUpload(Context context, String imei,
+                                       ArrayList<AdRemarkData> list) {
+        String url = "v0/device/upload.htm";
+        try {
+            JSONObject sendJSONObject = new JSONObject();
+            JSONObject mainJSONObject = new JSONObject();
+
+			JSONArray deviceAdsJsonArray = new JSONArray();
+			for(int i=0;i<list.size();i++){
+				AdRemarkData adRemarkData = list.get(i);
+				JSONObject deviceAdsJSONObject = new JSONObject();
+                deviceAdsJSONObject.put("adId", adRemarkData.getAdId());
+                deviceAdsJSONObject.put("count", adRemarkData.getAllCount());
+                deviceAdsJsonArray.put(deviceAdsJSONObject);
+			}
+			mainJSONObject.put("deviceAds", deviceAdsJsonArray);
+            mainJSONObject.put("imei", imei);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
+
+            String json = sendJSONObject.toString();
+
+            LogUtil.println("deviceUpload" + json);
+            String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
+            LogUtil.println("deviceUpload synchronousResult1" + synchronousResult);
             return HttpAnalyJsonManager.onResult(synchronousResult, context);
         } catch (Exception e) {
             HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
@@ -322,4 +370,5 @@ public class HttpSendJsonManager {
             return false;
         }
     }
+
 }
