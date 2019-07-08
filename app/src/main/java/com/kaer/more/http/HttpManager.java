@@ -55,9 +55,9 @@ public class HttpManager {
 					ResponseMessage.Response response = ResponseMessage.Response.parseFrom(dataByte);
 					String resultCode = response.getResult();
 					String data = response.getData();
-					LogUtil.println("sendSMS synchronousResult2 data" + data+" resultCode:"+resultCode);
+					LogUtil.println("SyncHttpCommunicate synchronousResult2 data" + data+" resultCode:"+resultCode);
 					data = DES3Util.decode(data);
-					LogUtil.println("sendSMS synchronousResult3 data" + data);
+					LogUtil.println("SyncHttpCommunicate synchronousResult3 data" + data);
 					if(resultCode.equals("1"))
 					{
 						dataJson = new JSONObject(data);

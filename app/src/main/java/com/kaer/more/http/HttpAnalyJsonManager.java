@@ -5,11 +5,15 @@ import android.content.Context;
 
 import com.kaer.more.R;
 import com.kaer.more.entitiy.AdvertisementData;
+import com.kaer.more.entitiy.AdvertisementListData;
 import com.kaer.more.entitiy.PropellingMovementData;
 import com.kaer.more.entitiy.UploadData;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 
 public class HttpAnalyJsonManager {
@@ -112,23 +116,30 @@ public class HttpAnalyJsonManager {
         return uploadData;
     }
 
-    public static AdvertisementData adSearch(String json, Context context) throws JSONException {
-        AdvertisementData advertisementData = new AdvertisementData();
-        advertisementData.setOK(false);
-        JSONObject dataJson = new JSONObject(json);
-        advertisementData.setAdId(dataJson.getString("id"));
-        advertisementData.setName(dataJson.getString("name"));
-        advertisementData.setAdType(dataJson.getInt("adType"));
-        advertisementData.setMediaType(dataJson.getInt("mediaType"));
-        advertisementData.setMedia(dataJson.getString("media"));
-        advertisementData.setContent(dataJson.getString("content"));
-        advertisementData.setDuration(dataJson.getInt("duration"));
-        advertisementData.setBigImage(dataJson.getString("bigImage"));
-        advertisementData.setLocation(dataJson.getString("location"));
-        advertisementData.setLimits(dataJson.getString("limits"));
-        advertisementData.setOK(true);
-        android.util.Log.e("adSearch", "advertisementData:"+advertisementData.toString());
-        return advertisementData;
+    public static AdvertisementListData adSearch(String json, Context context) throws JSONException {
+        AdvertisementListData advertisementListData = new AdvertisementListData();
+        advertisementListData.setOK(false);
+        ArrayList<AdvertisementData> adlist = new ArrayList<AdvertisementData>();
+        JSONArray arrayJson = new JSONArray(json);
+        for(int i = 0;i<arrayJson.length();i++) {
+            AdvertisementData advertisementData = new AdvertisementData();
+            JSONObject dataJson = arrayJson.getJSONObject(i);
+            advertisementData.setAdId(dataJson.getString("id"));
+            advertisementData.setName(dataJson.getString("name"));
+            advertisementData.setAdType(dataJson.getInt("adType"));
+            advertisementData.setMediaType(dataJson.getInt("mediaType"));
+            advertisementData.setMedia(dataJson.getString("media"));
+            advertisementData.setContent(dataJson.getString("content"));
+            advertisementData.setDuration(dataJson.getInt("duration"));
+            advertisementData.setBigImage(dataJson.getString("bigImage"));
+            advertisementData.setLocation(dataJson.getString("location"));
+            advertisementData.setLimits(dataJson.getString("limits"));
+            adlist.add(advertisementData);
+        }
+        advertisementListData.setAdList(adlist);
+        advertisementListData.setOK(true);
+        android.util.Log.e("adSearch", "advertisementListData:"+advertisementListData.toString());
+        return advertisementListData;
     }
 
     public static PropellingMovementData propellingMovementFunction(String json, Context context) throws JSONException {

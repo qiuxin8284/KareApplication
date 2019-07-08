@@ -81,6 +81,7 @@ public class KareApplication extends Application {
     public static final int REPEAT_CONNECT_TIME = 30000;//30s重试
     public static final String ACTION_TUISONG_JSON = "com.kaer.tuisong.action.json";
     public static final String ACTION_UPDATE_AD = "com.kaer.update.action.ad";
+    public static final String ACTION_IMAGE_UPLOAD = "com.kaer.update.action.image";
     public static ArrayList<AdvertisementData> mAdvertisementList = new ArrayList<AdvertisementData>();
     private Handler mHandler = new Handler() {
         @Override
@@ -119,7 +120,7 @@ public class KareApplication extends Application {
     private void initDevice() {
         //获取推送token
         String token = JPushInterface.getRegistrationID(this);
-        mDeviceUtil.setToken(token);
+        //mDeviceUtil.setToken(token);
 //        mCheckDeviceTask = new CheckDeviceTask();
 //        mCheckDeviceTask.execute();
     }

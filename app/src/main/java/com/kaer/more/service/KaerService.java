@@ -6,13 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.text.TextUtils;
 
+import com.jordan.httplibrary.utils.CommonUtils;
 import com.kaer.more.KareApplication;
 import com.kaer.more.entitiy.AdRemarkData;
+import com.kaer.more.entitiy.AdvertisementListData;
 import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.http.HttpSendJsonManager;
 import com.kaer.more.utils.LogUtil;
@@ -37,14 +40,14 @@ public class KaerService extends Service {
         LogUtil.println("KaerService onCreate");
         //开启定时服务
 //        //第一次触发广告
-        mGetAdTask = new GetAdTask();
-        mGetAdTask.execute();
+        mGetFristAdTask = new GetFristAdTask();
+        mGetFristAdTask.execute();
 
         //发送接口
         mNoticeDeviceTask = new NoticeDeviceTask();
         mNoticeDeviceTask.execute(STATE_OPEN);
-//        mExcpDeviceTask = new ExcpDeviceTask();
-//        mExcpDeviceTask.execute();
+        mExcpDeviceTask = new ExcpDeviceTask();
+        mExcpDeviceTask.execute();
 
 
         //收到广播-处理推送
@@ -163,7 +166,9 @@ public class KaerService extends Service {
     private static final int UPLOAD_IMG_FALSE = 10;
     private static final int GET_AD_SUCCESS = 11;
     private static final int GET_AD_FALSE = 12;
-    private static final int TIME_ADD = 13;
+    private static final int GET_AD_FRIST_SUCCESS = 13;
+    private static final int GET_AD_FRIST_FALSE = 14;
+    private static final int TIME_ADD = 15;
     public static final int REPEAT_CONNECT_TIME = 30000;//30s重试
     private Handler mHandler = new Handler() {
         @Override
@@ -186,7 +191,7 @@ public class KaerService extends Service {
                     //更新list
                     //发广播
                     Intent kaerIntent = new Intent();
-                    kaerIntent.setAction(KareApplication.ACTION_UPDATE_AD);
+                    kaerIntent.setAction(KareApplication.ACTION_IMAGE_UPLOAD);
                     sendBroadcast(kaerIntent);
                     break;
                 case IMG_DEVICE_FALSE:
@@ -199,7 +204,7 @@ public class KaerService extends Service {
                     break;
                 case UPLOAD_IMG_FALSE:
                     break;
-                case GET_AD_SUCCESS:
+                case GET_AD_FRIST_SUCCESS:
                     //记录当前地理位置&&记得请求成功的时间开启定时器清0
                     mConnectTime = 0;
                     mNowLongitude = "0.00";
@@ -208,14 +213,29 @@ public class KaerService extends Service {
                     mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
                     //地址监听
                     break;
+                case GET_AD_FRIST_FALSE:
+                    mGetFristAdTask = new GetFristAdTask();
+                    mGetFristAdTask.execute();
+                    break;
+                case GET_AD_SUCCESS:
+                    //记录当前地理位置&&记得请求成功的时间开启定时器清0
+                    mConnectTime = 0;
+                    mNowLongitude = "0.00";
+                    mNowLatitude = "0.00";
+                    //发送定时
+                    //mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
+                    //地址监听
+                    break;
                 case GET_AD_FALSE:
+                    mGetAdTask = new GetAdTask();
+                    mGetAdTask.execute();
                     break;
                 case TIME_ADD:
                     mConnectTime = mConnectTime + 1000;
                     if (mConnectTime >= CONNECT_REPEAT_TIME) {
                         mConnectTime = 0;
-                        mGetAdTask = new GetAdTask();
-                        mGetAdTask.execute();
+                        mGetFristAdTask = new GetFristAdTask();
+                        mGetFristAdTask.execute();
                     } else {
                         mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
                     }
@@ -336,8 +356,8 @@ public class KaerService extends Service {
         protected Void doInBackground(String... params) {
             int type = 0;
             String name = "";
-            String file = "";
-            String time = "";
+            String file  = CommonUtils.encodeToBase64(Environment.getExternalStorageDirectory() + "/" + name);
+            String time = "0";
             LogUtil.println("uploadMedia type:" + type);
             LogUtil.println("uploadMedia name:" + name);
             LogUtil.println("uploadMedia file:" + file);
@@ -345,7 +365,7 @@ public class KaerService extends Service {
             if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(file) && !TextUtils.isEmpty(time)) {
                 //上传检测是否存在这个设备号
                 uploadData = HttpSendJsonManager.uploadMedia(KareApplication.mInstance, type, name, file, time);
-                LogUtil.println("excpDevice flag:" + uploadData.isOK());
+                LogUtil.println("UploadMediaTask flag:" + uploadData.isOK());
                 if (uploadData.isOK()) {
                     mHandler.sendEmptyMessage(UPLOAD_IMG_SUCCESS);
                 } else {
@@ -356,6 +376,35 @@ public class KaerService extends Service {
         }
     }
 
+    private GetFristAdTask mGetFristAdTask;
+
+    private class GetFristAdTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            String deviceID = "e6287682d8422";
+            String longitude = "0.00";
+            String latitude = "0.00";
+            ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
+            AdRemarkData adRemarkData = new AdRemarkData();
+            adRemarkData.setAdId("e29ff2a8c727db3ebb2780541f4aa99d");
+            adRemarkData.setAllCount(1);
+            list.add(adRemarkData);
+            AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance,  deviceID, longitude, latitude,  list);
+            //如果失败重新获取
+            //如果成功那么推送刷新广告
+            if(advertisementListData.isOK()){
+                KareApplication.mAdvertisementList = advertisementListData.getAdList();
+                Intent intent = new Intent();
+                intent.setAction(KareApplication.ACTION_UPDATE_AD);
+                sendBroadcast(intent);
+                mHandler.sendEmptyMessage(GET_AD_FRIST_SUCCESS);
+            }else{
+                mHandler.sendEmptyMessage(GET_AD_FRIST_FALSE);
+            }
+            return null;
+        }
+    }
     private GetAdTask mGetAdTask;
 
     private class GetAdTask extends AsyncTask<String, Void, Void> {
@@ -370,7 +419,18 @@ public class KaerService extends Service {
             adRemarkData.setAdId("e29ff2a8c727db3ebb2780541f4aa99d");
             adRemarkData.setAllCount(1);
             list.add(adRemarkData);
-            HttpSendJsonManager.adSearch(KareApplication.mInstance,  deviceID, longitude, latitude,  list);
+            AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance,  deviceID, longitude, latitude,  list);
+            //如果失败重新获取
+            //如果成功那么推送刷新广告
+            if(advertisementListData.isOK()){
+                KareApplication.mAdvertisementList = advertisementListData.getAdList();
+                Intent intent = new Intent();
+                intent.setAction(KareApplication.ACTION_UPDATE_AD);
+                sendBroadcast(intent);
+                mHandler.sendEmptyMessage(GET_AD_SUCCESS);
+            }else{
+                mHandler.sendEmptyMessage(GET_AD_FALSE);
+            }
             return null;
         }
     }

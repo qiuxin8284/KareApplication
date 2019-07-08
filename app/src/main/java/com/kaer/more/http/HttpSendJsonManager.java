@@ -10,6 +10,7 @@ import com.kaer.more.KareApplication;
 import com.kaer.more.R;
 import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementData;
+import com.kaer.more.entitiy.AdvertisementListData;
 import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.utils.LogUtil;
 import com.safari.core.protocol.RequestMessage;
@@ -301,10 +302,10 @@ public class HttpSendJsonManager {
     }
 
 
-    public static AdvertisementData adSearch(Context context,
+    public static AdvertisementListData adSearch(Context context,
                                      String imei,String longitude,String latitude, ArrayList<AdRemarkData> list) {
-        AdvertisementData advertisementData = new AdvertisementData();
-        advertisementData.setOK(false);
+        AdvertisementListData advertisementListData = new AdvertisementListData();
+        advertisementListData.setOK(false);
         String url = "v0/ad/search.htm";
         try {
             JSONObject sendJSONObject = new JSONObject();
@@ -334,7 +335,7 @@ public class HttpSendJsonManager {
         } catch (Exception e) {
             HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
             e.printStackTrace();
-            return advertisementData;
+            return advertisementListData;
         }
     }
 

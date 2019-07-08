@@ -2,27 +2,46 @@ package com.kaer.more.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.hardware.display.DisplayManager;
+import android.hardware.display.VirtualDisplay;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
+import android.media.ImageReader;
+import android.media.projection.MediaProjection;
+import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kaer.more.KareApplication;
 import com.kaer.more.R;
@@ -34,6 +53,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerView;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +66,7 @@ import java.util.List;
 import scifly.device.Device;
 
 public class MainActivity extends AppCompatActivity {
+    private RelativeLayout mRLMainBG;
     private SuperPlayerView mSuperPlayerView;
     private ImageView mIvTextPic;
     private TextView mTvText;
@@ -152,7 +178,22 @@ public class MainActivity extends AppCompatActivity {
         mMainReceiver = new MainReceiver();//广播接受者实例
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(KareApplication.ACTION_TUISONG_JSON);
+        intentFilter.addAction(KareApplication.ACTION_IMAGE_UPLOAD);
         registerReceiver(mMainReceiver, intentFilter);
+
+//        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "qiuxin.jpg");
+//        Bitmap bitmap = screenShot(this);
+//        try {
+//            if (!file.exists())
+//                file.createNewFile();
+//            boolean ret = save(bitmap, file, Bitmap.CompressFormat.JPEG, true);
+//            if (ret) {
+//                Toast.makeText(getApplicationContext(), "截图已保持至 " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
     }
 
     private MainReceiver mMainReceiver;
@@ -165,6 +206,8 @@ public class MainActivity extends AppCompatActivity {
             if (action.equals(KareApplication.ACTION_UPDATE_AD)) {
                 //开始执行第一条
                 nowPosition = 0;
+            }else if (action.equals(KareApplication.ACTION_IMAGE_UPLOAD)) {
+                //截图上传
             }
         }
     }
@@ -228,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
         LogUtil.println("initView mIvTextPicId:" + (mIvTextPic.getId()));
         mTvText = (TextView) this.findViewById(R.id.tv_text);
         LogUtil.println("initView mTvTextgetId:" + (mTvText.getId()));
-
+        mRLMainBG = (RelativeLayout) findViewById(R.id.rl_main);
     }
 
     /**
@@ -349,4 +392,108 @@ public class MainActivity extends AppCompatActivity {
             //如果有判断是否符合在距离之内，否则发送广播请求新的广告
         }
     };
+
+
+    /**
+     * 保存图片到文件File。
+     *
+     * @param src     源图片
+     * @param file    要保存到的文件
+     * @param format  格式
+     * @param recycle 是否回收
+     * @return true 成功 false 失败
+     */
+    public static boolean save(Bitmap src, File file, Bitmap.CompressFormat format, boolean recycle) {
+        if (isEmptyBitmap(src))
+            return false;
+
+        OutputStream os;
+        boolean ret = false;
+        try {
+            os = new BufferedOutputStream(new FileOutputStream(file));
+            ret = src.compress(format, 100, os);
+            if (recycle && !src.isRecycled())
+                src.recycle();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ret;
+    }
+
+
+    /**
+     * 获取当前屏幕截图，不包含状态栏（Status Bar）。
+     *
+     * @param activity activity
+     * @return Bitmap
+     */
+    public static Bitmap screenShot(Activity activity) {
+        View view = activity.getWindow().getDecorView();
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache();
+        Bitmap bmp = view.getDrawingCache();
+        int statusBarHeight = getStatusBarHeight(activity);
+        int width = (int) getDeviceDisplaySize(activity)[0];
+        int height = (int) getDeviceDisplaySize(activity)[1];
+        Bitmap ret = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height - statusBarHeight);
+        view.destroyDrawingCache();
+        // 获取状态栏高度
+//        Rect frame = new Rect();
+//        activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+//        // 去掉标题栏 //Bitmap b = Bitmap.createBitmap(b1, 0, 25, 320, 455);
+//        Bitmap ret = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height
+//                - statusBarHeight);
+//        view.destroyDrawingCache();
+
+        LogUtil.println("screenShot width:" + width);
+        LogUtil.println("screenShot height:" + height);
+        LogUtil.println("screenShot statusBarHeight:" + statusBarHeight);
+        LogUtil.println("screenShot bmp:" + bmp);
+        return ret;
+    }
+
+    public static Bitmap getViewBitmap(View view) {
+        Bitmap bitmap;
+        if (view.getWidth() > 0 && view.getHeight() > 0)
+            bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        else if (view.getMeasuredWidth() > 0 && view.getMeasuredHeight() > 0)
+            bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        else
+            bitmap = Bitmap.createBitmap(1000, 1000 * 2, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
+    }
+
+    public static float[] getDeviceDisplaySize(Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics dm = resources.getDisplayMetrics();
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+
+        float[] size = new float[2];
+        size[0] = width;
+        size[1] = height;
+
+        return size;
+    }
+
+    public static int getStatusBarHeight(Context context) {
+        int height = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            height = context.getResources().getDimensionPixelSize(resourceId);
+        }
+
+        return height;
+    }
+
+    /**
+     * Bitmap对象是否为空。
+     */
+    public static boolean isEmptyBitmap(Bitmap src) {
+        return src == null || src.getWidth() == 0 || src.getHeight() == 0;
+    }
+
 }
