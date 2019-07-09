@@ -195,7 +195,7 @@ public class HttpSendJsonManager {
     private static final String CHARSET = "utf-8"; //编码格式
 
     public static UploadData uploadMedia(Context context, int type, String name, String file, String time) {
-        String filePath = Environment.getExternalStorageDirectory() + "/" + name;
+        String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + name;
         UploadData uploadData = new UploadData();
         uploadData.setOK(false);
         String urlPath = "media";

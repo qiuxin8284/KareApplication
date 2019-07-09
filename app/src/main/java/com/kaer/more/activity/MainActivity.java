@@ -127,36 +127,43 @@ public class MainActivity extends AppCompatActivity {
 //                        kaerIntent.putExtra("value", "-30");
 //                        sendBroadcast(kaerIntent);
                         //推送广播给到service做不同的事情
-                        Intent kaerIntent = new Intent();
-                        String funtion = String.valueOf(nowPosition);
-                        kaerIntent.putExtra("funtion",funtion);
-                        if (funtion.equals("1")) {
-                            kaerIntent.putExtra("state","1");
-                            kaerIntent.putExtra("value","0");
-                        } else if (funtion.equals("2")) {
-                            kaerIntent.putExtra("state","2");
-                            kaerIntent.putExtra("value","50");
-                        }
-                        else if (funtion.equals("3")) {
-                            kaerIntent.putExtra("state","1");
-                            kaerIntent.putExtra("value","");
-                        }else if (funtion.equals("4")) {
-                            kaerIntent.putExtra("state","1");
-                            kaerIntent.putExtra("value","");
-                        }
-                        kaerIntent.setAction(KareApplication.ACTION_TUISONG_JSON);
-                        sendBroadcast(kaerIntent);
+//                        Intent kaerIntent = new Intent();
+//                        String funtion = String.valueOf(nowPosition);
+//                        kaerIntent.putExtra("funtion",funtion);
+//                        if (funtion.equals("1")) {
+//                            kaerIntent.putExtra("state","1");
+//                            kaerIntent.putExtra("value","0");
+//                        } else if (funtion.equals("2")) {
+//                            kaerIntent.putExtra("state","2");
+//                            kaerIntent.putExtra("value","50");
+//                        }
+//                        else if (funtion.equals("3")) {
+//                            kaerIntent.putExtra("state","1");
+//                            kaerIntent.putExtra("value","");
+//                        }else if (funtion.equals("4")) {
+//                            kaerIntent.putExtra("state","1");
+//                            kaerIntent.putExtra("value","");
+//                        }
+//                        kaerIntent.setAction(KareApplication.ACTION_TUISONG_JSON);
+//                        sendBroadcast(kaerIntent);
                     }
                     break;
                 case GET_PIC:
-                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "qiuxin.jpg");
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "kaer.jpg");
                     Bitmap bitmap = screenShot(MainActivity.this);
                     try {
+                        LogUtil.println("screenShot bitmap:" + (bitmap!=null));
                         if (!file.exists())
                             file.createNewFile();
                         boolean ret = save(bitmap, file, Bitmap.CompressFormat.JPEG, true);
+                        LogUtil.println("screenShot ret:" + ret);
                         if (ret) {
-                            Toast.makeText(getApplicationContext(), "截图已保持至 " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                            //上传图片回传接口
+                            Intent picIntent = new Intent();
+                            picIntent.setAction(KareApplication.ACTION_IMAGE_UPLOAD_SUCESS);
+                            sendBroadcast(picIntent);
+
+                            //Toast.makeText(getApplicationContext(), "截图已保持至 " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -193,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
         mMainReceiver = new MainReceiver();//广播接受者实例
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(KareApplication.ACTION_TUISONG_JSON);
+        intentFilter.addAction(KareApplication.ACTION_UPDATE_AD);
         intentFilter.addAction(KareApplication.ACTION_IMAGE_UPLOAD);
         registerReceiver(mMainReceiver, intentFilter);
 
@@ -212,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
                 LogUtil.println("adSearch MainReceiver ACTION_UPDATE_AD nowPosition 0000");
             }else if (action.equals(KareApplication.ACTION_IMAGE_UPLOAD)) {
                 //截图上传
+                mHandler.sendEmptyMessage(GET_PIC);
             }
         }
     }
@@ -219,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //mHandler.sendEmptyMessageDelayed(GET_PIC,5000);
+        mHandler.sendEmptyMessageDelayed(GET_PIC,5000);
     }
 
     private void initList() {

@@ -56,6 +56,7 @@ public class KaerService extends Service {
         mKaerReceiver = new KaerReceiver();//广播接受者实例
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(KareApplication.ACTION_TUISONG_JSON);
+        intentFilter.addAction(KareApplication.ACTION_IMAGE_UPLOAD_SUCESS);
         registerReceiver(mKaerReceiver, intentFilter);
         //main横屏展示
     }
@@ -76,7 +77,7 @@ public class KaerService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            LogUtil.i("KaerReceiver","KaerReceiver");
+            LogUtil.i("KaerReceiver", "KaerReceiver");
             String action = intent.getAction();
             if (action.equals(KareApplication.ACTION_TUISONG_JSON)) {
                 //解析
@@ -88,10 +89,10 @@ public class KaerService extends Service {
                     if (funtion.equals("1")) {//推送 1：梯形调整
                         int valueInt = Integer.parseInt(value);
                         if (state.equals("1")) {//1设置自动梯形
-                            if(valueInt == 0){
-                                LogUtil.i("KaerReceiver","setAutoKeyStone true");
+                            if (valueInt == 0) {
+                                LogUtil.i("KaerReceiver", "setAutoKeyStone true");
                                 Device.setAutoKeyStone(true);
-                            }else if(valueInt == 1){
+                            } else if (valueInt == 1) {
                                 Device.setAutoKeyStone(false);
                             }
                         } else if (state.equals("2")) {//2设置垂直手动
@@ -115,11 +116,11 @@ public class KaerService extends Service {
                         }
                     } else if (funtion.equals("3")) {//开关光机（直接or定时）//时间以 8：00格式吧
                         //获取定时时间启动个定时器
-                        if(!TextUtils.isEmpty(value)){
-                           new TimeUtil(value,state);
-                        }else {
+                        if (!TextUtils.isEmpty(value)) {
+                            new TimeUtil(value, state);
+                        } else {
                             if (state.equals("1")) {//1设置开机 //1是开 0是关
-                                LogUtil.i("KaerReceiver","setProjectorLedPower 1");
+                                LogUtil.i("KaerReceiver", "setProjectorLedPower 1");
                                 Device.setProjectorLedPower(1);
                             } else if (state.equals("2")) {//2设置关闭
                                 Device.setProjectorLedPower(0);
@@ -127,7 +128,7 @@ public class KaerService extends Service {
                         }
                     } else if (funtion.equals("4")) {//机器重启
                         if (state.equals("1")) {//1重启
-                            LogUtil.i("KaerReceiver","机器重启 1");
+                            LogUtil.i("KaerReceiver", "机器重启 1");
 
                         } else if (state.equals("2")) {//2时间
 
@@ -135,8 +136,9 @@ public class KaerService extends Service {
                     }
                 } else {
                     if (funtion.equals("5")) {//图像回传
-                        mUploadMediaTask = new UploadMediaTask();
-                        mUploadMediaTask.execute();
+                        Intent kaerIntent = new Intent();
+                        kaerIntent.setAction(KareApplication.ACTION_IMAGE_UPLOAD);
+                        sendBroadcast(kaerIntent);
                     } else if (funtion.equals("6")) {//插播广告
                         mGetAdTask = new GetAdTask();
                         mGetAdTask.execute();
@@ -147,6 +149,9 @@ public class KaerService extends Service {
 
                     }
                 }
+            } else if (action.equals(KareApplication.ACTION_IMAGE_UPLOAD_SUCESS)) {
+                        mUploadMediaTask = new UploadMediaTask();
+                        mUploadMediaTask.execute();
             }
         }
     }
@@ -194,9 +199,6 @@ public class KaerService extends Service {
                 case IMG_DEVICE_SUCCESS:
                     //更新list
                     //发广播
-                    Intent kaerIntent = new Intent();
-                    kaerIntent.setAction(KareApplication.ACTION_IMAGE_UPLOAD);
-                    sendBroadcast(kaerIntent);
                     break;
                 case IMG_DEVICE_FALSE:
                     break;
@@ -360,8 +362,8 @@ public class KaerService extends Service {
         @Override
         protected Void doInBackground(String... params) {
             int type = 0;
-            String name = "";
-            String file  = CommonUtils.encodeToBase64(Environment.getExternalStorageDirectory() + "/" + name);
+            String name = "kaer.jpg";
+            String file  = CommonUtils.encodeToBase64(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + name);
             String time = "0";
             LogUtil.println("uploadMedia type:" + type);
             LogUtil.println("uploadMedia name:" + name);
