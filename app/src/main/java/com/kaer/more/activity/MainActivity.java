@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private int nowPosition = 0;
     private static final int GO_AD = 0;
+    private static final int GET_PIC = 1;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -125,26 +126,40 @@ public class MainActivity extends AppCompatActivity {
 //                        kaerIntent.putExtra("state", "3");
 //                        kaerIntent.putExtra("value", "-30");
 //                        sendBroadcast(kaerIntent);
-//                        //推送广播给到service做不同的事情
-//                        Intent kaerIntent = new Intent();
-//                        String funtion = String.valueOf(nowPosition);
-//                        kaerIntent.putExtra("funtion",funtion);
-//                        if (funtion.equals("1")) {
-//                            kaerIntent.putExtra("state","1");
-//                            kaerIntent.putExtra("value","0");
-//                        } else if (funtion.equals("2")) {
-//                            kaerIntent.putExtra("state","1");
-//                            kaerIntent.putExtra("value","0");
-//                        }
-//                        else if (funtion.equals("3")) {
-//                            kaerIntent.putExtra("state","1");
-//                            kaerIntent.putExtra("value","");
-//                        }else if (funtion.equals("4")) {
-//                            kaerIntent.putExtra("state","1");
-//                            kaerIntent.putExtra("value","");
-//                        }
-//                        kaerIntent.setAction(KareApplication.ACTION_TUISONG_JSON);
-//                        sendBroadcast(kaerIntent);
+                        //推送广播给到service做不同的事情
+                        Intent kaerIntent = new Intent();
+                        String funtion = String.valueOf(nowPosition);
+                        kaerIntent.putExtra("funtion",funtion);
+                        if (funtion.equals("1")) {
+                            kaerIntent.putExtra("state","1");
+                            kaerIntent.putExtra("value","0");
+                        } else if (funtion.equals("2")) {
+                            kaerIntent.putExtra("state","1");
+                            kaerIntent.putExtra("value","0");
+                        }
+                        else if (funtion.equals("3")) {
+                            kaerIntent.putExtra("state","1");
+                            kaerIntent.putExtra("value","");
+                        }else if (funtion.equals("4")) {
+                            kaerIntent.putExtra("state","1");
+                            kaerIntent.putExtra("value","");
+                        }
+                        kaerIntent.setAction(KareApplication.ACTION_TUISONG_JSON);
+                        sendBroadcast(kaerIntent);
+                    }
+                    break;
+                case GET_PIC:
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "qiuxin.jpg");
+                    Bitmap bitmap = screenShot(MainActivity.this);
+                    try {
+                        if (!file.exists())
+                            file.createNewFile();
+                        boolean ret = save(bitmap, file, Bitmap.CompressFormat.JPEG, true);
+                        if (ret) {
+                            Toast.makeText(getApplicationContext(), "截图已保持至 " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     break;
             }
@@ -181,19 +196,6 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(KareApplication.ACTION_IMAGE_UPLOAD);
         registerReceiver(mMainReceiver, intentFilter);
 
-//        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "qiuxin.jpg");
-//        Bitmap bitmap = screenShot(this);
-//        try {
-//            if (!file.exists())
-//                file.createNewFile();
-//            boolean ret = save(bitmap, file, Bitmap.CompressFormat.JPEG, true);
-//            if (ret) {
-//                Toast.makeText(getApplicationContext(), "截图已保持至 " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
     }
 
     private MainReceiver mMainReceiver;
@@ -212,6 +214,12 @@ public class MainActivity extends AppCompatActivity {
                 //截图上传
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //mHandler.sendEmptyMessageDelayed(GET_PIC,5000);
     }
 
     private void initList() {
