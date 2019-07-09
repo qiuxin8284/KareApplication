@@ -5,7 +5,7 @@
     <permission
         android:name="com.kaer.more.permission.JPUSH_MESSAGE"
         android:protectionLevel="signature" />
-
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />

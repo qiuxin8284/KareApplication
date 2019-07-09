@@ -102,14 +102,16 @@ public class KaerService extends Service {
                     } else if (funtion.equals("2")) {//画面转向
                         int valueInt = Integer.parseInt(value);
                         if (state.equals("1")) {//1设置自动投影方位
-                            if(valueInt == 0){
-                                LogUtil.i("KaerReceiver","setAutoProject 0");
-                                Device.setAutoProject(KareApplication.mInstance,true);
-                            }else if(valueInt == 1){
-                                Device.setAutoProject(KareApplication.mInstance,false);
-                            }
+                            //缺少android.permission.WRITE_SETTINGS.
+//                            if(valueInt == 0){
+//                                LogUtil.i("KaerReceiver","setAutoProject 0");
+//                                Device.setAutoProject(KareApplication.mInstance,true);
+//                            }else if(valueInt == 1){
+//                                Device.setAutoProject(KareApplication.mInstance,false);
+//                            }
                         } else if (state.equals("2")) {//2设置投影方位
-                            Device.setProjectorDirect(KareApplication.mInstance,valueInt);
+                            //缺少android.permission.WRITE_SETTINGS.
+//                            Device.setProjectorDirect(KareApplication.mInstance,valueInt);
                         }
                     } else if (funtion.equals("3")) {//开关光机（直接or定时）//时间以 8：00格式吧
                         //获取定时时间启动个定时器

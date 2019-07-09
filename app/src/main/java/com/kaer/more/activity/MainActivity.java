@@ -134,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
                             kaerIntent.putExtra("state","1");
                             kaerIntent.putExtra("value","0");
                         } else if (funtion.equals("2")) {
-                            kaerIntent.putExtra("state","1");
-                            kaerIntent.putExtra("value","0");
+                            kaerIntent.putExtra("state","2");
+                            kaerIntent.putExtra("value","50");
                         }
                         else if (funtion.equals("3")) {
                             kaerIntent.putExtra("state","1");
