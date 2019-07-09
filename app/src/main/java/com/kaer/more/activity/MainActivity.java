@@ -3,12 +3,14 @@ package com.kaer.more.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
@@ -30,6 +32,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -515,4 +518,66 @@ public class MainActivity extends AppCompatActivity {
         return src == null || src.getWidth() == 0 || src.getHeight() == 0;
     }
 
+
+
+
+
+
+
+
+
+
+
+    BroadcastReceiver broadcastReceiver;
+    private void listener(final long Id) {
+        // 注册广播监听系统的下载完成事件。
+        IntentFilter intentFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                DownloadManager manager = (DownloadManager)context.getSystemService(Context.DOWNLOAD_SERVICE);
+                // 这里是通过下面这个方法获取下载的id，
+                long ID = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                // 这里把传递的id和广播中获取的id进行对比是不是我们下载apk的那个id，如果是的话，就开始获取这个下载的路径
+                if (ID == Id) {
+
+                    DownloadManager.Query query = new DownloadManager.Query();
+                    query.setFilterById(Id);
+
+                    Cursor cursor = manager.query(query);
+                    if (cursor.moveToFirst()){
+                        // 获取文件下载路径
+                        String fileName = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+
+                        // 如果文件名不为空，说明文件已存在,则进行自动安装apk
+                        if (fileName != null){
+
+                            openAPK(fileName);
+
+                        }
+                    }
+                    cursor.close();
+                }
+            }
+        };
+        registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    private void openAPK(String fileSavePath){
+        File file=new File(Uri.parse(fileSavePath).getPath());
+        String filePath = file.getAbsolutePath();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri data = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//判断版本大于等于7.0
+            // 生成文件的uri，，
+            // 注意 下面参数com.ausee.fileprovider 为apk的包名加上.fileprovider，
+            data = FileProvider.getUriForFile(MainActivity.this, "com.kaer.more.fileprovider", new File(filePath));
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);// 给目标应用一个临时授权
+        } else {
+            data = Uri.fromFile(file);
+        }
+
+        intent.setDataAndType(data, "application/vnd.android.package-archive");
+        startActivity(intent);
+    }
 }

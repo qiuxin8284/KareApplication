@@ -186,6 +186,16 @@
         <meta-data
             android:name="JPUSH_APPKEY"
             android:value="69a32253a031dd5a678dcfff" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.kaer.more"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>
