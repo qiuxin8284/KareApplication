@@ -204,8 +204,10 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(KareApplication.ACTION_UPDATE_AD)) {
+                LogUtil.println("adSearch MainReceiver ACTION_UPDATE_AD nowPosition:"+nowPosition);
                 //开始执行第一条
                 nowPosition = 0;
+                LogUtil.println("adSearch MainReceiver ACTION_UPDATE_AD nowPosition 0000");
             }else if (action.equals(KareApplication.ACTION_IMAGE_UPLOAD)) {
                 //截图上传
             }

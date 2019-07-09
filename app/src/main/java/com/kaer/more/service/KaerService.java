@@ -27,7 +27,8 @@ import scifly.device.Device;
 
 public class KaerService extends Service {
 
-    private static final int CONNECT_REPEAT_TIME = 1000 * 60 * 30;//半小时
+    //private static final int CONNECT_REPEAT_TIME = 1000 * 60 * 30;//半小时
+    private static final int CONNECT_REPEAT_TIME = 1000 * 60;//半小时
     private static final String STATE_OPEN = "O";
     private static final String STATE_CLOSE = "F";
     private int mConnectTime = 0;
@@ -40,14 +41,15 @@ public class KaerService extends Service {
         LogUtil.println("KaerService onCreate");
         //开启定时服务
 //        //第一次触发广告
+        LogUtil.println("adSearch onCreate mGetFristAdTask");
         mGetFristAdTask = new GetFristAdTask();
         mGetFristAdTask.execute();
 
         //发送接口
         mNoticeDeviceTask = new NoticeDeviceTask();
         mNoticeDeviceTask.execute(STATE_OPEN);
-        mExcpDeviceTask = new ExcpDeviceTask();
-        mExcpDeviceTask.execute();
+//        mExcpDeviceTask = new ExcpDeviceTask();
+//        mExcpDeviceTask.execute();
 
 
         //收到广播-处理推送
@@ -231,6 +233,7 @@ public class KaerService extends Service {
                     mGetAdTask.execute();
                     break;
                 case TIME_ADD:
+                    LogUtil.println("adSearch TIME_ADD mConnectTime:"+mConnectTime+"|CONNECT_REPEAT_TIME:"+CONNECT_REPEAT_TIME);
                     mConnectTime = mConnectTime + 1000;
                     if (mConnectTime >= CONNECT_REPEAT_TIME) {
                         mConnectTime = 0;
@@ -382,6 +385,7 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
+            LogUtil.println("adSearch GetFristAdTask");
             String deviceID = "e6287682d8422";
             String longitude = "0.00";
             String latitude = "0.00";
@@ -391,15 +395,18 @@ public class KaerService extends Service {
             adRemarkData.setAllCount(1);
             list.add(adRemarkData);
             AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance,  deviceID, longitude, latitude,  list);
+            LogUtil.println("adSearch GetFristAdTask advertisementListData:"+advertisementListData.toString());
             //如果失败重新获取
             //如果成功那么推送刷新广告
             if(advertisementListData.isOK()){
+                LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_SUCCESS");
                 KareApplication.mAdvertisementList = advertisementListData.getAdList();
                 Intent intent = new Intent();
                 intent.setAction(KareApplication.ACTION_UPDATE_AD);
                 sendBroadcast(intent);
                 mHandler.sendEmptyMessage(GET_AD_FRIST_SUCCESS);
             }else{
+                LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_FALSE");
                 mHandler.sendEmptyMessage(GET_AD_FRIST_FALSE);
             }
             return null;
@@ -411,6 +418,7 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
+            LogUtil.println("adSearch mGetAdTask");
             String deviceID = "e6287682d8422";
             String longitude = "0.00";
             String latitude = "0.00";
@@ -420,15 +428,18 @@ public class KaerService extends Service {
             adRemarkData.setAllCount(1);
             list.add(adRemarkData);
             AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance,  deviceID, longitude, latitude,  list);
+            LogUtil.println("adSearch GetAdTask advertisementListData:"+advertisementListData.toString());
             //如果失败重新获取
             //如果成功那么推送刷新广告
             if(advertisementListData.isOK()){
+                LogUtil.println("adSearch GetAdTask GET_AD_SUCCESS");
                 KareApplication.mAdvertisementList = advertisementListData.getAdList();
                 Intent intent = new Intent();
                 intent.setAction(KareApplication.ACTION_UPDATE_AD);
                 sendBroadcast(intent);
                 mHandler.sendEmptyMessage(GET_AD_SUCCESS);
             }else{
+                LogUtil.println("adSearch GetAdTask GET_AD_FALSE");
                 mHandler.sendEmptyMessage(GET_AD_FALSE);
             }
             return null;
