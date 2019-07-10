@@ -2,6 +2,7 @@ package com.kaer.more.http;
 
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Environment;
 
 import com.jordan.httplibrary.utils.Base64;
@@ -11,6 +12,7 @@ import com.kaer.more.R;
 import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.entitiy.AdvertisementListData;
+import com.kaer.more.entitiy.RenewData;
 import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.utils.LogUtil;
 import com.safari.core.protocol.RequestMessage;
@@ -372,4 +374,38 @@ public class HttpSendJsonManager {
         }
     }
 
+    public final static String RENEW_TYPE_OTA = "1";//"Android Phone";
+    public final static String RENEW_TYPE_IOS = "2";//"Android Phone";
+    public final static String RENEW_TYPE_ANDROID = "3";//"Android Phone";
+
+    /**
+     * 获取版本信息
+     *
+     * @param context
+     * @return
+     */
+    public static RenewData renew(Context context, String type) {
+        RenewData renewData = new RenewData();
+        renewData.setOK(false);
+        String url = "v0/ver/renew.htm";
+        try {
+            JSONObject sendJSONObject = new JSONObject();
+            JSONObject mainJSONObject = new JSONObject();
+
+            mainJSONObject.put("type", type);
+//            sendJSONObject.put("main", mainJSONObject);
+//            sendJSONObject.put("biz", getBiz());
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
+
+            String json = sendJSONObject.toString();
+            LogUtil.println("renew" + json);
+            String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
+            return HttpAnalyJsonManager.renew(synchronousResult, context);
+        } catch (Exception e) {
+            HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
+            e.printStackTrace();
+            return renewData;
+        }
+    }
 }

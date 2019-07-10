@@ -7,6 +7,7 @@ import com.kaer.more.R;
 import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.entitiy.AdvertisementListData;
 import com.kaer.more.entitiy.PropellingMovementData;
+import com.kaer.more.entitiy.RenewData;
 import com.kaer.more.entitiy.UploadData;
 
 import org.json.JSONArray;
@@ -165,5 +166,30 @@ public class HttpAnalyJsonManager {
         return mPropellingMovementData;
     }
 
+    /**
+     * 获取版本信息
+     *
+     * @param json
+     * @param context
+     * @return
+     * @throws JSONException
+     */
+    public static RenewData renew(String json, Context context) throws JSONException {
+        RenewData renewData = new RenewData();
+        renewData.setOK(false);
+        if (!lastError.equals("")) {
+            lastError = context.getResources().getString(R.string.acquisition_failure);
+            return renewData;
+        }
+        JSONObject dataJson = new JSONObject(json);
+        String lowestVer = dataJson.getString("lowestVer");
+        String newVer = dataJson.getString("newVer");
+        String link = dataJson.getString("link");
+        renewData.setLink(link);
+        renewData.setLowestVer(lowestVer);
+        renewData.setNewVer(newVer);
+        renewData.setOK(true);
+        return renewData;
+    }
 
 }

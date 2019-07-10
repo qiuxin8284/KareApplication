@@ -25,6 +25,7 @@ import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -50,8 +51,13 @@ import com.kaer.more.KareApplication;
 import com.kaer.more.R;
 import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementData;
+import com.kaer.more.entitiy.RenewData;
+import com.kaer.more.http.HttpAnalyJsonManager;
+import com.kaer.more.http.HttpSendJsonManager;
 import com.kaer.more.service.KaerService;
+import com.kaer.more.utils.APPUtil;
 import com.kaer.more.utils.LogUtil;
+import com.kaer.more.utils.ToastUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerView;
@@ -78,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
     private int nowPosition = 0;
     private static final int GO_AD = 0;
     private static final int GET_PIC = 1;
+    private static final int VERSION_SUCCESS = 2;
+    private static final int VERSION_FALSE = 3;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -172,6 +180,24 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     break;
+
+                case VERSION_SUCCESS:
+                    if (mRenewData != null) {
+                        //对比版本号
+                        if (mRenewData.getLowestVer().equals(mRenewData.getNewVer())) {
+
+                        }else{
+                            long id = APPUtil.downLoadApk(MainActivity.this,"Kaer",mRenewData.getLink());
+                            listener(id);
+                        }
+//                        mTvNowVer.setText("现有版本：Version " + mRenewData.getLowestVer());
+//                        mTvUpdateVer.setText("可用版本：Version " + mRenewData.getNewVer());
+//                        LogUtil.println("Kare::getLink:= " + mRenewData.getLink());
+
+                    }
+                    break;
+                case VERSION_FALSE:
+                    break;
             }
         }
     };
@@ -206,6 +232,8 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(KareApplication.ACTION_UPDATE_AD);
         intentFilter.addAction(KareApplication.ACTION_IMAGE_UPLOAD);
         registerReceiver(mMainReceiver, intentFilter);
+//        mRenewTask = new RenewTask();
+//        mRenewTask.execute("");
 
     }
 
@@ -579,5 +607,22 @@ public class MainActivity extends AppCompatActivity {
 
         intent.setDataAndType(data, "application/vnd.android.package-archive");
         startActivity(intent);
+    }
+
+    private RenewTask mRenewTask;
+    private RenewData mRenewData;
+
+    private class RenewTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            mRenewData = HttpSendJsonManager.renew(MainActivity.this, HttpSendJsonManager.RENEW_TYPE_ANDROID);
+            if (mRenewData.isOK()) {
+                mHandler.sendEmptyMessage(VERSION_SUCCESS);
+            } else {
+                mHandler.sendEmptyMessage(VERSION_FALSE);
+            }
+            return null;
+        }
     }
 }
