@@ -106,6 +106,7 @@ public class KareApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
         mInstance = this;
         context = getApplicationContext();
@@ -121,7 +122,7 @@ public class KareApplication extends Application {
     private void initDevice() {
         //获取推送token
         String token = JPushInterface.getRegistrationID(this);
-        mDeviceUtil.setToken(token);
+        //mDeviceUtil.setToken(token);
 //        mCheckDeviceTask = new CheckDeviceTask();
 //        mCheckDeviceTask.execute();
     }

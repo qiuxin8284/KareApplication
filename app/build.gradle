@@ -12,6 +12,11 @@ android {
         ndk {
             abiFilters "armeabi", "armeabi-v7a"
         }
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : applicationId,
+                JPUSH_APPKEY : "69a32253a031dd5a678dcfff", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+        ]
     }
     buildTypes {
         release {
