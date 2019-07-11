@@ -38,6 +38,7 @@ import com.kaer.more.http.DeviceUtil;
 import com.kaer.more.http.HttpAnalyJsonManager;
 import com.kaer.more.http.HttpManager;
 import com.kaer.more.http.HttpSendJsonManager;
+import com.kaer.more.manager.Logger;
 import com.kaer.more.utils.LogUtil;
 import com.kaer.more.utils.ToastUtils;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
@@ -122,7 +123,10 @@ public class KareApplication extends Application {
     private void initDevice() {
         //获取推送token
         String token = JPushInterface.getRegistrationID(this);
-        //mDeviceUtil.setToken(token);
+        if(!TextUtils.isEmpty(token)) {
+            mDeviceUtil.setToken(token);
+            Logger.d("application", "[MyReceiver] 接收Registration Id : " + token);
+        }
 //        mCheckDeviceTask = new CheckDeviceTask();
 //        mCheckDeviceTask.execute();
     }

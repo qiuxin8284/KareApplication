@@ -87,8 +87,10 @@ public class KaerService extends Service {
                     String state = intent.getStringExtra("state");
                     String value = intent.getStringExtra("value");
                     if (funtion.equals("1")) {//推送 1：梯形调整
+                        LogUtil.i("KaerReceiver", "梯形调整");
                         int valueInt = Integer.parseInt(value);
                         if (state.equals("1")) {//1设置自动梯形
+                            LogUtil.i("KaerReceiver", "1设置自动梯形");
                             if (valueInt == 0) {
                                 LogUtil.i("KaerReceiver", "setAutoKeyStone true");
                                 Device.setAutoKeyStone(true);
@@ -96,11 +98,14 @@ public class KaerService extends Service {
                                 Device.setAutoKeyStone(false);
                             }
                         } else if (state.equals("2")) {//2设置垂直手动
+                            LogUtil.i("KaerReceiver", "2设置垂直手动");
                             Device.setManualHorizontalKeyStone(valueInt);
                         } else if (state.equals("3")) {//3设置水平手动
+                            LogUtil.i("KaerReceiver", "3设置水平手动");
                             Device.setManualVerticalKeyStone(valueInt);
                         }
                     } else if (funtion.equals("2")) {//画面转向
+                        LogUtil.i("KaerReceiver", "画面转向");
                         int valueInt = Integer.parseInt(value);
                         if (state.equals("1")) {//1设置自动投影方位
                             //缺少android.permission.WRITE_SETTINGS.
@@ -111,10 +116,12 @@ public class KaerService extends Service {
 //                                Device.setAutoProject(KareApplication.mInstance,false);
 //                            }
                         } else if (state.equals("2")) {//2设置投影方位
+                            LogUtil.i("KaerReceiver", "2设置投影方位");
                             //缺少android.permission.WRITE_SETTINGS.
 //                            Device.setProjectorDirect(KareApplication.mInstance,valueInt);
                         }
                     } else if (funtion.equals("3")) {//开关光机（直接or定时）//时间以 8：00格式吧
+                        LogUtil.i("KaerReceiver", "开关光机");
                         //获取定时时间启动个定时器
                         if (!TextUtils.isEmpty(value)) {
                             new TimeUtil(value, state);
@@ -127,6 +134,7 @@ public class KaerService extends Service {
                             }
                         }
                     } else if (funtion.equals("4")) {//机器重启
+                        LogUtil.i("KaerReceiver", "机器重启");
                         if (state.equals("1")) {//1重启
                             LogUtil.i("KaerReceiver", "机器重启 1");
 
@@ -136,16 +144,20 @@ public class KaerService extends Service {
                     }
                 } else {
                     if (funtion.equals("5")) {//图像回传
+                        LogUtil.i("KaerReceiver", "图像回传");
                         Intent kaerIntent = new Intent();
                         kaerIntent.setAction(KareApplication.ACTION_IMAGE_UPLOAD);
                         sendBroadcast(kaerIntent);
                     } else if (funtion.equals("6")) {//插播广告
+                        LogUtil.i("KaerReceiver", "插播广告");
                         mGetAdTask = new GetAdTask();
                         mGetAdTask.execute();
                     } else if (funtion.equals("7")) {//上传定位
+                        LogUtil.i("KaerReceiver", "上传定位");
                         mLocationDeviceTask = new LocationDeviceTask();
                         mLocationDeviceTask.execute();
                     } else if (funtion.equals("8")) {//暂未定义
+                        LogUtil.i("KaerReceiver", "暂未定义");
 
                     }
                 }
@@ -411,7 +423,7 @@ public class KaerService extends Service {
                 mHandler.sendEmptyMessage(GET_AD_FRIST_SUCCESS);
             }else{
                 LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_FALSE");
-                mHandler.sendEmptyMessage(GET_AD_FRIST_FALSE);
+                mHandler.sendEmptyMessageDelayed(GET_AD_FRIST_FALSE,30000);
             }
             return null;
         }
@@ -444,7 +456,7 @@ public class KaerService extends Service {
                 mHandler.sendEmptyMessage(GET_AD_SUCCESS);
             }else{
                 LogUtil.println("adSearch GetAdTask GET_AD_FALSE");
-                mHandler.sendEmptyMessage(GET_AD_FALSE);
+                mHandler.sendEmptyMessageDelayed(GET_AD_FALSE,30000);
             }
             return null;
         }

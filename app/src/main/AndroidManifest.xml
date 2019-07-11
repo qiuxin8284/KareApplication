@@ -134,7 +134,7 @@
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.WakedReceiver" />
 
-                <category android:name="${applicationId}" />
+                <category android:name="com.kaer.more" />
             </intent-filter>
         </receiver>
 
