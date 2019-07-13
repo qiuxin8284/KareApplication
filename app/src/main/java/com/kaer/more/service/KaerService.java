@@ -271,7 +271,7 @@ public class KaerService extends Service {
         @Override
         protected Void doInBackground(String... params) {
             //读取设备识别号跟常规android系统读取有区别吗？
-            String deviceID = "0bebf5bfc9554";
+            String deviceID = "caac240b42928";
             String type = params[0];
             LogUtil.println("noticeDevice type:" + type);
             if (!TextUtils.isEmpty(type) && !TextUtils.isEmpty(deviceID)) {
@@ -295,7 +295,7 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
-            String deviceID = "0bebf5bfc9554";
+            String deviceID = "caac240b42928";
             String longitude = "0.00";
             String latitude = "0.00";
             String address = "中国";
@@ -323,7 +323,7 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
-            String deviceID = "0bebf5bfc9554";
+            String deviceID = "caac240b42928";
             String desp = "APP预警";
             String content = "已经长时间没有启动运行了";
             LogUtil.println("excpDevice desp:" + desp);
@@ -349,7 +349,7 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
-            String deviceID = "0bebf5bfc9554";
+            String deviceID = "caac240b42928";
             String img = params[0];
             LogUtil.println("imgDevice img:" + img);
             if (!TextUtils.isEmpty(img) && !TextUtils.isEmpty(deviceID)) {
@@ -402,7 +402,7 @@ public class KaerService extends Service {
         @Override
         protected Void doInBackground(String... params) {
             LogUtil.println("adSearch GetFristAdTask");
-            String deviceID = "e6287682d8422";
+            String deviceID = "caac240b42928";
             String longitude = "0.00";
             String latitude = "0.00";
             ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
@@ -435,7 +435,7 @@ public class KaerService extends Service {
         @Override
         protected Void doInBackground(String... params) {
             LogUtil.println("adSearch mGetAdTask");
-            String deviceID = "e6287682d8422";
+            String deviceID = "caac240b42928";
             String longitude = "0.00";
             String latitude = "0.00";
             ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
@@ -467,7 +467,7 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
-            String deviceID = "e6287682d8422";
+            String deviceID = "caac240b42928";
             ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
             AdRemarkData adRemarkData = new AdRemarkData();
             adRemarkData = new AdRemarkData();

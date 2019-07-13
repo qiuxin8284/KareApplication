@@ -30,6 +30,9 @@ public class PushStatusReceiver extends BroadcastReceiver {
                 String regId = bundle.getString(JPushInterface.EXTRA_REGISTRATION_ID);
                 Logger.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
                 KareApplication.mDeviceUtil.setToken(regId);
+                Intent kaerIntent = new Intent();
+                kaerIntent.setAction(KareApplication.ACTION_CHECK_TOKEN);
+                context.sendBroadcast(kaerIntent);
             } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
                 Logger.d(TAG, "[MyReceiver] 接收到推送下来的自定义消息: " + bundle.getString(JPushInterface.EXTRA_MESSAGE));
                 PropellingMovementData propellingMovementData = HttpAnalyJsonManager.propellingMovementFunction(bundle.getString(JPushInterface.EXTRA_MESSAGE),context);

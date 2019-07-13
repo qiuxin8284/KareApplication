@@ -84,6 +84,7 @@ public class KareApplication extends Application {
     public static final String ACTION_UPDATE_AD = "com.kaer.update.action.ad";
     public static final String ACTION_IMAGE_UPLOAD = "com.kaer.update.action.image";
     public static final String ACTION_IMAGE_UPLOAD_SUCESS = "com.kaer.update.action.image.sucess";
+    public static final String ACTION_CHECK_TOKEN = "com.kaer.check.action.token";
     public static ArrayList<AdvertisementData> mAdvertisementList = new ArrayList<AdvertisementData>();
     private Handler mHandler = new Handler() {
         @Override
@@ -117,18 +118,28 @@ public class KareApplication extends Application {
         httpManager = HttpManager.getInstance(this);
         initImageLoader(this);
 
+        mKareReceiver = new KareReceiver();//广播接受者实例
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(KareApplication.ACTION_CHECK_TOKEN);
+        registerReceiver(mKareReceiver, intentFilter);
         initDevice();
     }
 
+
     private void initDevice() {
         //获取推送token
+        LogUtil.println("initDevice");
         String token = JPushInterface.getRegistrationID(this);
         if(!TextUtils.isEmpty(token)) {
+            LogUtil.println("initDevice token:"+token);
             mDeviceUtil.setToken(token);
             Logger.d("application", "[MyReceiver] 接收Registration Id : " + token);
         }
-//        mCheckDeviceTask = new CheckDeviceTask();
-//        mCheckDeviceTask.execute();
+        if(!TextUtils.isEmpty(mDeviceUtil.getToken())){
+            LogUtil.println("initDevice mCheckDeviceTask");
+            mCheckDeviceTask = new CheckDeviceTask();
+            mCheckDeviceTask.execute();
+        }
     }
 
     private CheckDeviceTask mCheckDeviceTask;
@@ -139,7 +150,8 @@ public class KareApplication extends Application {
         protected Void doInBackground(String... params) {
             //读取设备识别号跟常规android系统读取有区别吗？
             //String deviceID = mDeviceUtil.getDeviceData().getDeviceId();
-            String deviceID = "0bebf5bfc9554";
+            String deviceID = "caac240b42928";
+            LogUtil.println("checkDevice deviceID:" + deviceID);
             //上传检测是否存在这个设备号
             boolean flag = HttpSendJsonManager.checkDevice(mInstance,deviceID);
             LogUtil.println("checkDevice flag:" + flag);
@@ -160,9 +172,9 @@ public class KareApplication extends Application {
         protected Void doInBackground(String... params) {
             //读取设备识别号跟常规android系统读取有区别吗？
             //String deviceID = mDeviceUtil.getDeviceData().getDeviceId();
-            String deviceID = "0bebf5bfc9554";
+            String deviceID = "caac240b42928";
             String token = mDeviceUtil.getDeviceData().getToken();
-            token = "123456789012345";
+            //token = "123456789012345";
             LogUtil.println("bindDevice token:" + token);
             if(!TextUtils.isEmpty(token)) {
                 //上传检测是否存在这个设备号
@@ -223,4 +235,16 @@ public class KareApplication extends Application {
     }
 
 
+    private KareReceiver mKareReceiver;
+
+    public class KareReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(KareApplication.ACTION_CHECK_TOKEN)) {
+                initDevice();
+            }
+        }
+    }
 }
