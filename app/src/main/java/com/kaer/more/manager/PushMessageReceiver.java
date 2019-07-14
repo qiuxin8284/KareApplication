@@ -28,10 +28,10 @@ public class PushMessageReceiver extends JPushMessageReceiver {
             propellingMovementData = HttpAnalyJsonManager.propellingMovementFunction(customMessage.message, context);
             //推送广播给到service做不同的事情
             Intent kaerIntent = new Intent();
-            String funtion = propellingMovementData.getFunction();
-            kaerIntent.putExtra("funtion", funtion);
-            if (funtion.equals("1") || funtion.equals("2") || funtion.equals("3") || funtion.equals("4")) {
-                //funtion 1、2、3、4包含state和value
+            String function = propellingMovementData.getFunction();
+            kaerIntent.putExtra("function", function);
+            if (function.equals("1") || function.equals("2") || function.equals("3") || function.equals("4")) {
+                //function 1、2、3、4包含state和value
                 kaerIntent.putExtra("state", propellingMovementData.getState());
                 kaerIntent.putExtra("value", propellingMovementData.getValue());
             }

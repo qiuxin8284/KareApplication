@@ -136,25 +136,25 @@ public class MainActivity extends AppCompatActivity {
                         mHandler.sendEmptyMessageDelayed(GO_AD, advertisementData.getDuration() * 1000);
 //                        Intent kaerIntent = new Intent();
 //                        kaerIntent.setAction(KareApplication.ACTION_TUISONG_JSON);
-//                        kaerIntent.putExtra("funtion", "1");
+//                        kaerIntent.putExtra("function", "1");
 //                        kaerIntent.putExtra("state", "3");
 //                        kaerIntent.putExtra("value", "-30");
 //                        sendBroadcast(kaerIntent);
                         //推送广播给到service做不同的事情
 //                        Intent kaerIntent = new Intent();
-//                        String funtion = String.valueOf(nowPosition);
-//                        kaerIntent.putExtra("funtion",funtion);
-//                        if (funtion.equals("1")) {
+//                        String function = String.valueOf(nowPosition);
+//                        kaerIntent.putExtra("function",function);
+//                        if (function.equals("1")) {
 //                            kaerIntent.putExtra("state","1");
 //                            kaerIntent.putExtra("value","0");
-//                        } else if (funtion.equals("2")) {
+//                        } else if (function.equals("2")) {
 //                            kaerIntent.putExtra("state","2");
 //                            kaerIntent.putExtra("value","50");
 //                        }
-//                        else if (funtion.equals("3")) {
+//                        else if (function.equals("3")) {
 //                            kaerIntent.putExtra("state","1");
 //                            kaerIntent.putExtra("value","");
-//                        }else if (funtion.equals("4")) {
+//                        }else if (function.equals("4")) {
 //                            kaerIntent.putExtra("state","1");
 //                            kaerIntent.putExtra("value","");
 //                        }

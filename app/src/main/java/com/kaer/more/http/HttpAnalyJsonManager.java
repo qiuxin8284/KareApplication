@@ -151,16 +151,16 @@ public class HttpAnalyJsonManager {
             return mPropellingMovementData;
         }
         JSONObject resultJson = new JSONObject(json);
-        String funtion = resultJson.getString("funtion");
-        mPropellingMovementData.setFunction(funtion);
-        if (funtion.equals("1") || funtion.equals("2") || funtion.equals("3") || funtion.equals("4")) {
-            //funtion 1、2、3、4包含state和value
+        String function = resultJson.getString("function");
+        mPropellingMovementData.setFunction(function);
+        if (function.equals("1") || function.equals("2") || function.equals("3") || function.equals("4")) {
+            //function 1、2、3、4包含state和value
             String state = resultJson.getString("state");
             String value = resultJson.getString("value");
             mPropellingMovementData.setState(state);
             mPropellingMovementData.setValue(value);
         }
-        //funtion 5、6、7直接全跳过
+        //function 5、6、7直接全跳过
         mPropellingMovementData.setOK(true);
         android.util.Log.e("propellingMovementFunction", "mPropellingMovementData:" + mPropellingMovementData.toString());
         return mPropellingMovementData;

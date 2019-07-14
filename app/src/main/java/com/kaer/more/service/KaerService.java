@@ -81,12 +81,12 @@ public class KaerService extends Service {
             String action = intent.getAction();
             if (action.equals(KareApplication.ACTION_TUISONG_JSON)) {
                 //解析
-                String funtion = intent.getStringExtra("funtion");
-                if (funtion.equals("1") || funtion.equals("2") || funtion.equals("3") || funtion.equals("4")) {
-                    //funtion 1、2、3、4包含state和value
+                String function = intent.getStringExtra("function");
+                if (function.equals("1") || function.equals("2") || function.equals("3") || function.equals("4")) {
+                    //function 1、2、3、4包含state和value
                     String state = intent.getStringExtra("state");
                     String value = intent.getStringExtra("value");
-                    if (funtion.equals("1")) {//推送 1：梯形调整
+                    if (function.equals("1")) {//推送 1：梯形调整
                         LogUtil.i("KaerReceiver", "梯形调整");
                         int valueInt = Integer.parseInt(value);
                         if (state.equals("1")) {//1设置自动梯形
@@ -104,7 +104,7 @@ public class KaerService extends Service {
                             LogUtil.i("KaerReceiver", "3设置水平手动");
                             Device.setManualVerticalKeyStone(valueInt);
                         }
-                    } else if (funtion.equals("2")) {//画面转向
+                    } else if (function.equals("2")) {//画面转向
                         LogUtil.i("KaerReceiver", "画面转向");
                         int valueInt = Integer.parseInt(value);
                         if (state.equals("1")) {//1设置自动投影方位
@@ -120,7 +120,7 @@ public class KaerService extends Service {
                             //缺少android.permission.WRITE_SETTINGS.
 //                            Device.setProjectorDirect(KareApplication.mInstance,valueInt);
                         }
-                    } else if (funtion.equals("3")) {//开关光机（直接or定时）//时间以 8：00格式吧
+                    } else if (function.equals("3")) {//开关光机（直接or定时）//时间以 8：00格式吧
                         LogUtil.i("KaerReceiver", "开关光机");
                         //获取定时时间启动个定时器
                         if (!TextUtils.isEmpty(value)) {
@@ -133,7 +133,7 @@ public class KaerService extends Service {
                                 Device.setProjectorLedPower(0);
                             }
                         }
-                    } else if (funtion.equals("4")) {//机器重启
+                    } else if (function.equals("4")) {//机器重启
                         LogUtil.i("KaerReceiver", "机器重启");
                         if (state.equals("1")) {//1重启
                             LogUtil.i("KaerReceiver", "机器重启 1");
@@ -143,20 +143,20 @@ public class KaerService extends Service {
                         }
                     }
                 } else {
-                    if (funtion.equals("5")) {//图像回传
+                    if (function.equals("5")) {//图像回传
                         LogUtil.i("KaerReceiver", "图像回传");
                         Intent kaerIntent = new Intent();
                         kaerIntent.setAction(KareApplication.ACTION_IMAGE_UPLOAD);
                         sendBroadcast(kaerIntent);
-                    } else if (funtion.equals("6")) {//插播广告
+                    } else if (function.equals("6")) {//插播广告
                         LogUtil.i("KaerReceiver", "插播广告");
                         mGetAdTask = new GetAdTask();
                         mGetAdTask.execute();
-                    } else if (funtion.equals("7")) {//上传定位
+                    } else if (function.equals("7")) {//上传定位
                         LogUtil.i("KaerReceiver", "上传定位");
                         mLocationDeviceTask = new LocationDeviceTask();
                         mLocationDeviceTask.execute();
-                    } else if (funtion.equals("8")) {//暂未定义
+                    } else if (function.equals("8")) {//暂未定义
                         LogUtil.i("KaerReceiver", "暂未定义");
 
                     }
