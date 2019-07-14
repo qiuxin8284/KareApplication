@@ -174,7 +174,7 @@ public class HttpAnalyJsonManager {
      * @return
      * @throws JSONException
      */
-    public static RenewData renew(String json, Context context) throws JSONException {
+    public static RenewData deviceVersion(String json, Context context) throws JSONException {
         RenewData renewData = new RenewData();
         renewData.setOK(false);
         if (!lastError.equals("")) {
@@ -182,12 +182,12 @@ public class HttpAnalyJsonManager {
             return renewData;
         }
         JSONObject dataJson = new JSONObject(json);
-        String lowestVer = dataJson.getString("lowestVer");
-        String newVer = dataJson.getString("newVer");
+        String version = dataJson.getString("version");
         String link = dataJson.getString("link");
+        String desp = dataJson.getString("desp");
         renewData.setLink(link);
-        renewData.setLowestVer(lowestVer);
-        renewData.setNewVer(newVer);
+        renewData.setVersion(version);
+        renewData.setDesp(desp);
         renewData.setOK(true);
         return renewData;
     }

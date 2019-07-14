@@ -384,24 +384,25 @@ public class HttpSendJsonManager {
      * @param context
      * @return
      */
-    public static RenewData renew(Context context, String type) {
+    public static RenewData deviceVersion(Context context, String imei) {
         RenewData renewData = new RenewData();
         renewData.setOK(false);
-        String url = "v0/ver/renew.htm";
+        String url = "v0/device/ver.htm";
         try {
             JSONObject sendJSONObject = new JSONObject();
             JSONObject mainJSONObject = new JSONObject();
 
-            mainJSONObject.put("type", type);
+            mainJSONObject.put("imei", imei);
 //            sendJSONObject.put("main", mainJSONObject);
 //            sendJSONObject.put("biz", getBiz());
             RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
-            LogUtil.println("renew" + json);
+            LogUtil.println("deviceVersion" + json);
             String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
-            return HttpAnalyJsonManager.renew(synchronousResult, context);
+            LogUtil.println("deviceVersion synchronousResult1" + synchronousResult);
+            return HttpAnalyJsonManager.deviceVersion(synchronousResult, context);
         } catch (Exception e) {
             HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
             e.printStackTrace();

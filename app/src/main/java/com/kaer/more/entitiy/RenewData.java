@@ -1,39 +1,50 @@
 package com.kaer.more.entitiy;
 
 public class RenewData {
-    private String lowestVer;
-    private String newVer;
+    private String desp;
+    private String version;
     private String link;
 	private boolean isOK;
-	public String getLowestVer() {
-		return lowestVer;
+
+	public String getDesp() {
+		return desp;
 	}
-	public void setLowestVer(String lowestVer) {
-		this.lowestVer = lowestVer;
+
+	public void setDesp(String desp) {
+		this.desp = desp;
 	}
-	public String getNewVer() {
-		return newVer;
+
+	public String getVersion() {
+		return version;
 	}
-	public void setNewVer(String newVer) {
-		this.newVer = newVer;
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
+
 	public String getLink() {
 		return link;
 	}
+
 	public void setLink(String link) {
 		this.link = link;
 	}
+
 	public boolean isOK() {
 		return isOK;
 	}
-	public void setOK(boolean isOK) {
-		this.isOK = isOK;
+
+	public void setOK(boolean OK) {
+		isOK = OK;
 	}
+
 	@Override
 	public String toString() {
-		return "RenewData [lowestVer=" + lowestVer + ", newVer=" + newVer
-				+ ", link=" + link + ", isOK=" + isOK + "]";
+		return "RenewData{" +
+				"desp='" + desp + '\'' +
+				", version='" + version + '\'' +
+				", link='" + link + '\'' +
+				", isOK=" + isOK +
+				'}';
 	}
-    
-    
 }

@@ -67,7 +67,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -183,12 +186,17 @@ public class MainActivity extends AppCompatActivity {
 
                 case VERSION_SUCCESS:
                     if (mRenewData != null) {
-                        //对比版本号
-                        if (mRenewData.getLowestVer().equals(mRenewData.getNewVer())) {
-
+                        //对比版本号--和本地版本号对比
+                        if (mRenewData.getVersion().equals(APPUtil.packageCode(MainActivity.this))) {
+                            LogUtil.println("deviceVersion 版本相同");
                         }else{
-                            long id = APPUtil.downLoadApk(MainActivity.this,"Kaer",mRenewData.getLink());
-                            listener(id);
+                            LogUtil.println("deviceVersion downLoadApk");
+                            apkUrl = mRenewData.getLink();
+                            downloadApk();
+
+//                            long id = APPUtil.downLoadApk(MainActivity.this,"Kaer",mRenewData.getLink());
+//                            LogUtil.println("deviceVersion id" + id);
+//                            listener(id);
                         }
 //                        mTvNowVer.setText("现有版本：Version " + mRenewData.getLowestVer());
 //                        mTvUpdateVer.setText("可用版本：Version " + mRenewData.getNewVer());
@@ -232,8 +240,8 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(KareApplication.ACTION_UPDATE_AD);
         intentFilter.addAction(KareApplication.ACTION_IMAGE_UPLOAD);
         registerReceiver(mMainReceiver, intentFilter);
-//        mRenewTask = new RenewTask();
-//        mRenewTask.execute("");
+        mRenewTask = new RenewTask();
+        mRenewTask.execute("");
 
     }
 
@@ -360,6 +368,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mMainReceiver);
+        unregisterReceiver(broadcastReceiver);
         mSuperPlayerView.resetPlayer();
     }
 
@@ -563,9 +572,11 @@ public class MainActivity extends AppCompatActivity {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                LogUtil.println("deviceVersion onReceive OK");
                 DownloadManager manager = (DownloadManager)context.getSystemService(Context.DOWNLOAD_SERVICE);
                 // 这里是通过下面这个方法获取下载的id，
                 long ID = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                LogUtil.println("deviceVersion onReceive ID" + ID);
                 // 这里把传递的id和广播中获取的id进行对比是不是我们下载apk的那个id，如果是的话，就开始获取这个下载的路径
                 if (ID == Id) {
 
@@ -573,9 +584,11 @@ public class MainActivity extends AppCompatActivity {
                     query.setFilterById(Id);
 
                     Cursor cursor = manager.query(query);
+                    LogUtil.println("deviceVersion onReceive cursor.getCount:" + cursor.getCount());
                     if (cursor.moveToFirst()){
                         // 获取文件下载路径
                         String fileName = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                        LogUtil.println("deviceVersion onReceive fileName:" + fileName);
 
                         // 如果文件名不为空，说明文件已存在,则进行自动安装apk
                         if (fileName != null){
@@ -592,17 +605,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openAPK(String fileSavePath){
+        LogUtil.println("deviceVersion openAPK fileSavePath:" + fileSavePath);
+        LogUtil.println("deviceVersion openAPK Uri.parse(fileSavePath).getPath():" + Uri.parse(fileSavePath).getPath());
         File file=new File(Uri.parse(fileSavePath).getPath());
         String filePath = file.getAbsolutePath();
+        LogUtil.println("deviceVersion openAPK filePath:" + filePath);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri data = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//判断版本大于等于7.0
             // 生成文件的uri，，
             // 注意 下面参数com.ausee.fileprovider 为apk的包名加上.fileprovider，
             data = FileProvider.getUriForFile(MainActivity.this, "com.kaer.more.fileprovider", new File(filePath));
+            LogUtil.println("deviceVersion openAPK data:" + data);
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);// 给目标应用一个临时授权
         } else {
             data = Uri.fromFile(file);
+            LogUtil.println("deviceVersion openAPK data:" + data);
         }
 
         intent.setDataAndType(data, "application/vnd.android.package-archive");
@@ -616,7 +634,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(String... params) {
-            mRenewData = HttpSendJsonManager.renew(MainActivity.this, HttpSendJsonManager.RENEW_TYPE_ANDROID);
+            String deviceID = "caac240b42928";
+            mRenewData = HttpSendJsonManager.deviceVersion(MainActivity.this, deviceID);
             if (mRenewData.isOK()) {
                 mHandler.sendEmptyMessage(VERSION_SUCCESS);
             } else {
@@ -625,4 +644,89 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
+    private static final String savePath = "/sdcard/updatedemo/";
+    private static final String saveFileName = savePath
+            + "kaer_1.0.2.apk";
+    // 下载线程
+    private Thread downLoadThread;
+    private int progress;// 当前进度
+    private String apkUrl;
+    private boolean intercept = false;
+
+
+
+
+    /**
+     * 从服务器下载APK安装包
+     */
+    private void downloadApk() {
+        downLoadThread = new Thread(mdownApkRunnable);
+        downLoadThread.start();
+    }
+
+    private Runnable mdownApkRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            URL url;
+            try {
+                url = new URL(apkUrl);
+                HttpURLConnection conn = (HttpURLConnection) url
+                        .openConnection();
+                conn.connect();
+                int length = conn.getContentLength();
+                InputStream ins = conn.getInputStream();
+                File file = new File(savePath);
+                if (!file.exists()) {
+                    file.mkdir();
+                }
+                File apkFile = new File(saveFileName);
+                FileOutputStream fos = new FileOutputStream(apkFile);
+                int count = 0;
+                byte[] buf = new byte[1024];
+                while (!intercept) {
+                    int numread = ins.read(buf);
+                    count += numread;
+                    progress = (int) (((float) count / length) * 100);
+
+                    LogUtil.println("deviceVersion progress:"+progress);
+                    // 下载进度
+                    //mHandler.sendEmptyMessage(DOWN_UPDATE);
+                    if (numread <= 0) {
+                        LogUtil.println("deviceVersion DOWN_OVER");
+                        // 下载完成通知安装
+                        //mHandler.sendEmptyMessage(DOWN_OVER);
+                        openAPK(saveFileName);
+                        break;
+                    }
+                    fos.write(buf, 0, numread);
+                }
+                fos.close();
+                ins.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    /**
+     * 安装APK内容
+     */
+    private void installAPK() {
+        LogUtil.println("deviceVersion installAPK");
+        File apkFile = new File(saveFileName);
+        if (!apkFile.exists()) {
+            return;
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.parse("file://" + apkFile.toString()),
+                "application/vnd.android.package-archive");
+        startActivity(intent);
+        LogUtil.println("deviceVersion over");
+    }
+
+
 }
