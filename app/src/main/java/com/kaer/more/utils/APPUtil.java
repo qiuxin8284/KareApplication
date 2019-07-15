@@ -27,12 +27,12 @@ public class APPUtil {
 
         return refrence;
     }
-    public static int packageCode(Context context) {
+    public static String packageCode(Context context) {
         PackageManager manager = context.getPackageManager();
-        int code = 0;
+        String code = "1.0.0";
         try {
             PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
-            code = info.versionCode;
+            code = info.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

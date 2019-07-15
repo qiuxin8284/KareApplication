@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KareApplication</string>
+    <string name="app_name">卡尔广告</string>
     <string name="network_connection_failed">网络连接失败</string>
     <string name="failed_to_obtain_network_information">获取网络信息失败</string>
     <string name="upload_failed">上传失败</string>

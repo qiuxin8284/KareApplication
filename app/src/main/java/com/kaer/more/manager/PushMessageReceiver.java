@@ -25,7 +25,7 @@ public class PushMessageReceiver extends JPushMessageReceiver {
         Log.e(TAG, "[onMessage] " + customMessage);
         PropellingMovementData propellingMovementData = null;
         try {
-            propellingMovementData = HttpAnalyJsonManager.propellingMovementFunction(customMessage.message, context);
+            propellingMovementData = HttpAnalyJsonManager.propellingMovementFunction(customMessage.extra, context);
             //推送广播给到service做不同的事情
             Intent kaerIntent = new Intent();
             String function = propellingMovementData.getFunction();

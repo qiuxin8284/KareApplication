@@ -150,6 +150,7 @@ public class HttpAnalyJsonManager {
             lastError = context.getResources().getString(R.string.upload_failed);
             return mPropellingMovementData;
         }
+        android.util.Log.e("propellingMovementFunction", "json:" + json);
         JSONObject resultJson = new JSONObject(json);
         String function = resultJson.getString("function");
         mPropellingMovementData.setFunction(function);

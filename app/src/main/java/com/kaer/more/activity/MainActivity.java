@@ -57,6 +57,7 @@ import com.kaer.more.http.HttpSendJsonManager;
 import com.kaer.more.service.KaerService;
 import com.kaer.more.utils.APPUtil;
 import com.kaer.more.utils.LogUtil;
+import com.kaer.more.utils.SilentInstall;
 import com.kaer.more.utils.ToastUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
@@ -186,6 +187,8 @@ public class MainActivity extends AppCompatActivity {
 
                 case VERSION_SUCCESS:
                     if (mRenewData != null) {
+                        LogUtil.println("deviceVersion mRenewData.getVersion():"+mRenewData.getVersion());
+                        LogUtil.println("deviceVersion APPUtil.packageCode(MainActivity.this)):"+APPUtil.packageCode(MainActivity.this));
                         //对比版本号--和本地版本号对比
                         if (mRenewData.getVersion().equals(APPUtil.packageCode(MainActivity.this))) {
                             LogUtil.println("deviceVersion 版本相同");
@@ -699,6 +702,7 @@ public class MainActivity extends AppCompatActivity {
                         // 下载完成通知安装
                         //mHandler.sendEmptyMessage(DOWN_OVER);
                         openAPK(saveFileName);
+                        //SilentInstall.install(saveFileName);
                         break;
                     }
                     fos.write(buf, 0, numread);
