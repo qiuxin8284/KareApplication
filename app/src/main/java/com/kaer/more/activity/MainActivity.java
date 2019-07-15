@@ -59,6 +59,7 @@ import com.kaer.more.utils.APPUtil;
 import com.kaer.more.utils.LogUtil;
 import com.kaer.more.utils.SilentInstall;
 import com.kaer.more.utils.ToastUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerView;
@@ -107,13 +108,13 @@ public class MainActivity extends AppCompatActivity {
                             mSuperPlayerView.setVisibility(View.GONE);
                             mSuperPlayerView.onPause();
                             mTvText.setText(advertisementData.getContent());
-                            ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic);
+                            ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic,options);
                         } else if (advertisementData.getMediaType() == 2) {//图片
                             mTvText.setVisibility(View.GONE);
                             mIvTextPic.setVisibility(View.VISIBLE);
                             mSuperPlayerView.setVisibility(View.GONE);
                             mSuperPlayerView.onPause();
-                            ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic);
+                            ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic,options);
                         } else if (advertisementData.getMediaType() == 3) {//广告
                             mTvText.setVisibility(View.GONE);
                             mIvTextPic.setVisibility(View.GONE);
@@ -212,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    private DisplayImageOptions options;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,6 +248,11 @@ public class MainActivity extends AppCompatActivity {
         mRenewTask = new RenewTask();
         mRenewTask.execute("");
 
+        options = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.mipmap.ad_001)
+                .showImageForEmptyUri(R.mipmap.ad_001)
+                .showImageOnFail(R.mipmap.ad_001).cacheInMemory(true)
+                .cacheOnDisk(true).considerExifParams(true).build();
     }
 
     private MainReceiver mMainReceiver;
