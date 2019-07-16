@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
         advertisementData = new AdvertisementData();//模拟图片
         advertisementData.setMediaType(2);
         advertisementData.setDuration(10);
-        advertisementData.setMedia("assets://ad_002.jpg");
+        advertisementData.setMedia("assets://ad_001.jpg");
         KareApplication.mAdvertisementList.add(advertisementData);
         //开始执行第一条
         nowPosition = 0;
