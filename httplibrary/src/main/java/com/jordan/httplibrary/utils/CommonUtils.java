@@ -30,16 +30,16 @@ public final class CommonUtils {
 
     private static RequestMessage.Biz sBiz;
 
-    public static RequestMessage.Biz createBiz(Context ctx, String user_token) {
+    public static RequestMessage.Biz createBiz(Context ctx, String user_token,String device_id) {
 
         if (null == sBiz) {
             TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-            String device_id = "0";
-            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-
-            }else {
-                device_id = tm.getDeviceId();
-            }
+//            String device_id = "0";
+//            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//
+//            }else {
+//                device_id = tm.getDeviceId();
+//            }
 
             RequestMessage.Biz.Builder biz_build = RequestMessage.Biz.newBuilder();
             biz_build.setDeviceId((TextUtils.isEmpty(device_id) ? "0" : device_id));
@@ -62,12 +62,12 @@ public final class CommonUtils {
                 biz_builder.setLang(now_language);
             }
             TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-            String device_id = "0";
-            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-
-            }else {
-                device_id = tm.getDeviceId();
-            }
+//            String device_id = "0";
+//            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//
+//            }else {
+//                device_id = tm.getDeviceId();
+//            }
             biz_builder.setDeviceId((TextUtils.isEmpty(device_id) ? "0" : device_id));
             if (!TextUtils.isEmpty(user_token)) {
                 biz_builder.setToken(user_token);
@@ -77,7 +77,7 @@ public final class CommonUtils {
         return sBiz;
     }
 
-    public static RequestMessage.Biz createBizByDefault(Context ctx, String user_token){
+    public static RequestMessage.Biz createBizByDefault(Context ctx, String user_token,String device_id){
 
         if (null == sBiz){
             RequestMessage.Biz.Builder biz_build = RequestMessage.Biz.newBuilder();
@@ -100,13 +100,13 @@ public final class CommonUtils {
                     || !current_language.equals(now_language)) {
                 biz_builder.setLang(now_language);
             }
-            TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-            String device_id = "0";
-            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-
-            }else {
-                device_id = tm.getDeviceId();
-            }
+//            TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
+//            String device_id = "0";
+//            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//
+//            }else {
+//                device_id = tm.getDeviceId();
+//            }
             biz_builder.setDeviceId((TextUtils.isEmpty(device_id) ? "0" : device_id));
             if (!TextUtils.isEmpty(user_token)) {
                 biz_builder.setToken(user_token);
@@ -128,12 +128,12 @@ public final class CommonUtils {
         return sBiz;
     }
 
-    public static RequestMessage.Request createRequest(Context ctx, String main_json, String user_token, boolean is_granted){
+    public static RequestMessage.Request createRequest(Context ctx, String main_json, String user_token, boolean is_granted,String device_Id){
         RequestMessage.Request.Builder all_builder = RequestMessage.Request.newBuilder();
         String base64_str = DES3Util.encode(main_json);
         all_builder.setMain(base64_str);
         //all_builder.setBiz(is_granted ? createBiz(ctx, user_token) : createBizByDefault(ctx, user_token));
-        all_builder.setBiz(is_granted ? createBiz(ctx, user_token) : createBizByDefault(ctx, user_token));
+        all_builder.setBiz(is_granted ? createBiz(ctx, user_token,device_Id) : createBizByDefault(ctx, user_token,device_Id));
         RequestMessage.Request request_body = all_builder.build();
         return request_body;
     }

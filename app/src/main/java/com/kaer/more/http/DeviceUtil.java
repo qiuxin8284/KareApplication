@@ -13,6 +13,8 @@ import com.kaer.more.utils.LogUtil;
 
 import java.util.Locale;
 
+import scifly.device.Device;
+
 
 public class DeviceUtil {
 	private DeviceData mDeviceData;
@@ -25,6 +27,8 @@ public class DeviceUtil {
 		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
 			LogUtil.println("DeviceUtil no Permission");
 			mDeviceData = new DeviceData();
+			KareApplication.default_imei = Device.getDeviceId(context);
+			mDeviceData.setDeviceId(Device.getDeviceId(context));
 			mDeviceData.setDeviceName(Build.MANUFACTURER);
 			mDeviceData.setDeviceOs(String
 					.valueOf(Build.VERSION.SDK_INT));
@@ -53,13 +57,11 @@ public class DeviceUtil {
 				mDeviceData.setLang("en");
 			}
 		}else {
-			KareApplication.default_imei = TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm
-					.getDeviceId();
-			LogUtil.println("DeviceUtil has Permission KareApplication.TextUtils.isEmpty(tm.getDeviceId()) :"+TextUtils.isEmpty(tm.getDeviceId()));
-			LogUtil.println("DeviceUtil has Permission KareApplication.default_imei :"+KareApplication.default_imei);
 			mDeviceData = new DeviceData();
-			mDeviceData.setDeviceId(TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm
-					.getDeviceId());
+			mDeviceData.setDeviceId(Device.getDeviceId(context));
+			KareApplication.default_imei = Device.getDeviceId(context);
+//			mDeviceData.setDeviceId(TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm
+//					.getDeviceId());
 			mDeviceData.setDeviceName(Build.MANUFACTURER);
 			mDeviceData.setDeviceOs(String
 					.valueOf(Build.VERSION.SDK_INT));

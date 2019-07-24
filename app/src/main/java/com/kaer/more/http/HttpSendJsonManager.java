@@ -46,7 +46,7 @@ public class HttpSendJsonManager {
             JSONObject mainJSONObject = new JSONObject();
 
             mainJSONObject.put("imei", imei);
-            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
@@ -78,7 +78,7 @@ public class HttpSendJsonManager {
 
             mainJSONObject.put("imei", imei);
             mainJSONObject.put("jpushId", jpushId);
-            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
@@ -110,7 +110,7 @@ public class HttpSendJsonManager {
 
             mainJSONObject.put("type", type);
             mainJSONObject.put("imei", imei);
-            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
@@ -144,7 +144,7 @@ public class HttpSendJsonManager {
             mainJSONObject.put("latitude", latitude);
             mainJSONObject.put("imei", imei);
             mainJSONObject.put("address", address);
-            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
@@ -177,7 +177,7 @@ public class HttpSendJsonManager {
             mainJSONObject.put("desp", desp);
             mainJSONObject.put("content", content);
             mainJSONObject.put("imei", imei);
-            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
@@ -287,7 +287,7 @@ public class HttpSendJsonManager {
 
             mainJSONObject.put("img", img);
             mainJSONObject.put("imei", imei);
-            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
@@ -325,7 +325,7 @@ public class HttpSendJsonManager {
             mainJSONObject.put("imei", imei);
             mainJSONObject.put("longitude", longitude);
             mainJSONObject.put("latitude", latitude);
-            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
@@ -358,7 +358,7 @@ public class HttpSendJsonManager {
 			}
 			mainJSONObject.put("deviceAds", deviceAdsJsonArray);
             mainJSONObject.put("imei", imei);
-            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
@@ -395,7 +395,7 @@ public class HttpSendJsonManager {
             mainJSONObject.put("imei", imei);
 //            sendJSONObject.put("main", mainJSONObject);
 //            sendJSONObject.put("biz", getBiz());
-            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 
             String json = sendJSONObject.toString();
