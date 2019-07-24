@@ -1,11 +1,13 @@
 package com.jordan.httplibrary.utils;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
@@ -28,11 +30,16 @@ public final class CommonUtils {
 
     private static RequestMessage.Biz sBiz;
 
-    public static RequestMessage.Biz createBiz(Context ctx, String user_token){
+    public static RequestMessage.Biz createBiz(Context ctx, String user_token) {
 
-        if (null == sBiz){
+        if (null == sBiz) {
             TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-            String device_id = tm.getDeviceId();
+            String device_id = "0";
+            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+            }else {
+                device_id = tm.getDeviceId();
+            }
 
             RequestMessage.Biz.Builder biz_build = RequestMessage.Biz.newBuilder();
             biz_build.setDeviceId((TextUtils.isEmpty(device_id) ? "0" : device_id));
@@ -55,7 +62,12 @@ public final class CommonUtils {
                 biz_builder.setLang(now_language);
             }
             TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-            String device_id = tm.getDeviceId();
+            String device_id = "0";
+            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+            }else {
+                device_id = tm.getDeviceId();
+            }
             biz_builder.setDeviceId((TextUtils.isEmpty(device_id) ? "0" : device_id));
             if (!TextUtils.isEmpty(user_token)) {
                 biz_builder.setToken(user_token);
@@ -89,7 +101,12 @@ public final class CommonUtils {
                 biz_builder.setLang(now_language);
             }
             TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-            String device_id = tm.getDeviceId();
+            String device_id = "0";
+            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+            }else {
+                device_id = tm.getDeviceId();
+            }
             biz_builder.setDeviceId((TextUtils.isEmpty(device_id) ? "0" : device_id));
             if (!TextUtils.isEmpty(user_token)) {
                 biz_builder.setToken(user_token);

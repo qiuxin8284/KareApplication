@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
         mRenewTask.execute("");
 
         options = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.mipmap.ad_001)
+                //.showImageOnLoading(R.mipmap.ad_001)
                 .showImageForEmptyUri(R.mipmap.ad_001)
                 .showImageOnFail(R.mipmap.ad_001).cacheInMemory(true)
                 .cacheOnDisk(true).considerExifParams(true).build();
@@ -378,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mMainReceiver);
-        unregisterReceiver(broadcastReceiver);
+        //unregisterReceiver(broadcastReceiver);
         mSuperPlayerView.resetPlayer();
     }
 
@@ -644,7 +644,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(String... params) {
-            String deviceID = "caac240b42928";
+            String deviceID = KareApplication.default_imei;
             mRenewData = HttpSendJsonManager.deviceVersion(MainActivity.this, deviceID);
             if (mRenewData.isOK()) {
                 mHandler.sendEmptyMessage(VERSION_SUCCESS);

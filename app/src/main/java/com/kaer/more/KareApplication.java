@@ -85,6 +85,7 @@ public class KareApplication extends Application {
     public static final String ACTION_IMAGE_UPLOAD = "com.kaer.update.action.image";
     public static final String ACTION_IMAGE_UPLOAD_SUCESS = "com.kaer.update.action.image.sucess";
     public static final String ACTION_CHECK_TOKEN = "com.kaer.check.action.token";
+    public static String default_imei="0bebf5bfc9554";//"0bebf5bfc9554";
     public static ArrayList<AdvertisementData> mAdvertisementList = new ArrayList<AdvertisementData>();
     private Handler mHandler = new Handler() {
         @Override
@@ -150,7 +151,7 @@ public class KareApplication extends Application {
         protected Void doInBackground(String... params) {
             //读取设备识别号跟常规android系统读取有区别吗？
             //String deviceID = mDeviceUtil.getDeviceData().getDeviceId();
-            String deviceID = "caac240b42928";
+            String deviceID = KareApplication.default_imei;
             LogUtil.println("checkDevice deviceID:" + deviceID);
             //上传检测是否存在这个设备号
             boolean flag = HttpSendJsonManager.checkDevice(mInstance,deviceID);
@@ -172,7 +173,7 @@ public class KareApplication extends Application {
         protected Void doInBackground(String... params) {
             //读取设备识别号跟常规android系统读取有区别吗？
             //String deviceID = mDeviceUtil.getDeviceData().getDeviceId();
-            String deviceID = "caac240b42928";
+            String deviceID = KareApplication.default_imei;
             String token = mDeviceUtil.getDeviceData().getToken();
             //token = "123456789012345";
             LogUtil.println("bindDevice token:" + token);
