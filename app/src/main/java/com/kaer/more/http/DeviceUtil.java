@@ -9,6 +9,7 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.kaer.more.KareApplication;
+import com.kaer.more.utils.LogUtil;
 
 import java.util.Locale;
 
@@ -22,6 +23,7 @@ public class DeviceUtil {
 		TelephonyManager tm = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+			LogUtil.println("DeviceUtil no Permission");
 			mDeviceData = new DeviceData();
 			mDeviceData.setDeviceName(Build.MANUFACTURER);
 			mDeviceData.setDeviceOs(String
@@ -53,6 +55,7 @@ public class DeviceUtil {
 		}else {
 			KareApplication.default_imei = TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm
 					.getDeviceId();
+			LogUtil.println("DeviceUtil has Permission KareApplication.default_imei :"+KareApplication.default_imei);
 			mDeviceData = new DeviceData();
 			mDeviceData.setDeviceId(TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm
 					.getDeviceId());

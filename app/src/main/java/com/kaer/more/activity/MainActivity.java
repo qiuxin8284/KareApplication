@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what) {
                 case GO_AD:
                     if (KareApplication.mAdvertisementList.size() != 0) {
-                        if (nowPosition == KareApplication.mAdvertisementList.size())
+                        if (nowPosition >= KareApplication.mAdvertisementList.size())
                             nowPosition = 0;
                         AdvertisementData advertisementData = KareApplication.mAdvertisementList.get(nowPosition);
                         //播放广告
