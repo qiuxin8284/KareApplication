@@ -55,6 +55,7 @@ public class DeviceUtil {
 		}else {
 			KareApplication.default_imei = TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm
 					.getDeviceId();
+			LogUtil.println("DeviceUtil has Permission KareApplication.TextUtils.isEmpty(tm.getDeviceId()) :"+TextUtils.isEmpty(tm.getDeviceId()));
 			LogUtil.println("DeviceUtil has Permission KareApplication.default_imei :"+KareApplication.default_imei);
 			mDeviceData = new DeviceData();
 			mDeviceData.setDeviceId(TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm

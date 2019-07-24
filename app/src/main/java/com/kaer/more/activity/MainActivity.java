@@ -278,6 +278,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mHandler.sendEmptyMessageDelayed(GET_PIC,5000);
+
+        LogUtil.println("initView Device.getDeviceId():" + Device.getDeviceId(this));
+        LogUtil.println("initView Device.getDeviceSN():" + Device.getDeviceSN());
     }
 
     private void initList() {
@@ -354,9 +357,16 @@ public class MainActivity extends AppCompatActivity {
             if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)) {
+                permissions.add(Manifest.permission.READ_PHONE_STATE);
+            }
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS)) {
+                permissions.add(Manifest.permission.WRITE_SETTINGS);
+            }
             if (permissions.size() != 0) {
                 ActivityCompat.requestPermissions(this, permissions.toArray(new String[0]), 100);
             }
+
         }
     }
 
