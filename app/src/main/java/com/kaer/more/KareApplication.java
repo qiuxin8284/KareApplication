@@ -85,7 +85,7 @@ public class KareApplication extends Application {
     public static final String ACTION_IMAGE_UPLOAD = "com.kaer.update.action.image";
     public static final String ACTION_IMAGE_UPLOAD_SUCESS = "com.kaer.update.action.image.sucess";
     public static final String ACTION_CHECK_TOKEN = "com.kaer.check.action.token";
-    public static String default_imei="0bebf5bfc9554";//"0bebf5bfc9554";
+    public static String default_imei="caac240b42928";//"0bebf5bfc9554";
     public static ArrayList<AdvertisementData> mAdvertisementList = new ArrayList<AdvertisementData>();
     private Handler mHandler = new Handler() {
         @Override
