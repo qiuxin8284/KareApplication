@@ -330,6 +330,7 @@ public class HttpSendJsonManager {
 
             String json = sendJSONObject.toString();
 
+            LogUtil.println("adSearch imei:" + imei);
             LogUtil.println("adSearch" + json);
             String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
             LogUtil.println("adSearch synchronousResult1" + synchronousResult);
