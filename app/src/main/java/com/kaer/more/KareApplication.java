@@ -32,6 +32,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.kaer.more.activity.MainActivity;
+import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.http.Communicator;
 import com.kaer.more.http.DeviceUtil;
@@ -87,6 +88,7 @@ public class KareApplication extends Application {
     public static final String ACTION_CHECK_TOKEN = "com.kaer.check.action.token";
     public static String default_imei="caac240b42928";//"0bebf5bfc9554";
     public static ArrayList<AdvertisementData> mAdvertisementList = new ArrayList<AdvertisementData>();
+    public static HashMap<String, AdRemarkData> mAdRemarkMap = new HashMap<String, AdRemarkData>();//获取新的任务队列的时候清空一次
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {

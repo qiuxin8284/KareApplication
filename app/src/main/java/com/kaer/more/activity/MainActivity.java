@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
     private SuperPlayerView mSuperPlayerView;
     private ImageView mIvTextPic;
     private TextView mTvText;
-    private HashMap<String, AdRemarkData> mAdRemarkMap = new HashMap<String, AdRemarkData>();//获取新的任务队列的时候清空一次
     private LocationManager locationManager;
     private int nowPosition = 0;
     private static final int GO_AD = 0;
@@ -122,17 +121,17 @@ public class MainActivity extends AppCompatActivity {
                             playVideo(advertisementData.getMedia());
                         }
 
-                        if (mAdRemarkMap.containsKey(advertisementData.getAdId())) {
-                            AdRemarkData adRemarkData = mAdRemarkMap.get(advertisementData.getAdId());
+                        if (KareApplication.mAdRemarkMap.containsKey(advertisementData.getAdId())) {
+                            AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(advertisementData.getAdId());
                             adRemarkData.setAllCount(adRemarkData.getAllCount() + 1);
                             adRemarkData.setAllTime(adRemarkData.getAllTime() + advertisementData.getDuration());
-                            mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
+                            KareApplication.mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
                         } else {
                             AdRemarkData adRemarkData = new AdRemarkData();
                             adRemarkData.setAdId(advertisementData.getAdId());
                             adRemarkData.setAllCount(1);
                             adRemarkData.setAllTime(advertisementData.getDuration());
-                            mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
+                            KareApplication.mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
                         }
                         nowPosition = nowPosition + 1;
                         mHandler.sendEmptyMessageDelayed(GO_AD, advertisementData.getDuration() * 1000);

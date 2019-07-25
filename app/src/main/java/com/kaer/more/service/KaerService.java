@@ -22,6 +22,7 @@ import com.kaer.more.utils.LogUtil;
 import com.kaer.more.utils.TimeUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import scifly.device.Device;
 
@@ -162,12 +163,12 @@ public class KaerService extends Service {
 
                         }
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (action.equals(KareApplication.ACTION_IMAGE_UPLOAD_SUCESS)) {
-                        mUploadMediaTask = new UploadMediaTask();
-                        mUploadMediaTask.execute();
+                mUploadMediaTask = new UploadMediaTask();
+                mUploadMediaTask.execute();
             }
         }
     }
@@ -254,7 +255,7 @@ public class KaerService extends Service {
                     mGetAdTask.execute();
                     break;
                 case TIME_ADD:
-                    LogUtil.println("adSearch TIME_ADD mConnectTime:"+mConnectTime+"|CONNECT_REPEAT_TIME:"+CONNECT_REPEAT_TIME);
+                    LogUtil.println("adSearch TIME_ADD mConnectTime:" + mConnectTime + "|CONNECT_REPEAT_TIME:" + CONNECT_REPEAT_TIME);
                     mConnectTime = mConnectTime + 1000;
                     if (mConnectTime >= CONNECT_REPEAT_TIME) {
                         mConnectTime = 0;
@@ -267,7 +268,7 @@ public class KaerService extends Service {
                 case TIME_DELAY:
                     System.out.println("before TIME_DELAY：");
                     String state = (String) msg.obj;
-                    System.out.println("before TIME_DELAY state："+state);
+                    System.out.println("before TIME_DELAY state：" + state);
                     if (state.equals("1")) {//1设置开机 //1是开 0是关
                         Device.setProjectorLedPower(1);
                     } else if (state.equals("2")) {//2设置关闭
@@ -390,7 +391,7 @@ public class KaerService extends Service {
         protected Void doInBackground(String... params) {
             int type = 0;
             String name = "kaer.jpg";
-            String file  = CommonUtils.encodeToBase64(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + name);
+            String file = CommonUtils.encodeToBase64(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + name);
             String time = "0";
             LogUtil.println("uploadMedia type:" + type);
             LogUtil.println("uploadMedia name:" + name);
@@ -421,28 +422,31 @@ public class KaerService extends Service {
             String longitude = "0.00";
             String latitude = "0.00";
             ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
-            AdRemarkData adRemarkData = new AdRemarkData();
-            adRemarkData.setAdId("e29ff2a8c727db3ebb2780541f4aa99d");
-            adRemarkData.setAllCount(1);
-            list.add(adRemarkData);
-            AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance,  deviceID, longitude, latitude,  list);
-            LogUtil.println("adSearch GetFristAdTask advertisementListData:"+advertisementListData.toString());
+            for (String key : KareApplication.mAdRemarkMap.keySet()) {
+                AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
+                list.add(adRemarkData);
+            }
+            LogUtil.println("adSearch GetFristAdTask list:" + list.toString());
+            AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, longitude, latitude, list);
+            LogUtil.println("adSearch GetFristAdTask advertisementListData:" + advertisementListData.toString());
             //如果失败重新获取
             //如果成功那么推送刷新广告
-            if(advertisementListData.isOK()){
+            if (advertisementListData.isOK()) {
                 LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_SUCCESS");
                 KareApplication.mAdvertisementList = advertisementListData.getAdList();
+                KareApplication.mAdRemarkMap = new HashMap<String, AdRemarkData>();
                 Intent intent = new Intent();
                 intent.setAction(KareApplication.ACTION_UPDATE_AD);
                 sendBroadcast(intent);
                 mHandler.sendEmptyMessage(GET_AD_FRIST_SUCCESS);
-            }else{
+            } else {
                 LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_FALSE");
-                mHandler.sendEmptyMessageDelayed(GET_AD_FRIST_FALSE,30000);
+                mHandler.sendEmptyMessageDelayed(GET_AD_FRIST_FALSE, 30000);
             }
             return null;
         }
     }
+
     private GetAdTask mGetAdTask;
 
     private class GetAdTask extends AsyncTask<String, Void, Void> {
@@ -454,28 +458,31 @@ public class KaerService extends Service {
             String longitude = "0.00";
             String latitude = "0.00";
             ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
-            AdRemarkData adRemarkData = new AdRemarkData();
-            adRemarkData.setAdId("e29ff2a8c727db3ebb2780541f4aa99d");
-            adRemarkData.setAllCount(1);
-            list.add(adRemarkData);
-            AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance,  deviceID, longitude, latitude,  list);
-            LogUtil.println("adSearch GetAdTask advertisementListData:"+advertisementListData.toString());
+            for (String key : KareApplication.mAdRemarkMap.keySet()) {
+                AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
+                list.add(adRemarkData);
+            }
+            LogUtil.println("adSearch GetAdTask list:" + list.toString());
+            AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, longitude, latitude, list);
+            LogUtil.println("adSearch GetAdTask advertisementListData:" + advertisementListData.toString());
             //如果失败重新获取
             //如果成功那么推送刷新广告
-            if(advertisementListData.isOK()){
+            if (advertisementListData.isOK()) {
                 LogUtil.println("adSearch GetAdTask GET_AD_SUCCESS");
                 KareApplication.mAdvertisementList = advertisementListData.getAdList();
+                KareApplication.mAdRemarkMap = new HashMap<String, AdRemarkData>();
                 Intent intent = new Intent();
                 intent.setAction(KareApplication.ACTION_UPDATE_AD);
                 sendBroadcast(intent);
                 mHandler.sendEmptyMessage(GET_AD_SUCCESS);
-            }else{
+            } else {
                 LogUtil.println("adSearch GetAdTask GET_AD_FALSE");
-                mHandler.sendEmptyMessageDelayed(GET_AD_FALSE,30000);
+                mHandler.sendEmptyMessageDelayed(GET_AD_FALSE, 30000);
             }
             return null;
         }
     }
+
     private DeviceUploadTask mDeviceUploadTask;
 
     private class DeviceUploadTask extends AsyncTask<String, Void, Void> {
@@ -489,7 +496,7 @@ public class KaerService extends Service {
             adRemarkData.setAdId("e29ff2a8c727db3ebb2780541f4aa99d");
             adRemarkData.setAllCount(1000);
             list.add(adRemarkData);
-            HttpSendJsonManager.deviceUpload(KareApplication.mInstance, deviceID,  list);
+            HttpSendJsonManager.deviceUpload(KareApplication.mInstance, deviceID, list);
             return null;
         }
     }
