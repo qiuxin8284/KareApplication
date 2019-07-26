@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int GET_PIC = 1;
     private static final int VERSION_SUCCESS = 2;
     private static final int VERSION_FALSE = 3;
+    private TextView mTvDeviceID;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -278,8 +279,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         mHandler.sendEmptyMessageDelayed(GET_PIC,5000);
 
-        LogUtil.println("initView Device.getDeviceId():" + Device.getDeviceId(this));
-        LogUtil.println("initView Device.getDeviceSN():" + Device.getDeviceSN());
+        //LogUtil.println("initView Device.getDeviceId():" + Device.getDeviceId(this));
+        //LogUtil.println("initView Device.getDeviceSN():" + Device.getDeviceSN());
     }
 
     private void initList() {
@@ -342,6 +343,9 @@ public class MainActivity extends AppCompatActivity {
         mTvText = (TextView) this.findViewById(R.id.tv_text);
         LogUtil.println("initView mTvTextgetId:" + (mTvText.getId()));
         mRLMainBG = (RelativeLayout) findViewById(R.id.rl_main);
+        mTvDeviceID = (TextView) this.findViewById(R.id.tv_device_id);
+        mTvDeviceID.setText(KareApplication.default_imei);
+        mTvDeviceID.setVisibility(View.GONE);
     }
 
     /**

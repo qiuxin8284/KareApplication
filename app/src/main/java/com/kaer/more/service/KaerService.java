@@ -29,7 +29,7 @@ import scifly.device.Device;
 public class KaerService extends Service {
 
     //private static final int CONNECT_REPEAT_TIME = 1000 * 60 * 30;//半小时
-    private static final int CONNECT_REPEAT_TIME = 1000 * 60 * 10;//半小时
+    private static final int CONNECT_REPEAT_TIME = 1000 * 90;//1.5分钟
     private static final String STATE_OPEN = "O";
     private static final String STATE_CLOSE = "F";
     private int mConnectTime = 0;

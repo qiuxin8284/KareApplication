@@ -27,8 +27,15 @@ public class DeviceUtil {
 		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
 			LogUtil.println("DeviceUtil no Permission");
 			mDeviceData = new DeviceData();
-			KareApplication.default_imei = Device.getDeviceId(context);
-			mDeviceData.setDeviceId(Device.getDeviceId(context));
+			try {
+				KareApplication.default_imei = Device.getDeviceId(context);
+				mDeviceData.setDeviceId(Device.getDeviceId(context));
+			}catch (Exception e){
+				KareApplication.default_imei = "0";
+				mDeviceData.setDeviceId(KareApplication.default_imei);
+				e.printStackTrace();
+			}
+			LogUtil.println("DeviceUtil mDeviceData.getID："+mDeviceData.getDeviceId());
 			mDeviceData.setDeviceName(Build.MANUFACTURER);
 			mDeviceData.setDeviceOs(String
 					.valueOf(Build.VERSION.SDK_INT));
@@ -58,8 +65,15 @@ public class DeviceUtil {
 			}
 		}else {
 			mDeviceData = new DeviceData();
-			mDeviceData.setDeviceId(Device.getDeviceId(context));
-			KareApplication.default_imei = Device.getDeviceId(context);
+			try {
+				KareApplication.default_imei = Device.getDeviceId(context);
+				mDeviceData.setDeviceId(Device.getDeviceId(context));
+			}catch (Exception e){
+				KareApplication.default_imei = TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm.getDeviceId();
+				mDeviceData.setDeviceId(KareApplication.default_imei);
+				e.printStackTrace();
+			}
+			LogUtil.println("DeviceUtil mDeviceData.getID："+mDeviceData.getDeviceId());
 //			mDeviceData.setDeviceId(TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm
 //					.getDeviceId());
 			mDeviceData.setDeviceName(Build.MANUFACTURER);

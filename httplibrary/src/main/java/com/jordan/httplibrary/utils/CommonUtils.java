@@ -33,16 +33,16 @@ public final class CommonUtils {
     public static RequestMessage.Biz createBiz(Context ctx, String user_token,String device_id) {
 
         if (null == sBiz) {
-            TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-//            String device_id = "0";
-//            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-//
-//            }else {
-//                device_id = tm.getDeviceId();
-//            }
-
+            if(TextUtils.isEmpty(device_id)) {
+                if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                    device_id = "0";
+                } else {
+                    TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
+                    device_id = tm.getDeviceId();
+                }
+            }
             RequestMessage.Biz.Builder biz_build = RequestMessage.Biz.newBuilder();
-            biz_build.setDeviceId((TextUtils.isEmpty(device_id) ? "0" : device_id));
+            biz_build.setDeviceId(device_id);
             biz_build.setDeviceName(Build.MANUFACTURER);
             biz_build.setDeviceOs(String.valueOf(Build.VERSION.SDK_INT));
             biz_build.setDeviceVersion(Build.VERSION.RELEASE);
