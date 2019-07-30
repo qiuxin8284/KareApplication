@@ -20,6 +20,7 @@ import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.http.HttpSendJsonManager;
 import com.kaer.more.utils.LogUtil;
 import com.kaer.more.utils.TimeUtil;
+import com.kaer.more.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -235,6 +236,7 @@ public class KaerService extends Service {
                     mNowLatitude = "0.00";
                     //发送定时
                     mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
+                    //ToastUtils.shortToast(KaerService.this,"收到广播更新");
                     //地址监听
                     break;
                 case GET_AD_FRIST_FALSE:
@@ -248,6 +250,7 @@ public class KaerService extends Service {
                     mNowLatitude = "0.00";
                     //发送定时
                     //mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
+                    //ToastUtils.shortToast(KaerService.this,"收到广播更新");
                     //地址监听
                     break;
                 case GET_AD_FALSE:
