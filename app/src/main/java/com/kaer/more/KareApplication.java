@@ -80,6 +80,8 @@ public class KareApplication extends Application {
     private static final int CHECK_DEVICE_FALSE = 2;
     private static final int BIND_DEVICE_SUCCESS = 3;
     private static final int BIND_DEVICE_FALSE = 4;
+    private static final int ADD_DEVICE_SUCCESS = 5;
+    private static final int ADD_DEVICE_FALSE = 6;
     public static final int REPEAT_CONNECT_TIME = 30000;//30s重试
     public static final String ACTION_TUISONG_JSON = "com.kaer.tuisong.action.json";
     public static final String ACTION_UPDATE_AD = "com.kaer.update.action.ad";
@@ -105,6 +107,10 @@ public class KareApplication extends Application {
                 case BIND_DEVICE_FALSE:
                     mHandler.sendEmptyMessageDelayed(CHECK_DEVICE_SUCCESS,REPEAT_CONNECT_TIME);
                     break;
+                case ADD_DEVICE_SUCCESS:
+                    break;
+                case ADD_DEVICE_FALSE:
+                    break;
             }
         }
     };
@@ -126,6 +132,15 @@ public class KareApplication extends Application {
         intentFilter.addAction(KareApplication.ACTION_CHECK_TOKEN);
         registerReceiver(mKareReceiver, intentFilter);
         initDevice();
+        addDevice();
+    }
+
+    private void addDevice() {
+        if(!TextUtils.isEmpty(mDeviceUtil.getToken())){
+            LogUtil.println("addDevice mCheckDeviceTask");
+            mAddDeviceTask = new AddDeviceTask();
+            mAddDeviceTask.execute();
+        }
     }
 
 
@@ -145,6 +160,28 @@ public class KareApplication extends Application {
         }
     }
 
+    private AddDeviceTask mAddDeviceTask;
+
+    private class AddDeviceTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            //读取设备识别号跟常规android系统读取有区别吗？
+            String deviceID = mDeviceUtil.getDeviceData().getDeviceId();
+            //String deviceID = "1234567890";
+            LogUtil.println("addDevice deviceID:" + deviceID);
+            //上传检测是否存在这个设备号
+            //boolean flag = HttpSendJsonManager.addDevice(mInstance,deviceID,deviceID,"1234567890");
+            boolean flag = HttpSendJsonManager.addDevice(mInstance,deviceID,deviceID,mDeviceUtil.getToken());
+            LogUtil.println("addDevice flag:" + flag);
+            if (flag) {
+                mHandler.sendEmptyMessage(CHECK_DEVICE_SUCCESS);
+            } else {
+                mHandler.sendEmptyMessage(CHECK_DEVICE_FALSE);
+            }
+            return null;
+        }
+    }
     private CheckDeviceTask mCheckDeviceTask;
 
     private class CheckDeviceTask extends AsyncTask<String, Void, Void> {

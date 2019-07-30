@@ -410,4 +410,30 @@ public class HttpSendJsonManager {
             return renewData;
         }
     }
+
+    public static boolean addDevice(Context context, String imei,
+                                       String code,String jpushId) {
+        String url = "v0/device/add.htm";
+        try {
+            JSONObject sendJSONObject = new JSONObject();
+            JSONObject mainJSONObject = new JSONObject();
+
+            mainJSONObject.put("imei", imei);
+            mainJSONObject.put("code", code);
+            mainJSONObject.put("jpushId", jpushId);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
+            sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
+
+            String json = sendJSONObject.toString();
+
+            LogUtil.println("addDevice" + json);
+            String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
+            LogUtil.println("addDevice synchronousResult1" + synchronousResult);
+            return HttpAnalyJsonManager.onResult(synchronousResult, context);
+        } catch (Exception e) {
+            HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

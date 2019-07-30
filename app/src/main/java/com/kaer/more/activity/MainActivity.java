@@ -122,17 +122,19 @@ public class MainActivity extends AppCompatActivity {
                             playVideo(advertisementData.getMedia());
                         }
 
-                        if (KareApplication.mAdRemarkMap.containsKey(advertisementData.getAdId())) {
-                            AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(advertisementData.getAdId());
-                            adRemarkData.setAllCount(adRemarkData.getAllCount() + 1);
-                            adRemarkData.setAllTime(adRemarkData.getAllTime() + advertisementData.getDuration());
-                            KareApplication.mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
-                        } else {
-                            AdRemarkData adRemarkData = new AdRemarkData();
-                            adRemarkData.setAdId(advertisementData.getAdId());
-                            adRemarkData.setAllCount(1);
-                            adRemarkData.setAllTime(advertisementData.getDuration());
-                            KareApplication.mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
+                        if(!TextUtils.isEmpty(advertisementData.getAdId())) {
+                            if (KareApplication.mAdRemarkMap.containsKey(advertisementData.getAdId())) {
+                                AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(advertisementData.getAdId());
+                                adRemarkData.setAllCount(adRemarkData.getAllCount() + 1);
+                                adRemarkData.setAllTime(adRemarkData.getAllTime() + advertisementData.getDuration());
+                                KareApplication.mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
+                            } else {
+                                AdRemarkData adRemarkData = new AdRemarkData();
+                                adRemarkData.setAdId(advertisementData.getAdId());
+                                adRemarkData.setAllCount(1);
+                                adRemarkData.setAllTime(advertisementData.getDuration());
+                                KareApplication.mAdRemarkMap.put(advertisementData.getAdId(), adRemarkData);
+                            }
                         }
                         nowPosition = nowPosition + 1;
                         mHandler.sendEmptyMessageDelayed(GO_AD, advertisementData.getDuration() * 1000);
@@ -162,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
 //                        }
 //                        kaerIntent.setAction(KareApplication.ACTION_TUISONG_JSON);
 //                        sendBroadcast(kaerIntent);
+                    }else{
+                        initList();
                     }
                     break;
                 case GET_PIC:
