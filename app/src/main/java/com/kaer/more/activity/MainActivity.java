@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int GET_PIC = 1;
     private static final int VERSION_SUCCESS = 2;
     private static final int VERSION_FALSE = 3;
+    private static final int VERSION_SHOW = 4;
     private TextView mTvDeviceID;
     private Handler mHandler = new Handler() {
         @Override
@@ -196,8 +197,10 @@ public class MainActivity extends AppCompatActivity {
                         LogUtil.println("deviceVersion APPUtil.packageCode(MainActivity.this)):"+APPUtil.packageCode(MainActivity.this));
                         //对比版本号--和本地版本号对比
                         if (mRenewData.getVersion().equals(APPUtil.packageCode(MainActivity.this))) {
+                            ToastUtils.shortToast(MainActivity.this,"版本相同");
                             LogUtil.println("deviceVersion 版本相同");
                         }else{
+                            ToastUtils.shortToast(MainActivity.this,"downLoadApk");
                             LogUtil.println("deviceVersion downLoadApk");
                             apkUrl = mRenewData.getLink();
                             downloadApk();
@@ -213,6 +216,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case VERSION_FALSE:
+                    break;
+                case VERSION_SHOW:
+                    mTvDeviceID.setText("设备号:"+KareApplication.default_imei+
+                            "\n版本号："+APPUtil.packageCode(MainActivity.this)
+                            +"\ndeviceVersion progress:"+progress);
                     break;
             }
         }
@@ -348,8 +356,8 @@ public class MainActivity extends AppCompatActivity {
         LogUtil.println("initView mTvTextgetId:" + (mTvText.getId()));
         mRLMainBG = (RelativeLayout) findViewById(R.id.rl_main);
         mTvDeviceID = (TextView) this.findViewById(R.id.tv_device_id);
-        mTvDeviceID.setText(KareApplication.default_imei);
-        mTvDeviceID.setVisibility(View.GONE);
+        mTvDeviceID.setText("设备号:"+KareApplication.default_imei+"\n版本号："+APPUtil.packageCode(MainActivity.this));
+        mTvDeviceID.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -718,6 +726,7 @@ public class MainActivity extends AppCompatActivity {
                     count += numread;
                     progress = (int) (((float) count / length) * 100);
 
+                    mHandler.sendEmptyMessage(VERSION_SHOW);
                     LogUtil.println("deviceVersion progress:"+progress);
                     // 下载进度
                     //mHandler.sendEmptyMessage(DOWN_UPDATE);

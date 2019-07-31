@@ -236,7 +236,7 @@ public class KaerService extends Service {
                     mNowLatitude = "0.00";
                     //发送定时
                     mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
-                    //ToastUtils.shortToast(KaerService.this,"收到广播更新");
+                    ToastUtils.shortToast(KaerService.this,"收到广播更新");
                     //地址监听
                     break;
                 case GET_AD_FRIST_FALSE:
@@ -250,7 +250,7 @@ public class KaerService extends Service {
                     mNowLatitude = "0.00";
                     //发送定时
                     //mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
-                    //ToastUtils.shortToast(KaerService.this,"收到广播更新");
+                    ToastUtils.shortToast(KaerService.this,"收到广播更新");
                     //地址监听
                     break;
                 case GET_AD_FALSE:
