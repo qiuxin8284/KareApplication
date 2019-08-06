@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int VERSION_SHOW = 4;
     private static final int NOTICE_DEVICE_SUCCESS = 5;
     private static final int NOTICE_DEVICE_FALSE = 6;
+    public static final int NOTICE_DEVICE = 7;
+    public static final int NOTICE_DEVICE_TIME = 2*60*1000;//30s重试
     private TextView mTvDeviceID;
     private Handler mHandler = new Handler() {
         @Override
@@ -228,6 +230,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case NOTICE_DEVICE_FALSE:
                     break;
+                case NOTICE_DEVICE:
+                    mNoticeDeviceTask = new NoticeDeviceTask();
+                    mNoticeDeviceTask.execute(STATE_OPEN);
+                    break;
             }
         }
     };
@@ -273,10 +279,10 @@ public class MainActivity extends AppCompatActivity {
                 .showImageOnFail(R.mipmap.ad_001).cacheInMemory(true)
                 .cacheOnDisk(true).considerExifParams(true).build();
 
-
         //发送接口
         mNoticeDeviceTask = new NoticeDeviceTask();
         mNoticeDeviceTask.execute(STATE_OPEN);
+
     }
     private static final String STATE_OPEN = "O";
     private static final String STATE_CLOSE = "F";
@@ -803,6 +809,7 @@ public class MainActivity extends AppCompatActivity {
                     mHandler.sendEmptyMessage(NOTICE_DEVICE_FALSE);
                 }
             }
+            mHandler.sendEmptyMessageDelayed(NOTICE_DEVICE,NOTICE_DEVICE_TIME);
             return null;
         }
     }
