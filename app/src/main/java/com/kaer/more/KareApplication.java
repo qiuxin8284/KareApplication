@@ -117,6 +117,7 @@ public class KareApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        LogUtil.println("notice Application onCreate");
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
         mInstance = this;

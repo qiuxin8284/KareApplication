@@ -1,5 +1,6 @@
 package com.kaer.more.service;
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.text.TextUtils;
 
 import com.jordan.httplibrary.utils.CommonUtils;
 import com.kaer.more.KareApplication;
+import com.kaer.more.R;
 import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementListData;
 import com.kaer.more.entitiy.UploadData;
@@ -24,8 +26,12 @@ import com.kaer.more.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import scifly.device.Device;
+import scifly.util.LogUtils;
 
 public class KaerService extends Service {
 
@@ -48,8 +54,8 @@ public class KaerService extends Service {
         mGetFristAdTask.execute();
 
         //发送接口
-        mNoticeDeviceTask = new NoticeDeviceTask();
-        mNoticeDeviceTask.execute(STATE_OPEN);
+//        mNoticeDeviceTask = new NoticeDeviceTask();
+//        mNoticeDeviceTask.execute(STATE_OPEN);
 //        mExcpDeviceTask = new ExcpDeviceTask();
 //        mExcpDeviceTask.execute();
 
@@ -61,15 +67,27 @@ public class KaerService extends Service {
         intentFilter.addAction(KareApplication.ACTION_IMAGE_UPLOAD_SUCESS);
         registerReceiver(mKaerReceiver, intentFilter);
         //main横屏展示
+        LogUtil.println("NewTest 开启检查服务");
+//        timerMail.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                LogUtil.println("NewTest 发送消息");
+//                mHandler.sendEmptyMessage(APP_DEAD);
+//            }
+//        }, 15000, 5000);
+//        super.onCreate();
+
+        mHandler.sendEmptyMessageDelayed(DEVICE_UPLOAD,DEVICE_UPLOAD_TIME);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mNoticeDeviceTask = new NoticeDeviceTask();
-        mNoticeDeviceTask.execute(STATE_CLOSE);
-        mDeviceUploadTask = new DeviceUploadTask();
-        mDeviceUploadTask.execute();
+        logout();
+//        if (timerMail!= null){
+//            timerMail.cancel();
+//        }
+//        LogUtil.println("NewTest 销毁服务");
         unregisterReceiver(mKaerReceiver);
     }
 
@@ -197,6 +215,9 @@ public class KaerService extends Service {
     private static final int GET_AD_FRIST_FALSE = 14;
     private static final int TIME_ADD = 15;
     public static final int TIME_DELAY = 16;
+    public static final int APP_DEAD = 17;
+    public static final int DEVICE_UPLOAD = 18;
+    public static final int DEVICE_UPLOAD_TIME = 2*60*1000;//30s重试
     public static final int REPEAT_CONNECT_TIME = 30000;//30s重试
     private Handler mHandler = new Handler() {
         @Override
@@ -277,6 +298,21 @@ public class KaerService extends Service {
                     } else if (state.equals("2")) {//2设置关闭
                         Device.setProjectorLedPower(0);
                     }
+                    break;
+                case APP_DEAD:
+                    try {
+                        if(!isBackgroundRunning()){
+                            LogUtil.println("NewTest  退出操作");
+                            logout();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case DEVICE_UPLOAD:
+                    LogUtil.println("deviceUpload DEVICE_UPLOAD");
+                    mDeviceUploadTask = new DeviceUploadTask();
+                    mDeviceUploadTask.execute();
                     break;
             }
         }
@@ -493,14 +529,46 @@ public class KaerService extends Service {
         @Override
         protected Void doInBackground(String... params) {
             String deviceID = KareApplication.default_imei;
+            LogUtil.println("deviceUpload doInBackground");
+
             ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
-            AdRemarkData adRemarkData = new AdRemarkData();
-            adRemarkData = new AdRemarkData();
-            adRemarkData.setAdId("e29ff2a8c727db3ebb2780541f4aa99d");
-            adRemarkData.setAllCount(1000);
-            list.add(adRemarkData);
-            HttpSendJsonManager.deviceUpload(KareApplication.mInstance, deviceID, list);
+            if(list!=null&&list.size()!=0) {
+                for (String key : KareApplication.mAdRemarkMap.keySet()) {
+                    AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
+                    list.add(adRemarkData);
+                }
+                LogUtil.println("deviceUpload list:" + list.toString());
+                if (HttpSendJsonManager.deviceUpload(KareApplication.mInstance, deviceID, list)) {
+                    LogUtil.println("deviceUpload OK");
+                    KareApplication.mAdRemarkMap = new HashMap<String, AdRemarkData>();
+                }
+            }
+            mHandler.sendEmptyMessageDelayed(DEVICE_UPLOAD, DEVICE_UPLOAD_TIME);
             return null;
         }
+    }
+
+    private static final String PackageName = "com.kaer.more";
+    private final Timer timerMail = new Timer();
+    private ActivityManager activityManager=null;
+
+    private boolean isBackgroundRunning() {
+        activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        if (activityManager == null) {
+            return false;
+        }
+        List<ActivityManager.RunningTaskInfo> processList = activityManager.getRunningTasks(100);
+        for (ActivityManager.RunningTaskInfo info : processList) {
+            if (info.baseActivity.getPackageName().startsWith(PackageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public void logout() {
+        mNoticeDeviceTask = new NoticeDeviceTask();
+        mNoticeDeviceTask.execute(STATE_CLOSE);
+        mDeviceUploadTask = new DeviceUploadTask();
+        mDeviceUploadTask.execute();
     }
 }

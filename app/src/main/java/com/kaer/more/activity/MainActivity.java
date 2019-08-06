@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int VERSION_SUCCESS = 2;
     private static final int VERSION_FALSE = 3;
     private static final int VERSION_SHOW = 4;
+    private static final int NOTICE_DEVICE_SUCCESS = 5;
+    private static final int NOTICE_DEVICE_FALSE = 6;
     private TextView mTvDeviceID;
     private Handler mHandler = new Handler() {
         @Override
@@ -222,6 +224,10 @@ public class MainActivity extends AppCompatActivity {
                             "\n版本号："+APPUtil.packageCode(MainActivity.this)
                             +"\ndeviceVersion progress:"+progress);
                     break;
+                case NOTICE_DEVICE_SUCCESS:
+                    break;
+                case NOTICE_DEVICE_FALSE:
+                    break;
             }
         }
     };
@@ -231,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        LogUtil.println("notice MainActivity onCreate");
         getSupportActionBar().hide();// 隐藏ActionBar
         setContentView(R.layout.activity_main);
         //得到当前界面的装饰视图
@@ -265,7 +272,14 @@ public class MainActivity extends AppCompatActivity {
                 .showImageForEmptyUri(R.mipmap.ad_001)
                 .showImageOnFail(R.mipmap.ad_001).cacheInMemory(true)
                 .cacheOnDisk(true).considerExifParams(true).build();
+
+
+        //发送接口
+        mNoticeDeviceTask = new NoticeDeviceTask();
+        mNoticeDeviceTask.execute(STATE_OPEN);
     }
+    private static final String STATE_OPEN = "O";
+    private static final String STATE_CLOSE = "F";
 
     private MainReceiver mMainReceiver;
 
@@ -402,6 +416,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LogUtil.println("notice MainActivity onDestroy");
+        mNoticeDeviceTask = new NoticeDeviceTask();
+        mNoticeDeviceTask.execute(STATE_CLOSE);
         unregisterReceiver(mMainReceiver);
         //unregisterReceiver(broadcastReceiver);
         mSuperPlayerView.resetPlayer();
@@ -765,5 +782,29 @@ public class MainActivity extends AppCompatActivity {
         LogUtil.println("deviceVersion over");
     }
 
+    //上传状态
+    private NoticeDeviceTask mNoticeDeviceTask;
+
+    private class NoticeDeviceTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            //读取设备识别号跟常规android系统读取有区别吗？
+            String deviceID = KareApplication.default_imei;
+            String type = params[0];
+            LogUtil.println("noticeDevice type:" + type);
+            if (!TextUtils.isEmpty(type) && !TextUtils.isEmpty(deviceID)) {
+                //上传检测是否存在这个设备号
+                boolean flag = HttpSendJsonManager.noticeDevice(KareApplication.mInstance, type, deviceID);
+                LogUtil.println("noticeDevice flag:" + flag);
+                if (flag) {
+                    mHandler.sendEmptyMessage(NOTICE_DEVICE_SUCCESS);
+                } else {
+                    mHandler.sendEmptyMessage(NOTICE_DEVICE_FALSE);
+                }
+            }
+            return null;
+        }
+    }
 
 }

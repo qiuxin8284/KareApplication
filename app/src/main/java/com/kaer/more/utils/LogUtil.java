@@ -14,13 +14,13 @@ public class LogUtil {
 
     public static void println(String a) {
         if (a != null) {
-            //System.out.println(a);
+            System.out.println(a);
         }
     }
 
     public static void print(String a) {
         if (a != null) {
-            //System.out.print(a);
+            System.out.print(a);
         }
     }
 }
