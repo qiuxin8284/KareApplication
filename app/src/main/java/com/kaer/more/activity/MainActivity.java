@@ -4,6 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.app.IPackageInstallListener;
+import android.app.PackageManagerExtra;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -681,8 +683,17 @@ public class MainActivity extends AppCompatActivity {
             LogUtil.println("deviceVersion openAPK data:" + data);
         }
 
-        intent.setDataAndType(data, "application/vnd.android.package-archive");
-        startActivity(intent);
+        PackageManagerExtra pm = PackageManagerExtra.getInstance();
+        pm.installPackage(this, data, new IPackageInstallListener(){
+
+            @Override
+            public void packageInstalled(String s, int i) {
+                android.util.Log.e("PackageManager", "packageInstalled::s= " + s + " code= " + i);
+            }
+        });
+        //intent.setDataAndType(data, "application/vnd.android.package-archive");
+        //startActivity(intent);
+
     }
 
     private RenewTask mRenewTask;
