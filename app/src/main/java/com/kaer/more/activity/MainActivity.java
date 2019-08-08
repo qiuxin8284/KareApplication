@@ -672,16 +672,16 @@ public class MainActivity extends AppCompatActivity {
         LogUtil.println("deviceVersion openAPK filePath:" + filePath);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri data = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//判断版本大于等于7.0
-            // 生成文件的uri，，
-            // 注意 下面参数com.ausee.fileprovider 为apk的包名加上.fileprovider，
-            data = FileProvider.getUriForFile(MainActivity.this, "com.kaer.more.fileprovider", new File(filePath));
-            LogUtil.println("deviceVersion openAPK data:" + data);
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);// 给目标应用一个临时授权
-        } else {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//判断版本大于等于7.0
+//            // 生成文件的uri，，
+//            // 注意 下面参数com.ausee.fileprovider 为apk的包名加上.fileprovider，
+//            data = FileProvider.getUriForFile(MainActivity.this, "com.kaer.more.fileprovider", new File(filePath));
+//            LogUtil.println("deviceVersion openAPK data:" + data);
+//            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);// 给目标应用一个临时授权
+//        } else {
             data = Uri.fromFile(file);
             LogUtil.println("deviceVersion openAPK data:" + data);
-        }
+//        }
 
         PackageManagerExtra pm = PackageManagerExtra.getInstance();
         pm.installPackage(this, data, new IPackageInstallListener(){
@@ -717,7 +717,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String savePath = "/sdcard/updatedemo/";
     private static final String saveFileName = savePath
-            + "kaer_1.0.2.apk";
+            + "kaer_1.0.6.apk";
     // 下载线程
     private Thread downLoadThread;
     private int progress;// 当前进度
