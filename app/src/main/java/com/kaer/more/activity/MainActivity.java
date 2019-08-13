@@ -41,6 +41,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int NOTICE_DEVICE_SUCCESS = 5;
     private static final int NOTICE_DEVICE_FALSE = 6;
     public static final int NOTICE_DEVICE = 7;
+    private static final int UPDATE_SHOW = 8;
     public static final int NOTICE_DEVICE_TIME = 2*60*1000;//30s重试
     private TextView mTvDeviceID;
     private Handler mHandler = new Handler() {
@@ -235,6 +237,16 @@ public class MainActivity extends AppCompatActivity {
                 case NOTICE_DEVICE:
                     mNoticeDeviceTask = new NoticeDeviceTask();
                     mNoticeDeviceTask.execute(STATE_OPEN);
+                    break;
+                case UPDATE_SHOW:
+                    LogUtil.println("onClick UPDATE_SHOW isShow:"+isShow);
+                    if(isShow){
+                        isShow = false;
+                        mTvDeviceID.setVisibility(View.GONE);
+                    }else{
+                        isShow = true;
+                        mTvDeviceID.setVisibility(View.VISIBLE);
+                    }
                     break;
             }
         }
@@ -379,7 +391,16 @@ public class MainActivity extends AppCompatActivity {
         mRLMainBG = (RelativeLayout) findViewById(R.id.rl_main);
         mTvDeviceID = (TextView) this.findViewById(R.id.tv_device_id);
         mTvDeviceID.setText("设备号:"+KareApplication.default_imei+"\n版本号："+APPUtil.packageCode(MainActivity.this));
-        mTvDeviceID.setVisibility(View.VISIBLE);
+        mTvDeviceID.setVisibility(View.GONE);
+    }
+    private boolean isShow = false;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        LogUtil.println("onClick onKeyDown keyCode:"+keyCode);
+        if(keyCode==66){
+            mHandler.sendEmptyMessage(UPDATE_SHOW);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     /**
