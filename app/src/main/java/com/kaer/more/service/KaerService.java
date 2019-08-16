@@ -532,12 +532,14 @@ public class KaerService extends Service {
             LogUtil.println("deviceUpload doInBackground");
 
             ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
-            if(list!=null&&list.size()!=0) {
+            LogUtil.println("deviceUpload KareApplication.mAdRemarkMap.size()："+KareApplication.mAdRemarkMap.size());
+            if(KareApplication.mAdRemarkMap!=null&&KareApplication.mAdRemarkMap.size()!=0) {
                 for (String key : KareApplication.mAdRemarkMap.keySet()) {
                     AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
                     list.add(adRemarkData);
                 }
                 LogUtil.println("deviceUpload list:" + list.toString());
+                LogUtil.println("deviceUpload deviceID:" + deviceID);
                 if (HttpSendJsonManager.deviceUpload(KareApplication.mInstance, deviceID, list)) {
                     LogUtil.println("deviceUpload OK");
                     KareApplication.mAdRemarkMap = new HashMap<String, AdRemarkData>();
