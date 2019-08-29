@@ -15,8 +15,11 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.location.Location;
@@ -34,6 +37,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +54,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.kaer.more.KareApplication;
 import com.kaer.more.R;
 import com.kaer.more.entitiy.AdRemarkData;
@@ -117,13 +127,85 @@ public class MainActivity extends AppCompatActivity {
                             mSuperPlayerView.setVisibility(View.GONE);
                             mSuperPlayerView.onPause();
                             mTvText.setText(advertisementData.getContent());
-                            ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic,options);
+                            if(advertisementData.getMedia().contains("assets://")){
+                                try {
+                                    LogUtil.println("assets advertisementData.getMedia():" + advertisementData.getMedia());
+                                    LogUtil.println("assets advertisementData.getMedia() substring:" + advertisementData.
+                                            getMedia().substring(advertisementData.getMedia().indexOf("//")));
+                                    Glide.with(MainActivity.this).load(getResources().getAssets().
+                                            open(advertisementData.getMedia().substring(advertisementData.getMedia().indexOf("//"))))
+                                            .into(mIvTextPic); //加载assets图片
+                                } catch (IOException e) {
+                                    //图片加载失败调用
+                                    Glide.with(MainActivity.this).load(R.mipmap.ad_001).into(mIvTextPic);
+                                    e.printStackTrace();
+                                }
+                            }else{
+                                RequestOptions option = new RequestOptions();
+                                //option.centerCrop();
+                                //option.placeholder(R.mipmap.ad_001); //或者
+                                option.fallback(R.mipmap.ad_001);
+                                option.placeholder(new ColorDrawable(Color.BLACK));
+                                option.error(R.mipmap.ad_001);
+                                Glide.with(MainActivity.this) .load(advertisementData.getMedia()) .apply(option) .into(mIvTextPic);
+                            //ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic,options);
+//                            Glide.with(MainActivity.this).load(advertisementData.getMedia()).listener(new RequestListener<Drawable>() {
+//                                @Override
+//                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                                    //图片加载失败调用
+//                                    Glide.with(MainActivity.this).load(R.mipmap.ad_001).into(mIvTextPic);
+//                                    return false;
+//                                }
+//
+//                                @Override
+//                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                                    //图片加载完成时调用
+//                                    return false;
+//                                }
+//                            }).into(mIvTextPic);
+                            }
                         } else if (advertisementData.getMediaType() == 2) {//图片
                             mTvText.setVisibility(View.GONE);
                             mIvTextPic.setVisibility(View.VISIBLE);
                             mSuperPlayerView.setVisibility(View.GONE);
                             mSuperPlayerView.onPause();
-                            ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic,options);
+                            if(advertisementData.getMedia().contains("assets://")){
+                                try {
+                                    LogUtil.println("assets advertisementData.getMedia():" + advertisementData.getMedia());
+                                    LogUtil.println("assets advertisementData.getMedia() substring:" + advertisementData.
+                                            getMedia().substring(advertisementData.getMedia().indexOf("//")));
+                                    Glide.with(MainActivity.this).load(getResources().getAssets().
+                                            open(advertisementData.getMedia().substring(advertisementData.getMedia().indexOf("//"))))
+                                            .into(mIvTextPic); //加载assets图片
+                                } catch (IOException e) {
+                                    //图片加载失败调用
+                                    Glide.with(MainActivity.this).load(R.mipmap.ad_001).into(mIvTextPic);
+                                    e.printStackTrace();
+                                }
+                            }else {
+                                RequestOptions option = new RequestOptions();
+                                //option.centerCrop();
+                                //option.placeholder(R.mipmap.ad_001);
+                                option.placeholder(new ColorDrawable(Color.BLACK));
+                                option.fallback(R.mipmap.ad_001);
+                                option.error(R.mipmap.ad_001);
+                                Glide.with(MainActivity.this) .load(advertisementData.getMedia()) .apply(option) .into(mIvTextPic);
+                                //ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic,options);
+//                                Glide.with(MainActivity.this).load(advertisementData.getMedia()).listener(new RequestListener<Drawable>() {
+//                                    @Override
+//                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                                        //图片加载失败调用
+//                                        Glide.with(MainActivity.this).load(R.mipmap.ad_001).into(mIvTextPic);
+//                                        return false;
+//                                    }
+//
+//                                    @Override
+//                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                                        //图片加载完成时调用
+//                                        return false;
+//                                    }
+//                                }).into(mIvTextPic);
+                            }
                         } else if (advertisementData.getMediaType() == 3) {//广告
                             mTvText.setVisibility(View.GONE);
                             mIvTextPic.setVisibility(View.GONE);

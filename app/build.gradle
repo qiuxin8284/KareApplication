@@ -50,4 +50,6 @@ dependencies {
     compile project(path: ':httplibrary')
     implementation files('libs/jpush-android-3.3.2.jar')
     implementation files('libs/jcore-android-2.1.0.jar')
+    implementation 'com.github.bumptech.glide:glide:4.0.0' //添加支持
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0' //Glide4.x以上需要添加的支持
 }
