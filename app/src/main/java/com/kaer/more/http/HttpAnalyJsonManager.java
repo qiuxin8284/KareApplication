@@ -6,6 +6,7 @@ import android.content.Context;
 import com.kaer.more.R;
 import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.entitiy.AdvertisementListData;
+import com.kaer.more.entitiy.OperateData;
 import com.kaer.more.entitiy.PropellingMovementData;
 import com.kaer.more.entitiy.RenewData;
 import com.kaer.more.entitiy.UploadData;
@@ -193,4 +194,18 @@ public class HttpAnalyJsonManager {
         return renewData;
     }
 
+    public static OperateData operateDevice(String json, Context context) throws JSONException {
+        OperateData operateData = new OperateData();
+        operateData.setOK(false);
+        JSONObject resultJson = new JSONObject(json);
+//        String id = resultJson.getString("id");
+//        String name = resultJson.getString("name");
+        String operate = resultJson.getString("operate");
+//        uploadData.setId(id);
+//        uploadData.setName(name);
+        operateData.setOperate(operate);
+        operateData.setOK(true);
+        android.util.Log.e("OperateData", "operateData:"+operateData.toString());
+        return operateData;
+    }
 }

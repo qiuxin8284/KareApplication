@@ -456,30 +456,34 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
-            LogUtil.println("adSearch GetFristAdTask");
-            String deviceID = KareApplication.default_imei;
-            String longitude = "0.00";
-            String latitude = "0.00";
-            ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
-            for (String key : KareApplication.mAdRemarkMap.keySet()) {
-                AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
-                list.add(adRemarkData);
-            }
-            LogUtil.println("adSearch GetFristAdTask list:" + list.toString());
-            AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, longitude, latitude, list);
-            LogUtil.println("adSearch GetFristAdTask advertisementListData:" + advertisementListData.toString());
-            //如果失败重新获取
-            //如果成功那么推送刷新广告
-            if (advertisementListData.isOK()) {
-                LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_SUCCESS");
-                KareApplication.mAdvertisementList = advertisementListData.getAdList();
-                KareApplication.mAdRemarkMap = new HashMap<String, AdRemarkData>();
-                Intent intent = new Intent();
-                intent.setAction(KareApplication.ACTION_UPDATE_AD);
-                sendBroadcast(intent);
-                mHandler.sendEmptyMessage(GET_AD_FRIST_SUCCESS);
-            } else {
-                LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_FALSE");
+            LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd："+KareApplication.mGetAd);
+            if(KareApplication.mGetAd) {
+                String deviceID = KareApplication.default_imei;
+                String longitude = "0.00";
+                String latitude = "0.00";
+                ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
+                for (String key : KareApplication.mAdRemarkMap.keySet()) {
+                    AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
+                    list.add(adRemarkData);
+                }
+                LogUtil.println("adSearch GetFristAdTask list:" + list.toString());
+                AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, longitude, latitude, list);
+                LogUtil.println("adSearch GetFristAdTask advertisementListData:" + advertisementListData.toString());
+                //如果失败重新获取
+                //如果成功那么推送刷新广告
+                if (advertisementListData.isOK()) {
+                    LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_SUCCESS");
+                    KareApplication.mAdvertisementList = advertisementListData.getAdList();
+                    KareApplication.mAdRemarkMap = new HashMap<String, AdRemarkData>();
+                    Intent intent = new Intent();
+                    intent.setAction(KareApplication.ACTION_UPDATE_AD);
+                    sendBroadcast(intent);
+                    mHandler.sendEmptyMessage(GET_AD_FRIST_SUCCESS);
+                } else {
+                    LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_FALSE");
+                    mHandler.sendEmptyMessageDelayed(GET_AD_FRIST_FALSE, 30000);
+                }
+            }else{
                 mHandler.sendEmptyMessageDelayed(GET_AD_FRIST_FALSE, 30000);
             }
             return null;
@@ -492,30 +496,34 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
-            LogUtil.println("adSearch mGetAdTask");
-            String deviceID = KareApplication.default_imei;
-            String longitude = "0.00";
-            String latitude = "0.00";
-            ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
-            for (String key : KareApplication.mAdRemarkMap.keySet()) {
-                AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
-                list.add(adRemarkData);
-            }
-            LogUtil.println("adSearch GetAdTask list:" + list.toString());
-            AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, longitude, latitude, list);
-            LogUtil.println("adSearch GetAdTask advertisementListData:" + advertisementListData.toString());
-            //如果失败重新获取
-            //如果成功那么推送刷新广告
-            if (advertisementListData.isOK()) {
-                LogUtil.println("adSearch GetAdTask GET_AD_SUCCESS");
-                KareApplication.mAdvertisementList = advertisementListData.getAdList();
-                KareApplication.mAdRemarkMap = new HashMap<String, AdRemarkData>();
-                Intent intent = new Intent();
-                intent.setAction(KareApplication.ACTION_UPDATE_AD);
-                sendBroadcast(intent);
-                mHandler.sendEmptyMessage(GET_AD_SUCCESS);
-            } else {
-                LogUtil.println("adSearch GetAdTask GET_AD_FALSE");
+            LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd："+KareApplication.mGetAd);
+            if(KareApplication.mGetAd) {
+                String deviceID = KareApplication.default_imei;
+                String longitude = "0.00";
+                String latitude = "0.00";
+                ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
+                for (String key : KareApplication.mAdRemarkMap.keySet()) {
+                    AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
+                    list.add(adRemarkData);
+                }
+                LogUtil.println("adSearch GetAdTask list:" + list.toString());
+                AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, longitude, latitude, list);
+                LogUtil.println("adSearch GetAdTask advertisementListData:" + advertisementListData.toString());
+                //如果失败重新获取
+                //如果成功那么推送刷新广告
+                if (advertisementListData.isOK()) {
+                    LogUtil.println("adSearch GetAdTask GET_AD_SUCCESS");
+                    KareApplication.mAdvertisementList = advertisementListData.getAdList();
+                    KareApplication.mAdRemarkMap = new HashMap<String, AdRemarkData>();
+                    Intent intent = new Intent();
+                    intent.setAction(KareApplication.ACTION_UPDATE_AD);
+                    sendBroadcast(intent);
+                    mHandler.sendEmptyMessage(GET_AD_SUCCESS);
+                } else {
+                    LogUtil.println("adSearch GetAdTask GET_AD_FALSE");
+                    mHandler.sendEmptyMessageDelayed(GET_AD_FALSE, 30000);
+                }
+            }else{
                 mHandler.sendEmptyMessageDelayed(GET_AD_FALSE, 30000);
             }
             return null;

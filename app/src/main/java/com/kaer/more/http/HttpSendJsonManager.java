@@ -12,6 +12,7 @@ import com.kaer.more.R;
 import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.entitiy.AdvertisementListData;
+import com.kaer.more.entitiy.OperateData;
 import com.kaer.more.entitiy.RenewData;
 import com.kaer.more.entitiy.UploadData;
 import com.kaer.more.utils.LogUtil;
@@ -434,6 +435,33 @@ public class HttpSendJsonManager {
             HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
             e.printStackTrace();
             return false;
+        }
+    }
+
+
+    public static OperateData operateDevice(Context context,
+                                       String imei) {
+        OperateData operateData = new OperateData();
+        operateData.setOK(false);
+        String url = "v0/device/opt.htm";
+        try {
+            JSONObject sendJSONObject = new JSONObject();
+            JSONObject mainJSONObject = new JSONObject();
+
+            mainJSONObject.put("imei", imei);
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
+            sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
+
+            String json = sendJSONObject.toString();
+
+            LogUtil.println("operateDevice" + json);
+            String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
+            LogUtil.println("operateDevice synchronousResult1" + synchronousResult);
+            return HttpAnalyJsonManager.operateDevice(synchronousResult, context);
+        } catch (Exception e) {
+            HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
+            e.printStackTrace();
+            return operateData;
         }
     }
 }

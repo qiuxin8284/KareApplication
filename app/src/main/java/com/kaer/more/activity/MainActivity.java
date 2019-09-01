@@ -64,13 +64,16 @@ import com.kaer.more.KareApplication;
 import com.kaer.more.R;
 import com.kaer.more.entitiy.AdRemarkData;
 import com.kaer.more.entitiy.AdvertisementData;
+import com.kaer.more.entitiy.OperateData;
 import com.kaer.more.entitiy.RenewData;
 import com.kaer.more.http.HttpAnalyJsonManager;
 import com.kaer.more.http.HttpSendJsonManager;
 import com.kaer.more.service.KaerService;
 import com.kaer.more.utils.APPUtil;
 import com.kaer.more.utils.LogUtil;
+import com.kaer.more.utils.SettingSharedPerferencesUtil;
 import com.kaer.more.utils.SilentInstall;
+import com.kaer.more.utils.TimeUtil;
 import com.kaer.more.utils.ToastUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -87,6 +90,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -108,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int NOTICE_DEVICE_FALSE = 6;
     public static final int NOTICE_DEVICE = 7;
     private static final int UPDATE_SHOW = 8;
+    private static final int OPT_DEVICE_SUCCESS = 9;
+    private static final int OPT_DEVICE_FALSE = 10;
     public static final int NOTICE_DEVICE_TIME = 2*60*1000;//30s重试
     private TextView mTvDeviceID;
     private Handler mHandler = new Handler() {
@@ -330,6 +336,17 @@ public class MainActivity extends AppCompatActivity {
                         mTvDeviceID.setVisibility(View.VISIBLE);
                     }
                     break;
+                case OPT_DEVICE_SUCCESS:
+                    KareApplication.mOperate = (String) msg.obj;
+                    //缓存营业时间
+                    SettingSharedPerferencesUtil.SetOPTDeviceValue(MainActivity.this,KareApplication.mOperate);
+                    optInit();
+                    break;
+                case OPT_DEVICE_FALSE:
+                    //失败读取缓存
+                    KareApplication.mOperate = SettingSharedPerferencesUtil.GetOPTDeviceConfig(MainActivity.this);
+                    optInit();
+                    break;
             }
         }
     };
@@ -378,6 +395,9 @@ public class MainActivity extends AppCompatActivity {
         //发送接口
         mNoticeDeviceTask = new NoticeDeviceTask();
         mNoticeDeviceTask.execute(STATE_OPEN);
+
+        mOperateDeviceTask = new OperateDeviceTask();
+        mOperateDeviceTask.execute();
 
     }
     private static final String STATE_OPEN = "O";
@@ -928,4 +948,61 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //上传状态
+    private OperateDeviceTask mOperateDeviceTask;
+
+    private class OperateDeviceTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            //读取设备识别号跟常规android系统读取有区别吗？
+            String deviceID = KareApplication.default_imei;
+            LogUtil.println("operateDevice deviceID:" + deviceID);
+            if (!TextUtils.isEmpty(deviceID)) {
+                //上传检测是否存在这个设备号
+                OperateData operateData = HttpSendJsonManager.operateDevice(KareApplication.mInstance, deviceID);
+                LogUtil.println("operateDevice operateData:" + operateData.toString());
+                if (operateData.isOK()) {
+                    Message message = new Message();
+                    message.what = OPT_DEVICE_SUCCESS;
+                    message.obj = operateData.getOperate();
+                    mHandler.sendMessage(message);
+                } else {
+                    mHandler.sendEmptyMessage(OPT_DEVICE_FALSE);
+                }
+            }
+            return null;
+        }
+    }
+    private void optInit(){
+        if(!TextUtils.isEmpty(KareApplication.mOperate)) {
+            //解析时间
+            String startTime = KareApplication.mOperate.substring(0,KareApplication.mOperate.indexOf("-"));
+            String[] startTimes = startTime.split(":");
+            String endTime = KareApplication.mOperate.substring(KareApplication.mOperate.indexOf("-")+1);
+            String[] endTimes = endTime.split(":");
+            LogUtil.println("operateDevice startTimes:" + startTimes);
+            LogUtil.println("operateDevice endTimes:" + endTimes);
+            boolean isOpt = TimeUtil.isCurrentInTimeScope(Integer.parseInt(startTimes[0]),Integer.parseInt(startTimes[1]),
+                    Integer.parseInt(endTimes[0]),Integer.parseInt(endTimes[1]));
+            if(isOpt){
+                //开机
+                LogUtil.println("operateDevice 开机");
+                Device.setProjectorLedPower(1);
+                //请求广告接口+逻辑判断
+                KareApplication.mGetAd = true;
+            }else{
+                //关机
+                LogUtil.println("operateDevice 关机");
+                Device.setProjectorLedPower(0);
+                //请求广告接口+逻辑判断
+                KareApplication.mGetAd = false;
+            }
+            //开启定时器
+        }else{
+            //无限制
+            //无逻辑判断
+            KareApplication.mGetAd = true;
+        }
+    }
 }
