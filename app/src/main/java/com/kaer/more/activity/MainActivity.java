@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_SHOW = 8;
     private static final int OPT_DEVICE_SUCCESS = 9;
     private static final int OPT_DEVICE_FALSE = 10;
+    public static final int REPEAT_OPT = 11;
     public static final int NOTICE_DEVICE_TIME = 2*60*1000;//30s重试
     private TextView mTvDeviceID;
     private Handler mHandler = new Handler() {
@@ -346,6 +347,10 @@ public class MainActivity extends AppCompatActivity {
                     //失败读取缓存
                     KareApplication.mOperate = SettingSharedPerferencesUtil.GetOPTDeviceConfig(MainActivity.this);
                     optInit();
+                    break;
+                case REPEAT_OPT:
+                    mOperateDeviceTask = new OperateDeviceTask();
+                    mOperateDeviceTask.execute();
                     break;
             }
         }
@@ -998,7 +1003,22 @@ public class MainActivity extends AppCompatActivity {
                 //请求广告接口+逻辑判断
                 KareApplication.mGetAd = false;
             }
-            //开启定时器
+            //算出到终结时间的时间差发个延迟
+            int endT = Integer.parseInt(endTime.replace(":",""));
+            int nowT = Integer.parseInt(KareApplication.dateFormat.format(new Date()));
+            LogUtil.println("operateDevice endT:" + endT);
+            LogUtil.println("operateDevice nowT:" + nowT);
+            //算出到终结时间的时间差发个延迟
+            //以距离结束时间差为刷新点
+            if(nowT<endT){
+                //开启定时器-重新获取次接口外加刷新下界面
+                new TimeUtil(endTime,mHandler);
+            }else{
+                //开启定时器-重新获取次接口外加刷新下界面
+                new TimeUtil(startTime,mHandler);
+            }
+
+            //开启定时器-重新获取次接口外加刷新下界面
         }else{
             //无限制
             //无逻辑判断

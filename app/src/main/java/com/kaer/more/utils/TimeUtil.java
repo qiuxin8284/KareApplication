@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.format.Time;
 
+import com.kaer.more.activity.MainActivity;
 import com.kaer.more.service.KaerService;
 
 import java.util.Calendar;
@@ -114,5 +115,37 @@ public class TimeUtil {
         }
         return result;
     }
+    public TimeUtil(String time , Handler handler) {
+        String[] times = time.split(":");
+        int hour = Integer.parseInt(times[0]);
+        int minute =  Integer.parseInt(times[1]);
+        int second =  0;
+        long delayTime = 1000;
+        Calendar calendar = Calendar.getInstance();
 
+        /*** 定制每日执行方法 ***/
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+
+        Date date = calendar.getTime(); //第一次执行定时任务的时间
+        System.out.println(date);
+        System.out.println("operateDevice before 开始时间：" + date.toString());
+        System.out.println("operateDevice before 当前时间：" + new Date().toString());
+        System.out.println("operateDevice before 方法比较：" + date.before(new Date()));
+        //如果第一次执行定时任务的时间 小于 当前的时间
+        //此时要在 第一次执行定时任务的时间 加一天，以便此任务在下个时间点执行。如果不加一天，任务会立即执行。循环执行的周期则以当前时间为准
+        if (date.before(new Date())) {
+            delayTime = date.getTime()+ PERIOD_DAY- new Date().getTime();
+        }else{
+            delayTime = date.getTime() - new Date().getTime();
+        }
+        System.out.println("operateDevice before delayTime：" + delayTime);
+
+        //安排指定的任务在指定的时间开始进行重复的固定延迟执行。
+        System.out.println("operateDevice before 最终开始时间：" + date.toString());
+        System.out.println("operateDevice before 延迟时间：" + PERIOD_DAY);
+        //timer.schedule(task, date, PERIOD_DAY);
+        handler.sendEmptyMessageDelayed(MainActivity.REPEAT_OPT,delayTime);
+    }
 }
