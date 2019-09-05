@@ -85,7 +85,7 @@ public class TimeUtil {
     public static boolean isCurrentInTimeScope(int beginHour, int beginMin, int endHour, int endMin) {
         boolean result = false;// 结果
         final long aDayInMillis = 1000 * 60 * 60 * 24;// 一天的全部毫秒数
-        final long currentTimeMillis = System.currentTimeMillis();// 当前时间
+        final long currentTimeMillis = System.currentTimeMillis();// 当前时间+1分钟，方便触发刷新
 
         Time now = new Time();// 注意这里导入的时候选择android.text.format.Time类,而不是java.sql.Time类
         now.set(currentTimeMillis);
@@ -96,7 +96,7 @@ public class TimeUtil {
         startTime.minute = beginMin;
 
         Time endTime = new Time();
-        endTime.set(currentTimeMillis);
+        endTime.set(currentTimeMillis - 1000 * 60);
         endTime.hour = endHour;
         endTime.minute = endMin;
 

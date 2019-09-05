@@ -986,42 +986,120 @@ public class MainActivity extends AppCompatActivity {
             String[] startTimes = startTime.split(":");
             String endTime = KareApplication.mOperate.substring(KareApplication.mOperate.indexOf("-")+1);
             String[] endTimes = endTime.split(":");
-            LogUtil.println("operateDevice startTimes:" + startTimes);
-            LogUtil.println("operateDevice endTimes:" + endTimes);
-            boolean isOpt = TimeUtil.isCurrentInTimeScope(Integer.parseInt(startTimes[0]),Integer.parseInt(startTimes[1]),
-                    Integer.parseInt(endTimes[0]),Integer.parseInt(endTimes[1]));
-            if(isOpt){
-                //开机
-                LogUtil.println("operateDevice 开机");
-                Device.setProjectorLedPower(1);
-                //请求广告接口+逻辑判断
-                KareApplication.mGetAd = true;
-            }else{
-                //关机
-                LogUtil.println("operateDevice 关机");
-                Device.setProjectorLedPower(0);
-                //请求广告接口+逻辑判断
-                KareApplication.mGetAd = false;
-            }
+//            LogUtil.println("operateDevice startTimes:" + startTimes);
+//            LogUtil.println("operateDevice endTimes:" + endTimes);
+//            boolean isOpt = TimeUtil.isCurrentInTimeScope(Integer.parseInt(startTimes[0]),Integer.parseInt(startTimes[1]),
+//                    Integer.parseInt(endTimes[0]),Integer.parseInt(endTimes[1]));
+//            if(isOpt){
+//                //开机
+//                LogUtil.println("operateDevice 开机");
+//                Device.setProjectorLedPower(1);
+//                //请求广告接口+逻辑判断
+//                KareApplication.mGetAd = true;
+//            }else{
+//                //关机
+//                LogUtil.println("operateDevice 关机");
+//                Device.setProjectorLedPower(0);
+//                //请求广告接口+逻辑判断
+//                KareApplication.mGetAd = false;
+//            }
             //算出到终结时间的时间差发个延迟
+            int startT = Integer.parseInt(startTime.replace(":",""));
             int endT = Integer.parseInt(endTime.replace(":",""));
             int nowT = Integer.parseInt(KareApplication.dateFormat.format(new Date()));
+            LogUtil.println("operateDevice startT:" + startT);
             LogUtil.println("operateDevice endT:" + endT);
             LogUtil.println("operateDevice nowT:" + nowT);
             //算出到终结时间的时间差发个延迟
             //以距离结束时间差为刷新点
-            if(nowT<endT){
-                //开启定时器-重新获取次接口外加刷新下界面
-                new TimeUtil(endTime,mHandler);
+            if(startT>endT){//代表跨天
+                if(nowT<startT) {
+                    // 22 3   n：2      距离end  ok 结束时间触发关机 ok
+                    if(nowT<endT){
+                        LogUtil.println("operateDevice 22 3   n：2      距离end");
+                        LogUtil.println("operateDevice 开机");
+                        Device.setProjectorLedPower(1);
+                        //请求广告接口+逻辑判断
+                        KareApplication.mGetAd = true;
+                        new TimeUtil(endTime,mHandler);
+                    }else {
+                        // 22 3   n：21     距离start  ok开始时间触发开机ok
+                        // 22 3   n：4      距离start  ok开始时间触发开机ok
+                        LogUtil.println("operateDevice 22 3   n：21      距离start or 22 3   n：4       距离start");
+                        LogUtil.println("operateDevice 关机");
+                        Device.setProjectorLedPower(0);
+                        //请求广告接口+逻辑判断
+                        KareApplication.mGetAd = false;
+                        new TimeUtil(startTime,mHandler);
+                    }
+                }else {
+                    // 22 3   n：23     距离end  结束时间触发关机ok
+                    LogUtil.println("operateDevice 22 3   n：23     距离end");
+                    LogUtil.println("operateDevice 开机");
+                    Device.setProjectorLedPower(1);
+                    //请求广告接口+逻辑判断
+                    KareApplication.mGetAd = true;
+                    new TimeUtil(endTime,mHandler);
+                }
             }else{
-                //开启定时器-重新获取次接口外加刷新下界面
-                new TimeUtil(startTime,mHandler);
+                if(nowT<startT){
+                    // 2  4   n：1      距离start ok 开始时间触发开机 ok
+                    LogUtil.println("operateDevice 2  4   n：1      距离start");
+                    LogUtil.println("operateDevice 关机");
+                    Device.setProjectorLedPower(0);
+                    //请求广告接口+逻辑判断
+                    KareApplication.mGetAd = false;
+                    new TimeUtil(startTime,mHandler);
+                }else {
+                    if(nowT<endT) {
+                        // 2  4   n：3      距离end  ok 结束时间触发关机ok
+                        LogUtil.println("operateDevice 2  4   n：3      距离end");
+                        LogUtil.println("operateDevice 开机");
+                        Device.setProjectorLedPower(1);
+                        //请求广告接口+逻辑判断
+                        KareApplication.mGetAd = true;
+                        new TimeUtil(endTime,mHandler);
+                    }else {
+                        // 2  4   n：5      距离start ok 开始时间触发开机 ok
+                        LogUtil.println("operateDevice 2  4   n：5      距离start");
+                        LogUtil.println("operateDevice 关机");
+                        Device.setProjectorLedPower(0);
+                        //请求广告接口+逻辑判断
+                        KareApplication.mGetAd = false;
+                        new TimeUtil(startTime,mHandler);
+                    }
+                }
             }
+
+            //
+//            if(nowT<endT){
+//                if(nowT<startT){
+//                    LogUtil.println("operateDevice nowT<startT<endT");
+//                    //开启定时器-重新获取次接口外加刷新下界面
+//                    new TimeUtil(startTime,mHandler);
+//                }else{
+//                    LogUtil.println("operateDevice startT<nowT<endT");
+//                    //开启定时器-重新获取次接口外加刷新下界面
+//                    new TimeUtil(endTime,mHandler);
+//                }
+//            }else{
+//                if(nowT<startT){
+//                    LogUtil.println("operateDevice startT<endT<nowT");
+//                    //开启定时器-重新获取次接口外加刷新下界面
+//                    new TimeUtil(startTime,mHandler);
+//                }else{
+//                    //有问题
+//                    LogUtil.println("operateDevice startT<endT<nowT");
+//                    //开启定时器-重新获取次接口外加刷新下界面
+//                    new TimeUtil(startTime,mHandler);
+//                }
+//            }
 
             //开启定时器-重新获取次接口外加刷新下界面
         }else{
             //无限制
             //无逻辑判断
+            LogUtil.println("operateDevice 无限制");
             KareApplication.mGetAd = true;
         }
     }
