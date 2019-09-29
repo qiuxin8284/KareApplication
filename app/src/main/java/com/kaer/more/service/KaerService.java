@@ -40,8 +40,8 @@ public class KaerService extends Service {
     private static final String STATE_OPEN = "O";
     private static final String STATE_CLOSE = "F";
     private int mConnectTime = 0;
-    private String mNowLongitude = "";
-    private String mNowLatitude = "";
+//    private String mNowLongitude = "";
+//    private String mNowLatitude = "";
 
     @Override
     public void onCreate() {
@@ -253,8 +253,8 @@ public class KaerService extends Service {
                 case GET_AD_FRIST_SUCCESS:
                     //记录当前地理位置&&记得请求成功的时间开启定时器清0
                     mConnectTime = 0;
-                    mNowLongitude = "0.00";
-                    mNowLatitude = "0.00";
+//                    mNowLongitude = "0.00";
+//                    mNowLatitude = "0.00";
                     //发送定时
                     mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
                     ToastUtils.shortToast(KaerService.this,"收到广播更新");
@@ -267,8 +267,8 @@ public class KaerService extends Service {
                 case GET_AD_SUCCESS:
                     //记录当前地理位置&&记得请求成功的时间开启定时器清0
                     mConnectTime = 0;
-                    mNowLongitude = "0.00";
-                    mNowLatitude = "0.00";
+//                    mNowLongitude = "0.00";
+//                    mNowLatitude = "0.00";
                     //发送定时
                     //mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
                     ToastUtils.shortToast(KaerService.this,"收到广播更新");
@@ -351,15 +351,13 @@ public class KaerService extends Service {
         @Override
         protected Void doInBackground(String... params) {
             String deviceID = KareApplication.default_imei;
-            String longitude = "0.00";
-            String latitude = "0.00";
             String address = "中国";
-            LogUtil.println("locationDevice longitude:" + longitude);
-            LogUtil.println("locationDevice latitude:" + latitude);
+            LogUtil.println("locationDevice longitude:" + KareApplication.mLongitude);
+            LogUtil.println("locationDevice latitude:" + KareApplication.mLatitude);
             LogUtil.println("locationDevice address:" + address);
-            if (!TextUtils.isEmpty(longitude) && !TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(deviceID) && !TextUtils.isEmpty(address)) {
+            if (!TextUtils.isEmpty(KareApplication.mLongitude) && !TextUtils.isEmpty(KareApplication.mLatitude) && !TextUtils.isEmpty(deviceID) && !TextUtils.isEmpty(address)) {
                 //上传检测是否存在这个设备号
-                boolean flag = HttpSendJsonManager.locationDevice(KareApplication.mInstance, longitude, latitude, deviceID, address);
+                boolean flag = HttpSendJsonManager.locationDevice(KareApplication.mInstance, KareApplication.mLongitude, KareApplication.mLatitude, deviceID, address);
                 LogUtil.println("locationDevice flag:" + flag);
                 if (flag) {
                     mHandler.sendEmptyMessage(LOCATION_DEVICE_SUCCESS);
@@ -459,15 +457,13 @@ public class KaerService extends Service {
             LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd："+KareApplication.mGetAd);
             if(KareApplication.mGetAd) {
                 String deviceID = KareApplication.default_imei;
-                String longitude = "0.00";
-                String latitude = "0.00";
                 ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
                 for (String key : KareApplication.mAdRemarkMap.keySet()) {
                     AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
                     list.add(adRemarkData);
                 }
                 LogUtil.println("adSearch GetFristAdTask list:" + list.toString());
-                AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, longitude, latitude, list);
+                AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, KareApplication.mLongitude, KareApplication.mLatitude, list);
                 LogUtil.println("adSearch GetFristAdTask advertisementListData:" + advertisementListData.toString());
                 //如果失败重新获取
                 //如果成功那么推送刷新广告
@@ -499,15 +495,13 @@ public class KaerService extends Service {
             LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd："+KareApplication.mGetAd);
             if(KareApplication.mGetAd) {
                 String deviceID = KareApplication.default_imei;
-                String longitude = "0.00";
-                String latitude = "0.00";
                 ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
                 for (String key : KareApplication.mAdRemarkMap.keySet()) {
                     AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
                     list.add(adRemarkData);
                 }
                 LogUtil.println("adSearch GetAdTask list:" + list.toString());
-                AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, longitude, latitude, list);
+                AdvertisementListData advertisementListData = HttpSendJsonManager.adSearch(KareApplication.mInstance, deviceID, KareApplication.mLongitude, KareApplication.mLatitude, list);
                 LogUtil.println("adSearch GetAdTask advertisementListData:" + advertisementListData.toString());
                 //如果失败重新获取
                 //如果成功那么推送刷新广告

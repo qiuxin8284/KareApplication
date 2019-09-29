@@ -135,18 +135,13 @@ public class MainActivity extends AppCompatActivity {
                             mSuperPlayerView.onPause();
                             mTvText.setText(advertisementData.getContent());
                             if(advertisementData.getMedia().contains("assets://")){
-                                try {
-                                    LogUtil.println("assets advertisementData.getMedia():" + advertisementData.getMedia());
-                                    LogUtil.println("assets advertisementData.getMedia() substring:" + advertisementData.
-                                            getMedia().substring(advertisementData.getMedia().indexOf("//")));
-                                    Glide.with(MainActivity.this).load(getResources().getAssets().
-                                            open(advertisementData.getMedia().substring(advertisementData.getMedia().indexOf("//"))))
-                                            .into(mIvTextPic); //加载assets图片
-                                } catch (IOException e) {
-                                    //图片加载失败调用
-                                    Glide.with(MainActivity.this).load(R.mipmap.ad_001).into(mIvTextPic);
-                                    e.printStackTrace();
-                                }
+                                LogUtil.println("assets advertisementData.getMedia():" + advertisementData.getMedia());
+                                LogUtil.println("assets advertisementData.getMedia() substring:" + advertisementData.
+                                        getMedia().substring(advertisementData.getMedia().indexOf("//")));
+//                                    Glide.with(MainActivity.this).load(getResources().getAssets().
+//                                            open(advertisementData.getMedia().substring(advertisementData.getMedia().indexOf("//"))))
+//                                            .into(mIvTextPic); //加载assets图片
+                                ImageLoader.getInstance().displayImage(advertisementData.getMedia(),mIvTextPic);
                             }else{
                                 RequestOptions option = new RequestOptions();
                                 //option.centerCrop();
@@ -177,18 +172,13 @@ public class MainActivity extends AppCompatActivity {
                             mSuperPlayerView.setVisibility(View.GONE);
                             mSuperPlayerView.onPause();
                             if(advertisementData.getMedia().contains("assets://")){
-                                try {
-                                    LogUtil.println("assets advertisementData.getMedia():" + advertisementData.getMedia());
-                                    LogUtil.println("assets advertisementData.getMedia() substring:" + advertisementData.
-                                            getMedia().substring(advertisementData.getMedia().indexOf("//")));
-                                    Glide.with(MainActivity.this).load(getResources().getAssets().
-                                            open(advertisementData.getMedia().substring(advertisementData.getMedia().indexOf("//"))))
-                                            .into(mIvTextPic); //加载assets图片
-                                } catch (IOException e) {
-                                    //图片加载失败调用
-                                    Glide.with(MainActivity.this).load(R.mipmap.ad_001).into(mIvTextPic);
-                                    e.printStackTrace();
-                                }
+                                LogUtil.println("assets advertisementData.getMedia():" + advertisementData.getMedia());
+                                LogUtil.println("assets advertisementData.getMedia() substring:" + advertisementData.
+                                        getMedia().substring(advertisementData.getMedia().indexOf("//")));
+//                                    Glide.with(mIvTextPic.getContext()).load(getResources().getAssets().
+//                                            open(advertisementData.getMedia().substring(advertisementData.getMedia().indexOf("//"))))
+//                                            .into(mIvTextPic); //加载assets图片
+                                ImageLoader.getInstance().displayImage(advertisementData.getMedia(),mIvTextPic);
                             }else {
                                 RequestOptions option = new RequestOptions();
                                 //option.centerCrop();
@@ -196,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                                 option.placeholder(new ColorDrawable(Color.BLACK));
                                 option.fallback(R.mipmap.ad_001);
                                 option.error(R.mipmap.ad_001);
-                                Glide.with(MainActivity.this) .load(advertisementData.getMedia()) .apply(option) .into(mIvTextPic);
+                                Glide.with(mIvTextPic.getContext()) .load(advertisementData.getMedia()) .apply(option) .into(mIvTextPic);
                                 //ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic,options);
 //                                Glide.with(MainActivity.this).load(advertisementData.getMedia()).listener(new RequestListener<Drawable>() {
 //                                    @Override
@@ -294,10 +284,10 @@ public class MainActivity extends AppCompatActivity {
                         LogUtil.println("deviceVersion APPUtil.packageCode(MainActivity.this)):"+APPUtil.packageCode(MainActivity.this));
                         //对比版本号--和本地版本号对比
                         if (mRenewData.getVersion().equals(APPUtil.packageCode(MainActivity.this))) {
-                            ToastUtils.shortToast(MainActivity.this,"版本相同");
+                            //ToastUtils.shortToast(MainActivity.this,"版本相同");
                             LogUtil.println("deviceVersion 版本相同");
                         }else{
-                            ToastUtils.shortToast(MainActivity.this,"downLoadApk");
+                            //ToastUtils.shortToast(MainActivity.this,"downLoadApk");
                             LogUtil.println("deviceVersion downLoadApk");
                             apkUrl = mRenewData.getLink();
                             downloadApk();
@@ -449,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
         advertisementData = new AdvertisementData();//模拟图片
         advertisementData.setMediaType(2);
         advertisementData.setDuration(10);
-        advertisementData.setMedia("assets://ad_001.jpg");
+        advertisementData.setMedia("assets://ad_002.png");
         KareApplication.mAdvertisementList.add(advertisementData);
         //开始执行第一条
         nowPosition = 0;
@@ -562,34 +552,46 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void initLocation() {
-        LogUtil.println("initLocation");
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        //获取所有可用的位置提供器
-        List<String> providers = locationManager.getProviders(true);
-        String locationProvider = null;
-        if (providers.contains(LocationManager.GPS_PROVIDER)) {
-            //如果是GPS
-            locationProvider = LocationManager.GPS_PROVIDER;
-        } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
-            //如果是Network
-            locationProvider = LocationManager.NETWORK_PROVIDER;
-        } else {
-//            Intent i = new Intent();
-//            i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//            startActivity(i);
+        LogUtil.println("initLocation init");
+        try {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            //获取所有可用的位置提供器
+            List<String> providers = locationManager.getProviders(true);
+            String locationProvider = null;
+            if (providers.contains(LocationManager.GPS_PROVIDER)) {
+                LogUtil.println("initLocation GPS_PROVIDER");
+                //如果是GPS
+                locationProvider = LocationManager.GPS_PROVIDER;
+            } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+                LogUtil.println("initLocation NETWORK_PROVIDER");
+                //如果是Network
+                locationProvider = LocationManager.NETWORK_PROVIDER;
+            } else {
+                LogUtil.println("initLocation ACTION_LOCATION_SOURCE_SETTINGS");
+                Intent i = new Intent();
+                i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(i);
+            }
+            //获取Location
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                LogUtil.println("initLocation 缺少权限");
+                return;
+            }
+            Location location = locationManager.getLastKnownLocation(locationProvider);
+            String string = "纬度为：" + location.getLatitude() + ",经度为："
+                    + location.getLongitude();
+            if (location != null) {
+                KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                KareApplication.mLongitude = String.valueOf(location.getLongitude());
+            }
+            LogUtil.println("initLocation location:" + string);
+            //监视地理位置变化
+            locationManager.requestLocationUpdates(locationProvider, 1000, 100, locationListener);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        //获取Location
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-//                this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            return;
-//        }
-//        Location location = locationManager.getLastKnownLocation(locationProvider);
-//        String string = "纬度为：" + location.getLatitude() + ",经度为："
-//                + location.getLongitude();
-//        LogUtil.println("location:" + string);
-//        //监视地理位置变化
-//        locationManager.requestLocationUpdates(locationProvider, 1000, 100, locationListener);
     }
 
 
@@ -617,22 +619,37 @@ public class MainActivity extends AppCompatActivity {
         public void onLocationChanged(Location location) {
             String string = "纬度为：" + location.getLatitude() + ",经度为："
                     + location.getLongitude();
-            LogUtil.println("locationListener:" + string);
+            if(location!=null){
+                KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                KareApplication.mLongitude = String.valueOf(location.getLongitude());
+            }
+            LogUtil.println("initLocation locationListener:" + string);
             //遍历广告中有经纬度定位的广告
             for (int i = 0; i < KareApplication.mAdvertisementList.size(); i++) {
                 AdvertisementData advertisementData = KareApplication.mAdvertisementList.get(i);
                 if (!TextUtils.isEmpty(advertisementData.getLocation())) {
-                    //拆分advertisementData.getLocation();
-                    double latitude = 0.0;
-                    double longitude = 0.0;
-                    //判断上下距离 1km等于经纬度多少。1/111 1/111 0.009
-                    double laDistance = location.getLatitude() - latitude;
-                    double lgDistance = location.getLongitude() - longitude;
-                    if (laDistance < -0.009 * Double.valueOf(advertisementData.getLimits()) && laDistance > 0.009 * Double.valueOf(advertisementData.getLimits())) {
-                        //重新获取新的广告
-                    }
-                    if (longitude < -0.009 * Double.valueOf(advertisementData.getLimits()) && longitude > 0.009 * Double.valueOf(advertisementData.getLimits())) {
-                        //重新获取新的广告
+                    LogUtil.println("initLocation advertisementData.getLocation():" + advertisementData.getLocation());
+                    if(advertisementData.getLocation().contains(",")) {
+                        String[] locations = advertisementData.getLocation().split(",");
+                        //拆分advertisementData.getLocation();
+                        double longitude = Double.valueOf(locations[0]);;
+                        double latitude = Double.valueOf(locations[1]);
+                        //判断上下距离 1km等于经纬度多少。1/111 1/111 0.009
+                        double laDistance = location.getLatitude() - latitude;
+                        double lgDistance = location.getLongitude() - longitude;
+                        LogUtil.println("initLocation laDistance:" + laDistance);
+                        LogUtil.println("initLocation lgDistance:" + lgDistance);
+                        if (laDistance < -0.009 * Double.valueOf(advertisementData.getLimits()) && laDistance > 0.009 * Double.valueOf(advertisementData.getLimits())) {
+                            //重新获取新的广告
+                            LogUtil.println("initLocation 重新获取新的广告");
+                            getAdSearch();
+                        }else {
+                            if (longitude < -0.009 * Double.valueOf(advertisementData.getLimits()) && longitude > 0.009 * Double.valueOf(advertisementData.getLimits())) {
+                                //重新获取新的广告
+                                LogUtil.println("initLocation 重新获取新的广告");
+                                getAdSearch();
+                            }
+                        }
                     }
                 }
             }
@@ -1102,5 +1119,12 @@ public class MainActivity extends AppCompatActivity {
             LogUtil.println("operateDevice 无限制");
             KareApplication.mGetAd = true;
         }
+    }
+
+    private void getAdSearch(){
+        Intent kaerIntent = new Intent();
+        kaerIntent.putExtra("function", "6");
+        kaerIntent.setAction(KareApplication.ACTION_TUISONG_JSON);
+        sendBroadcast(kaerIntent);
     }
 }

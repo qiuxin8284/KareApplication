@@ -71,6 +71,8 @@ public class KareApplication extends Application {
     public static String USER_TOKEN = "";
     public static DeviceUtil mDeviceUtil;
     public static String mOperate = "";
+    public static String mLongitude = "0.00";
+    public static String mLatitude = "0.00";
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("HHmm");  //HH:24小时制  hh:12小时制
     private static Context context;
     /**

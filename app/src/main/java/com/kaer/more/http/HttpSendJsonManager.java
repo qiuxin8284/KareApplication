@@ -326,6 +326,7 @@ public class HttpSendJsonManager {
             mainJSONObject.put("imei", imei);
             mainJSONObject.put("longitude", longitude);
             mainJSONObject.put("latitude", latitude);
+            LogUtil.println("adSearch mainJSONObject.toString():" + mainJSONObject.toString());
             RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
             sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
 

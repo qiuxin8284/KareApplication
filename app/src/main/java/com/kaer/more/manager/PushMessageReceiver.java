@@ -7,6 +7,7 @@ import android.util.Log;
 import com.kaer.more.KareApplication;
 import com.kaer.more.entitiy.PropellingMovementData;
 import com.kaer.more.http.HttpAnalyJsonManager;
+import com.kaer.more.utils.LogUtil;
 
 import org.json.JSONException;
 
@@ -30,6 +31,8 @@ public class PushMessageReceiver extends JPushMessageReceiver {
             Intent kaerIntent = new Intent();
             String function = propellingMovementData.getFunction();
             kaerIntent.putExtra("function", function);
+            LogUtil.println("propellingMovementData:" + propellingMovementData.toString());
+            LogUtil.println("function:" + function);
             if (function.equals("1") || function.equals("2") || function.equals("3") || function.equals("4")) {
                 //function 1、2、3、4包含state和value
                 kaerIntent.putExtra("state", propellingMovementData.getState());
