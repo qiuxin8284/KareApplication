@@ -243,7 +243,7 @@ public class KaerService extends Service {
                 case IMG_DEVICE_FALSE:
                     break;
                 case UPLOAD_IMG_SUCCESS:
-                    if (uploadData != null && TextUtils.isEmpty(uploadData.getUrl())) {
+                    if (uploadData != null && !TextUtils.isEmpty(uploadData.getUrl())) {
                         mImgDeviceTask = new ImgDeviceTask();
                         mImgDeviceTask.execute(uploadData.getUrl());
                     }
