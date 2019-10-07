@@ -309,7 +309,7 @@ public class HttpSendJsonManager {
                                      String imei,String longitude,String latitude, ArrayList<AdRemarkData> list) {
         AdvertisementListData advertisementListData = new AdvertisementListData();
         advertisementListData.setOK(false);
-        String url = "v0/ad/search.htm";
+        String url = "v0/ad/search1.htm";
         try {
             JSONObject sendJSONObject = new JSONObject();
             JSONObject mainJSONObject = new JSONObject();
@@ -381,6 +381,8 @@ public class HttpSendJsonManager {
     public final static String RENEW_TYPE_IOS = "2";//"Android Phone";
     public final static String RENEW_TYPE_ANDROID = "3";//"Android Phone";
 
+    public final static String VERSION_DEFAULT = "1";//"Android Phone";
+    public final static String VERSION_TEST = "2";//"Android Phone";
     /**
      * 获取版本信息
      *
@@ -395,6 +397,7 @@ public class HttpSendJsonManager {
             JSONObject sendJSONObject = new JSONObject();
             JSONObject mainJSONObject = new JSONObject();
 
+            mainJSONObject.put("type", VERSION_DEFAULT);//VERSION_DEFAULT VERSION_TEST
             mainJSONObject.put("imei", imei);
 //            sendJSONObject.put("main", mainJSONObject);
 //            sendJSONObject.put("biz", getBiz());

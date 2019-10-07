@@ -3,6 +3,7 @@ package com.kaer.more.http;
 
 import android.content.Context;
 
+import com.kaer.more.KareApplication;
 import com.kaer.more.R;
 import com.kaer.more.entitiy.AdvertisementData;
 import com.kaer.more.entitiy.AdvertisementListData;
@@ -123,7 +124,16 @@ public class HttpAnalyJsonManager {
         AdvertisementListData advertisementListData = new AdvertisementListData();
         advertisementListData.setOK(false);
         ArrayList<AdvertisementData> adlist = new ArrayList<AdvertisementData>();
-        JSONArray arrayJson = new JSONArray(json);
+        JSONObject resultJson = new JSONObject(json);
+        String refresh = resultJson.getString("refresh");
+        try{
+            android.util.Log.e("adSearch", "refresh:"+refresh);
+            KareApplication.CONNECT_REPEAT_TIME = Integer.parseInt(refresh);
+            android.util.Log.e("adSearch", "KareApplication.CONNECT_REPEAT_TIME:"+KareApplication.CONNECT_REPEAT_TIME);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        JSONArray arrayJson = resultJson.getJSONArray("result");
         for(int i = 0;i<arrayJson.length();i++) {
             AdvertisementData advertisementData = new AdvertisementData();
             JSONObject dataJson = arrayJson.getJSONObject(i);

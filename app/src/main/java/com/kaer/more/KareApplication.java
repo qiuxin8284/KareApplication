@@ -66,6 +66,7 @@ import cn.jpush.android.api.JPushInterface;
 
 public class KareApplication extends Application {
 
+    public static int CONNECT_REPEAT_TIME =  4 * 60 * 1000 ;//默认4分钟
     public static Communicator communicator;
     public static HttpManager httpManager;
     public static String USER_TOKEN = "";

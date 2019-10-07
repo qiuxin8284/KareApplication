@@ -36,7 +36,7 @@ import scifly.util.LogUtils;
 public class KaerService extends Service {
 
     //private static final int CONNECT_REPEAT_TIME = 1000 * 60 * 30;//半小时
-    private static final int CONNECT_REPEAT_TIME = 1000 * 90;//1.5分钟
+    //private static final int CONNECT_REPEAT_TIME = 1000 * 90;//1.5分钟
     private static final String STATE_OPEN = "O";
     private static final String STATE_CLOSE = "F";
     private int mConnectTime = 0;
@@ -257,7 +257,7 @@ public class KaerService extends Service {
 //                    mNowLatitude = "0.00";
                     //发送定时
                     mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
-                    ToastUtils.shortToast(KaerService.this,"收到广播更新");
+                    //ToastUtils.shortToast(KaerService.this,"收到广播更新");
                     //地址监听
                     break;
                 case GET_AD_FRIST_FALSE:
@@ -271,7 +271,7 @@ public class KaerService extends Service {
 //                    mNowLatitude = "0.00";
                     //发送定时
                     //mHandler.sendEmptyMessageDelayed(TIME_ADD, 1000);
-                    ToastUtils.shortToast(KaerService.this,"收到广播更新");
+                    //ToastUtils.shortToast(KaerService.this,"收到广播更新");
                     //地址监听
                     break;
                 case GET_AD_FALSE:
@@ -279,9 +279,9 @@ public class KaerService extends Service {
                     mGetAdTask.execute();
                     break;
                 case TIME_ADD:
-                    LogUtil.println("adSearch TIME_ADD mConnectTime:" + mConnectTime + "|CONNECT_REPEAT_TIME:" + CONNECT_REPEAT_TIME);
+                    LogUtil.println("adSearch TIME_ADD mConnectTime:" + mConnectTime + "|CONNECT_REPEAT_TIME:" + KareApplication.CONNECT_REPEAT_TIME);
                     mConnectTime = mConnectTime + 1000;
-                    if (mConnectTime >= CONNECT_REPEAT_TIME) {
+                    if (mConnectTime >= KareApplication.CONNECT_REPEAT_TIME) {
                         mConnectTime = 0;
                         mGetFristAdTask = new GetFristAdTask();
                         mGetFristAdTask.execute();
