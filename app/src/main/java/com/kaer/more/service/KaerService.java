@@ -1,16 +1,20 @@
 package com.kaer.more.service;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 
 import com.jordan.httplibrary.utils.CommonUtils;
@@ -186,6 +190,7 @@ public class KaerService extends Service {
                     e.printStackTrace();
                 }
             } else if (action.equals(KareApplication.ACTION_IMAGE_UPLOAD_SUCESS)) {
+                LogUtil.i("KaerReceiver", "ACTION_IMAGE_UPLOAD_SUCESS");
                 mUploadMediaTask = new UploadMediaTask();
                 mUploadMediaTask.execute();
             }
@@ -350,6 +355,32 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
+            //获取Location
+            if (ActivityCompat.checkSelfPermission(KaerService.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    KaerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                LogUtil.println("initLocation 缺少权限");
+            }else {
+                try {
+                    if (KareApplication.locationProvider != null) {
+                        LogUtil.println("initLocation KareApplication.locationProvider!=null");
+                        Location location = KareApplication.locationManager.getLastKnownLocation(KareApplication.locationProvider);
+                        if (location != null) {
+                            String string = "纬度为：" + location.getLatitude() + ",经度为："
+                                    + location.getLongitude();
+                            KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                            KareApplication.mLongitude = String.valueOf(location.getLongitude());
+                            LogUtil.println("initLocation location:" + string);
+                        } else {
+                            LogUtil.println("initLocation location==null");
+                        }
+                    } else {
+                        LogUtil.println("initLocation KareApplication.locationProvider==null");
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
             String deviceID = KareApplication.default_imei;
             String address = "中国";
             LogUtil.println("locationDevice longitude:" + KareApplication.mLongitude);
@@ -456,6 +487,32 @@ public class KaerService extends Service {
         protected Void doInBackground(String... params) {
             LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd："+KareApplication.mGetAd);
             if(KareApplication.mGetAd) {
+                //获取Location
+                if (ActivityCompat.checkSelfPermission(KaerService.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        KaerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    LogUtil.println("initLocation 缺少权限");
+                }else {
+                    try {
+                        if (KareApplication.locationProvider != null) {
+                            LogUtil.println("initLocation KareApplication.locationProvider!=null");
+                            Location location = KareApplication.locationManager.getLastKnownLocation(KareApplication.locationProvider);
+                            if (location != null) {
+                                String string = "纬度为：" + location.getLatitude() + ",经度为："
+                                        + location.getLongitude();
+                                KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                                KareApplication.mLongitude = String.valueOf(location.getLongitude());
+                                LogUtil.println("initLocation location:" + string);
+                            } else {
+                                LogUtil.println("initLocation location==null");
+                            }
+                        } else {
+                            LogUtil.println("initLocation KareApplication.locationProvider==null");
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
                 String deviceID = KareApplication.default_imei;
                 ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
                 for (String key : KareApplication.mAdRemarkMap.keySet()) {
@@ -494,6 +551,32 @@ public class KaerService extends Service {
         protected Void doInBackground(String... params) {
             LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd："+KareApplication.mGetAd);
             if(KareApplication.mGetAd) {
+                //获取Location
+                if (ActivityCompat.checkSelfPermission(KaerService.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        KaerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    LogUtil.println("initLocation 缺少权限");
+                }else {
+                    try {
+                        if (KareApplication.locationProvider != null) {
+                            LogUtil.println("initLocation KareApplication.locationProvider!=null");
+                            Location location = KareApplication.locationManager.getLastKnownLocation(KareApplication.locationProvider);
+                            if (location != null) {
+                                String string = "纬度为：" + location.getLatitude() + ",经度为："
+                                        + location.getLongitude();
+                                KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                                KareApplication.mLongitude = String.valueOf(location.getLongitude());
+                                LogUtil.println("initLocation location:" + string);
+                            } else {
+                                LogUtil.println("initLocation location==null");
+                            }
+                        } else {
+                            LogUtil.println("initLocation KareApplication.locationProvider==null");
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
                 String deviceID = KareApplication.default_imei;
                 ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
                 for (String key : KareApplication.mAdRemarkMap.keySet()) {

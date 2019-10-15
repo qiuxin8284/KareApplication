@@ -81,6 +81,9 @@ public class KareApplication extends Application {
      */
     public static KareApplication mInstance;
 
+    public static LocationManager locationManager;
+    public static String locationProvider = null;
+
     private static final int CHECK_DEVICE_SUCCESS = 1;
     private static final int CHECK_DEVICE_FALSE = 2;
     private static final int BIND_DEVICE_SUCCESS = 3;
