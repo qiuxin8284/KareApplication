@@ -27,14 +27,16 @@ public class DeviceUtil {
 		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
 			LogUtil.println("DeviceUtil no Permission");
 			mDeviceData = new DeviceData();
-			try {
-				KareApplication.default_imei = Device.getDeviceId(context);
-				mDeviceData.setDeviceId(Device.getDeviceId(context));
-			}catch (Exception e){
-				KareApplication.default_imei = "0";
-				mDeviceData.setDeviceId(KareApplication.default_imei);
-				e.printStackTrace();
-			}
+//			try {
+//				KareApplication.default_imei = Device.getDeviceId(context);
+//				mDeviceData.setDeviceId(Device.getDeviceId(context));
+//			}catch (Exception e){
+//				KareApplication.default_imei = "0";
+//				mDeviceData.setDeviceId(KareApplication.default_imei);
+//				e.printStackTrace();
+//			}
+			KareApplication.default_imei = "0";
+			mDeviceData.setDeviceId(KareApplication.default_imei);
 			LogUtil.println("DeviceUtil mDeviceData.getID："+mDeviceData.getDeviceId());
 			mDeviceData.setDeviceName(Build.MANUFACTURER);
 			mDeviceData.setDeviceOs(String
@@ -64,15 +66,18 @@ public class DeviceUtil {
 				mDeviceData.setLang("en");
 			}
 		}else {
+			LogUtil.println("DeviceUtil has Permission");
 			mDeviceData = new DeviceData();
-			try {
-				KareApplication.default_imei = Device.getDeviceId(context);
-				mDeviceData.setDeviceId(Device.getDeviceId(context));
-			}catch (Exception e){
-				KareApplication.default_imei = TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm.getDeviceId();
-				mDeviceData.setDeviceId(KareApplication.default_imei);
-				e.printStackTrace();
-			}
+//			try {
+//				KareApplication.default_imei = Device.getDeviceId(context);
+//				mDeviceData.setDeviceId(Device.getDeviceId(context));
+//			}catch (Exception e){
+//				KareApplication.default_imei = TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm.getDeviceId();
+//				mDeviceData.setDeviceId(KareApplication.default_imei);
+//				e.printStackTrace();
+//			}
+			KareApplication.default_imei = TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm.getDeviceId();
+			mDeviceData.setDeviceId(KareApplication.default_imei);
 			LogUtil.println("DeviceUtil mDeviceData.getID："+mDeviceData.getDeviceId());
 //			mDeviceData.setDeviceId(TextUtils.isEmpty(tm.getDeviceId()) ? "0" : tm
 //					.getDeviceId());

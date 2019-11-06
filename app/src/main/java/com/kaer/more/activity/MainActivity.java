@@ -282,8 +282,12 @@ public class MainActivity extends AppCompatActivity {
                     if (mRenewData != null) {
                         LogUtil.println("deviceVersion mRenewData.getVersion():"+mRenewData.getVersion());
                         LogUtil.println("deviceVersion APPUtil.packageCode(MainActivity.this)):"+APPUtil.packageCode(MainActivity.this));
+                        int nowVersion = Integer.parseInt(APPUtil.packageCode(MainActivity.this).replace(".",""));
+                        int renewVersion = Integer.parseInt(mRenewData.getVersion().replace(".",""));
+                        LogUtil.println("deviceVersion nowVersion:"+nowVersion);
+                        LogUtil.println("deviceVersion renewVersion:"+renewVersion);
                         //对比版本号--和本地版本号对比
-                        if (mRenewData.getVersion().equals(APPUtil.packageCode(MainActivity.this))) {
+                        if (renewVersion<=nowVersion) {
                             //ToastUtils.shortToast(MainActivity.this,"版本相同");
                             LogUtil.println("deviceVersion 版本相同");
                         }else{
@@ -555,23 +559,28 @@ public class MainActivity extends AppCompatActivity {
         LogUtil.println("initLocation init");
         try {
             KareApplication.locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            //获取所有可用的位置提供器
-            List<String> providers = KareApplication.locationManager.getProviders(true);
+//            //获取所有可用的位置提供器
+//            List<String> providers = KareApplication.locationManager.getProviders(true);
+//            LogUtil.println("initLocation providers.size:"+providers.size());
+//            LogUtil.println("initLocation providers.toString:"+providers.toString());
+//            for(int i=0;i<providers.size();i++){
+//                LogUtil.println("initLocation providers i=:"+i+"|providers:"+providers.get(i));
+//            }
             //String locationProvider = null;
-            if (providers.contains(LocationManager.GPS_PROVIDER)) {
-                LogUtil.println("initLocation GPS_PROVIDER");
-                //如果是GPS
-                KareApplication.locationProvider = LocationManager.GPS_PROVIDER;
-            } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+//            if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
                 LogUtil.println("initLocation NETWORK_PROVIDER");
                 //如果是Network
                 KareApplication.locationProvider = LocationManager.NETWORK_PROVIDER;
-            } else {
-                LogUtil.println("initLocation ACTION_LOCATION_SOURCE_SETTINGS");
-                Intent i = new Intent();
-                i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(i);
-            }
+//            } else if (providers.contains(LocationManager.GPS_PROVIDER)) {
+//                LogUtil.println("initLocation GPS_PROVIDER");
+//                //如果是GPS
+//                KareApplication.locationProvider = LocationManager.GPS_PROVIDER;
+//            } else {
+//                LogUtil.println("initLocation ACTION_LOCATION_SOURCE_SETTINGS");
+//                Intent i = new Intent();
+//                i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                startActivity(i);
+//            }
             //获取Location
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -579,6 +588,8 @@ public class MainActivity extends AppCompatActivity {
                 LogUtil.println("initLocation 缺少权限");
                 return;
             }
+            //监视地理位置变化
+            KareApplication.locationManager.requestLocationUpdates(KareApplication.locationProvider, 10000, 100, locationListener);
             Location location = KareApplication.locationManager.getLastKnownLocation(KareApplication.locationProvider);
             if (location != null) {
                 String string = "纬度为：" + location.getLatitude() + ",经度为："
@@ -589,8 +600,6 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 LogUtil.println("initLocation location==null");
             }
-            //监视地理位置变化
-            KareApplication.locationManager.requestLocationUpdates(KareApplication.locationProvider, 10000, 100, locationListener);
         }catch (Exception e){
             LogUtil.println("initLocation Exception");
             e.printStackTrace();
