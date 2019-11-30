@@ -559,28 +559,28 @@ public class MainActivity extends AppCompatActivity {
         LogUtil.println("initLocation init");
         try {
             KareApplication.locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//            //获取所有可用的位置提供器
-//            List<String> providers = KareApplication.locationManager.getProviders(true);
-//            LogUtil.println("initLocation providers.size:"+providers.size());
-//            LogUtil.println("initLocation providers.toString:"+providers.toString());
-//            for(int i=0;i<providers.size();i++){
-//                LogUtil.println("initLocation providers i=:"+i+"|providers:"+providers.get(i));
-//            }
+            //获取所有可用的位置提供器
+            List<String> providers = KareApplication.locationManager.getProviders(true);
+            LogUtil.println("initLocation providers.size:"+providers.size());
+            LogUtil.println("initLocation providers.toString:"+providers.toString());
+            for(int i=0;i<providers.size();i++){
+                LogUtil.println("initLocation providers i=:"+i+"|providers:"+providers.get(i));
+            }
             //String locationProvider = null;
-//            if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+            if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
                 LogUtil.println("initLocation NETWORK_PROVIDER");
                 //如果是Network
                 KareApplication.locationProvider = LocationManager.NETWORK_PROVIDER;
-//            } else if (providers.contains(LocationManager.GPS_PROVIDER)) {
-//                LogUtil.println("initLocation GPS_PROVIDER");
-//                //如果是GPS
-//                KareApplication.locationProvider = LocationManager.GPS_PROVIDER;
-//            } else {
-//                LogUtil.println("initLocation ACTION_LOCATION_SOURCE_SETTINGS");
-//                Intent i = new Intent();
-//                i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                startActivity(i);
-//            }
+            } else if (providers.contains(LocationManager.GPS_PROVIDER)) {
+                LogUtil.println("initLocation GPS_PROVIDER");
+                //如果是GPS
+                KareApplication.locationProvider = LocationManager.GPS_PROVIDER;
+            } else {
+                LogUtil.println("initLocation ACTION_LOCATION_SOURCE_SETTINGS");
+                Intent i = new Intent();
+                i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(i);
+            }
             //获取Location
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -588,17 +588,32 @@ public class MainActivity extends AppCompatActivity {
                 LogUtil.println("initLocation 缺少权限");
                 return;
             }
+            if(!providers.contains(LocationManager.GPS_PROVIDER)){
+                LogUtil.println("initLocation 不含GPS_PROVIDER直接使用4G");
+                KareApplication.locationProvider = LocationManager.NETWORK_PROVIDER;
+            }else{
+                KareApplication.locationManager.requestLocationUpdates(KareApplication.locationProvider, 2000, 20, gpslocationListener);
+            }
             //监视地理位置变化
-            KareApplication.locationManager.requestLocationUpdates(KareApplication.locationProvider, 10000, 100, locationListener);
+            KareApplication.locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 20, locationListener);
             Location location = KareApplication.locationManager.getLastKnownLocation(KareApplication.locationProvider);
             if (location != null) {
                 String string = "纬度为：" + location.getLatitude() + ",经度为："
                         + location.getLongitude();
                 KareApplication.mLatitude = String.valueOf(location.getLatitude());
                 KareApplication.mLongitude = String.valueOf(location.getLongitude());
-                LogUtil.println("initLocation location:" + string);
+                LogUtil.println("initLocation locationProvider location:" + string);
             }else{
-                LogUtil.println("initLocation location==null");
+                location = KareApplication.locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (location != null) {
+                    String string = "纬度为：" + location.getLatitude() + ",经度为："
+                            + location.getLongitude();
+                    KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                    KareApplication.mLongitude = String.valueOf(location.getLongitude());
+                    LogUtil.println("initLocation NETWORK_PROVIDER location:" + string);
+                }else {
+                    LogUtil.println("initLocation location==null");
+                }
             }
         }catch (Exception e){
             LogUtil.println("initLocation Exception");
@@ -636,6 +651,69 @@ public class MainActivity extends AppCompatActivity {
                 KareApplication.mLatitude = String.valueOf(location.getLatitude());
                 KareApplication.mLongitude = String.valueOf(location.getLongitude());
                 LogUtil.println("initLocation locationListener:" + string);
+            }
+            //遍历广告中有经纬度定位的广告
+            for (int i = 0; i < KareApplication.mAdvertisementList.size(); i++) {
+                AdvertisementData advertisementData = KareApplication.mAdvertisementList.get(i);
+                if (!TextUtils.isEmpty(advertisementData.getLocation())) {
+                    LogUtil.println("initLocation advertisementData.getLocation():" + advertisementData.getLocation());
+                    if(advertisementData.getLocation().contains(",")) {
+                        String[] locations = advertisementData.getLocation().split(",");
+                        //拆分advertisementData.getLocation();
+                        double longitude = Double.valueOf(locations[0]);;
+                        double latitude = Double.valueOf(locations[1]);
+                        //判断上下距离 1km等于经纬度多少。1/111 1/111 0.009
+                        double laDistance = location.getLatitude() - latitude;
+                        double lgDistance = location.getLongitude() - longitude;
+                        LogUtil.println("initLocation laDistance:" + laDistance);
+                        LogUtil.println("initLocation lgDistance:" + lgDistance);
+                        if (laDistance < -0.009 * Double.valueOf(advertisementData.getLimits()) && laDistance > 0.009 * Double.valueOf(advertisementData.getLimits())) {
+                            //重新获取新的广告
+                            LogUtil.println("initLocation 重新获取新的广告");
+                            getAdSearch();
+                        }else {
+                            if (longitude < -0.009 * Double.valueOf(advertisementData.getLimits()) && longitude > 0.009 * Double.valueOf(advertisementData.getLimits())) {
+                                //重新获取新的广告
+                                LogUtil.println("initLocation 重新获取新的广告");
+                                getAdSearch();
+                            }
+                        }
+                    }
+                }
+            }
+            //如果有判断是否符合在距离之内，否则发送广播请求新的广告
+        }
+    };
+
+    public LocationListener gpslocationListener = new LocationListener() {
+        // Provider的状态在可用、暂时不可用和无服务三个状态直接切换时触发此函数
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        // Provider被enable时触发此函数，比如GPS被打开
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        // Provider被disable时触发此函数，比如GPS被关闭
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+
+        //当坐标改变时触发此函数，如果Provider传进相同的坐标，它就不会被触发
+        @Override
+        public void onLocationChanged(Location location) {
+            LogUtil.println("initLocation onLocationChanged");
+            if(location!=null){
+                String string = "纬度为：" + location.getLatitude() + ",经度为："
+                        + location.getLongitude();
+                KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                KareApplication.mLongitude = String.valueOf(location.getLongitude());
+                LogUtil.println("initLocation gpslocationListener:" + string);
             }
             //遍历广告中有经纬度定位的广告
             for (int i = 0; i < KareApplication.mAdvertisementList.size(); i++) {

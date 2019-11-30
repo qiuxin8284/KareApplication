@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
@@ -370,9 +371,18 @@ public class KaerService extends Service {
                                     + location.getLongitude();
                             KareApplication.mLatitude = String.valueOf(location.getLatitude());
                             KareApplication.mLongitude = String.valueOf(location.getLongitude());
-                            LogUtil.println("initLocation location:" + string);
+                            LogUtil.println("initLocation ad locationProvider location:" + string);
                         } else {
-                            LogUtil.println("initLocation location==null");
+                            location = KareApplication.locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                            if (location != null) {
+                                String string = "纬度为：" + location.getLatitude() + ",经度为："
+                                        + location.getLongitude();
+                                KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                                KareApplication.mLongitude = String.valueOf(location.getLongitude());
+                                LogUtil.println("initLocation ad NETWORK_PROVIDER location:" + string);
+                            }else {
+                                LogUtil.println("initLocation location==null");
+                            }
                         }
                     } else {
                         LogUtil.println("initLocation KareApplication.locationProvider==null");
@@ -502,9 +512,18 @@ public class KaerService extends Service {
                                         + location.getLongitude();
                                 KareApplication.mLatitude = String.valueOf(location.getLatitude());
                                 KareApplication.mLongitude = String.valueOf(location.getLongitude());
-                                LogUtil.println("initLocation location:" + string);
+                                LogUtil.println("initLocation ad locationProvider location:" + string);
                             } else {
-                                LogUtil.println("initLocation location==null");
+                                location = KareApplication.locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                                if (location != null) {
+                                    String string = "纬度为：" + location.getLatitude() + ",经度为："
+                                            + location.getLongitude();
+                                    KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                                    KareApplication.mLongitude = String.valueOf(location.getLongitude());
+                                    LogUtil.println("initLocation ad NETWORK_PROVIDER location:" + string);
+                                }else {
+                                    LogUtil.println("initLocation location==null");
+                                }
                             }
                         } else {
                             LogUtil.println("initLocation KareApplication.locationProvider==null");
@@ -566,9 +585,19 @@ public class KaerService extends Service {
                                         + location.getLongitude();
                                 KareApplication.mLatitude = String.valueOf(location.getLatitude());
                                 KareApplication.mLongitude = String.valueOf(location.getLongitude());
-                                LogUtil.println("initLocation location:" + string);
+
+                                LogUtil.println("initLocation ad locationProvider location:" + string);
                             } else {
-                                LogUtil.println("initLocation location==null");
+                                location = KareApplication.locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                                if (location != null) {
+                                    String string = "纬度为：" + location.getLatitude() + ",经度为："
+                                            + location.getLongitude();
+                                    KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                                    KareApplication.mLongitude = String.valueOf(location.getLongitude());
+                                    LogUtil.println("initLocation ad NETWORK_PROVIDER location:" + string);
+                                }else {
+                                    LogUtil.println("initLocation location==null");
+                                }
                             }
                         } else {
                             LogUtil.println("initLocation KareApplication.locationProvider==null");

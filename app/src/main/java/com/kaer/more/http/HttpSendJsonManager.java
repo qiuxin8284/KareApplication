@@ -344,6 +344,45 @@ public class HttpSendJsonManager {
         }
     }
 
+    public static AdvertisementListData timeAdSearch(Context context,
+                                                 String imei,String longitude,String latitude, ArrayList<AdRemarkData> list) {
+        AdvertisementListData advertisementListData = new AdvertisementListData();
+        advertisementListData.setOK(false);
+        String url = "v0/ad/searchTime.htm";
+        try {
+            JSONObject sendJSONObject = new JSONObject();
+            JSONObject mainJSONObject = new JSONObject();
+
+            JSONArray deviceAdsJsonArray = new JSONArray();
+            for(int i=0;i<list.size();i++){
+                AdRemarkData adRemarkData = list.get(i);
+                JSONObject deviceAdsJSONObject = new JSONObject();
+                deviceAdsJSONObject.put("adId", adRemarkData.getAdId());
+                deviceAdsJSONObject.put("count", adRemarkData.getAllCount());
+                deviceAdsJsonArray.put(deviceAdsJSONObject);
+            }
+            mainJSONObject.put("deviceAds", deviceAdsJsonArray);
+            mainJSONObject.put("imei", imei);
+            mainJSONObject.put("longitude", longitude);
+            mainJSONObject.put("latitude", latitude);
+            LogUtil.println("adSearch mainJSONObject.toString():" + mainJSONObject.toString());
+            RequestMessage.Request request_proto = CommonUtils.createRequest(context, mainJSONObject.toString(), KareApplication.USER_TOKEN, false,KareApplication.default_imei);
+            sendJSONObject.put("data", Base64.encode(request_proto.toByteArray()));
+
+            String json = sendJSONObject.toString();
+
+            LogUtil.println("adSearch imei:" + imei);
+            LogUtil.println("adSearch" + json);
+            String synchronousResult = KareApplication.httpManager.SyncHttpCommunicate(url, json);
+            LogUtil.println("adSearch synchronousResult1" + synchronousResult);
+            return HttpAnalyJsonManager.adSearch(synchronousResult, context);
+        } catch (Exception e) {
+            HttpAnalyJsonManager.lastError = context.getResources().getString(R.string.network_connection_failed);
+            e.printStackTrace();
+            return advertisementListData;
+        }
+    }
+
     public static boolean deviceUpload(Context context, String imei,
                                        ArrayList<AdRemarkData> list) {
         String url = "v0/device/upload.htm";
