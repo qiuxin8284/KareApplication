@@ -75,6 +75,7 @@ public class KareApplication extends Application {
     public static String mLongitude = "0.00";
     public static String mLatitude = "0.00";
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("HHmm");  //HH:24小时制  hh:12小时制
+    public static SimpleDateFormat dateFormatss = new SimpleDateFormat("HH:mm:ss");  //HH:24小时制  hh:12小时制
     private static Context context;
     /**
      * 全局Context，原理是因为Application类是应用最先运行的，所以在我们的代码调用时，该值已经被赋值过了
@@ -96,9 +97,11 @@ public class KareApplication extends Application {
     public static final String ACTION_IMAGE_UPLOAD = "com.kaer.update.action.image";
     public static final String ACTION_IMAGE_UPLOAD_SUCESS = "com.kaer.update.action.image.sucess";
     public static final String ACTION_CHECK_TOKEN = "com.kaer.check.action.token";
+    public static final String ACTION_UPDATE_TIME_AD = "com.kaer.update.action.time.ad";
     public static String default_imei="0";//"0bebf5bfc9554";
     public static ArrayList<AdvertisementData> mAdvertisementList = new ArrayList<AdvertisementData>();
     public static HashMap<String, AdRemarkData> mAdRemarkMap = new HashMap<String, AdRemarkData>();//获取新的任务队列的时候清空一次
+    public static ArrayList<AdvertisementData> mTimeAdvertisementList = new ArrayList<AdvertisementData>();
     public static boolean mGetAd = true;
     private Handler mHandler = new Handler() {
         @Override

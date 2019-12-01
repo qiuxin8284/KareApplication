@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.format.Time;
 
+import com.kaer.more.KareApplication;
 import com.kaer.more.activity.MainActivity;
 import com.kaer.more.service.KaerService;
 
@@ -147,5 +148,32 @@ public class TimeUtil {
         System.out.println("operateDevice before 延迟时间：" + PERIOD_DAY);
         //timer.schedule(task, date, PERIOD_DAY);
         handler.sendEmptyMessageDelayed(MainActivity.REPEAT_OPT,delayTime);
+    }
+
+
+
+    public static long getTime(Date nowDate) {
+        //计算与整点的时间差推送广告show
+        String time = KareApplication.dateFormatss.format(nowDate);
+        String[] times = time.split(":");
+        int hour = Integer.parseInt(times[0]);
+        int minute =  0;
+        int second =  0;
+        long delayTime = 1000;
+        Calendar calendar = Calendar.getInstance();
+
+        /*** 定制每日执行方法 ***/
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+
+        Date date = new Date(calendar.getTime().getTime() + (60 * 60 * 1000 - 15000)); //第一次执行定时任务的时间
+        System.out.println(date);
+        System.out.println("mGetTimeAdTask  当前时间：" + time);
+        System.out.println("mGetTimeAdTask  开始时间：" + KareApplication.dateFormatss.format(date));
+        delayTime = date.getTime() - nowDate.getTime();
+        System.out.println("mGetTimeAdTask  delayTime：" + delayTime);
+
+        return  delayTime;
     }
 }

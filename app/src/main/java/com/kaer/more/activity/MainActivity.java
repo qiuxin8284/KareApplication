@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout mRLMainBG;
     private SuperPlayerView mSuperPlayerView;
     private ImageView mIvTextPic;
+    private ImageView mIvTimeAd;
     private TextView mTvText;
     //private LocationManager locationManager;
     private int nowPosition = 0;
@@ -115,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int OPT_DEVICE_SUCCESS = 9;
     private static final int OPT_DEVICE_FALSE = 10;
     public static final int REPEAT_OPT = 11;
+    public static final int SHOW_TIME_AD = 12;
+    public static final int SHOW_TIME_AD_END = 13;
     public static final int NOTICE_DEVICE_TIME = 2*60*1000;//30s重试
     private TextView mTvDeviceID;
     private Handler mHandler = new Handler() {
@@ -346,6 +349,28 @@ public class MainActivity extends AppCompatActivity {
                     mOperateDeviceTask = new OperateDeviceTask();
                     mOperateDeviceTask.execute();
                     break;
+                case SHOW_TIME_AD:
+                    LogUtil.println("adSearch MainReceiver mGetTimeAdTask SHOW_TIME_AD显示广告");
+                    LogUtil.println("adSearch MainReceiver mGetTimeAdTask KareApplication." +
+                            "mTimeAdvertisementList.size:"+KareApplication.mTimeAdvertisementList.size());
+                    if(KareApplication.mTimeAdvertisementList.size()>0) {
+                        AdvertisementData advertisementData = KareApplication.mTimeAdvertisementList.get(0);
+                        RequestOptions option = new RequestOptions();
+                        option.placeholder(new ColorDrawable(Color.BLACK));
+                        option.fallback(R.mipmap.ad_001);
+                        option.error(R.mipmap.ad_001);
+                        Glide.with(mIvTimeAd.getContext()).load(advertisementData.getMedia()).apply(option).into(mIvTimeAd);
+                        mIvTimeAd.setVisibility(View.VISIBLE);
+                        mHandler.sendEmptyMessageDelayed(SHOW_TIME_AD_END, 30000);
+                    }else{
+                        isShowTimeAd = false;
+                    }
+                    break;
+                case SHOW_TIME_AD_END:
+                    isShowTimeAd = false;
+                    mIvTimeAd.setVisibility(View.GONE);
+                    LogUtil.println("adSearch MainReceiver mGetTimeAdTask SHOW_TIME_AD_END关闭广告");
+                    break;
             }
         }
     };
@@ -380,6 +405,7 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(KareApplication.ACTION_TUISONG_JSON);
         intentFilter.addAction(KareApplication.ACTION_UPDATE_AD);
+        intentFilter.addAction(KareApplication.ACTION_UPDATE_TIME_AD);
         intentFilter.addAction(KareApplication.ACTION_IMAGE_UPLOAD);
         registerReceiver(mMainReceiver, intentFilter);
         mRenewTask = new RenewTask();
@@ -401,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private static final String STATE_OPEN = "O";
     private static final String STATE_CLOSE = "F";
+    private boolean isShowTimeAd = false;
 
     private MainReceiver mMainReceiver;
 
@@ -417,6 +444,12 @@ public class MainActivity extends AppCompatActivity {
             }else if (action.equals(KareApplication.ACTION_IMAGE_UPLOAD)) {
                 //截图上传
                 mHandler.sendEmptyMessage(GET_PIC);
+            }else if (action.equals(KareApplication.ACTION_UPDATE_TIME_AD)){
+                LogUtil.println("adSearch MainReceiver mGetTimeAdTask ACTION_UPDATE_TIME_AD");
+                if(!isShowTimeAd) {
+                    isShowTimeAd = true;
+                    mHandler.sendEmptyMessage(SHOW_TIME_AD);
+                }
             }
         }
     }
@@ -486,6 +519,7 @@ public class MainActivity extends AppCompatActivity {
         mSuperPlayerView = (SuperPlayerView) findViewById(R.id.video_player_item);
         LogUtil.println("initView mSuperPlayerViewId:" + (mSuperPlayerView.getId()));
         mIvTextPic = (ImageView) findViewById(R.id.iv_text_and_pic);
+        mIvTimeAd = (ImageView)findViewById(R.id.iv_time_pic);
         LogUtil.println("initView mIvTextPicId:" + (mIvTextPic.getId()));
         mTvText = (TextView) this.findViewById(R.id.tv_text);
         LogUtil.println("initView mTvTextgetId:" + (mTvText.getId()));

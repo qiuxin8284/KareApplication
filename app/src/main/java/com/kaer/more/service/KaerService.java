@@ -30,6 +30,7 @@ import com.kaer.more.utils.TimeUtil;
 import com.kaer.more.utils.ToastUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -40,7 +41,7 @@ import scifly.util.LogUtils;
 
 public class KaerService extends Service {
 
-    //private static final int CONNECT_REPEAT_TIME = 1000 * 60 * 30;//半小时
+    private static final int TIME_AD_REPEAT_TIME = 1000 * 60 * 30;//30分钟
     //private static final int CONNECT_REPEAT_TIME = 1000 * 90;//1.5分钟
     private static final String STATE_OPEN = "O";
     private static final String STATE_CLOSE = "F";
@@ -58,6 +59,9 @@ public class KaerService extends Service {
         mGetFristAdTask = new GetFristAdTask();
         mGetFristAdTask.execute();
 
+//        //第一次触发报时广告
+        mGetTimeAdTask = new GetTimeAdTask();
+        mGetTimeAdTask.execute("");
         //发送接口
 //        mNoticeDeviceTask = new NoticeDeviceTask();
 //        mNoticeDeviceTask.execute(STATE_OPEN);
@@ -82,7 +86,7 @@ public class KaerService extends Service {
 //        }, 15000, 5000);
 //        super.onCreate();
 
-        mHandler.sendEmptyMessageDelayed(DEVICE_UPLOAD,DEVICE_UPLOAD_TIME);
+        mHandler.sendEmptyMessageDelayed(DEVICE_UPLOAD, DEVICE_UPLOAD_TIME);
     }
 
     @Override
@@ -223,7 +227,11 @@ public class KaerService extends Service {
     public static final int TIME_DELAY = 16;
     public static final int APP_DEAD = 17;
     public static final int DEVICE_UPLOAD = 18;
-    public static final int DEVICE_UPLOAD_TIME = 2*60*1000;//30s重试
+    private static final int GET_TIME_AD_SUCCESS = 19;
+    private static final int GET_TIME_AD_FALSE = 20;
+    private static final int GET_TIME_AD_REPEAT = 21;
+    private static final int GET_TIME_AD_SHOW = 22;
+    public static final int DEVICE_UPLOAD_TIME = 2 * 60 * 1000;//30s重试
     public static final int REPEAT_CONNECT_TIME = 30000;//30s重试
     private Handler mHandler = new Handler() {
         @Override
@@ -284,6 +292,28 @@ public class KaerService extends Service {
                     mGetAdTask = new GetAdTask();
                     mGetAdTask.execute();
                     break;
+                case GET_TIME_AD_SUCCESS:
+                    long time = TimeUtil.getTime(new Date());
+                    //半小时小时候刷新新的广告
+                    mHandler.sendEmptyMessageDelayed(GET_TIME_AD_SHOW,time);
+                    mHandler.sendEmptyMessageDelayed(GET_TIME_AD_REPEAT,TIME_AD_REPEAT_TIME);
+//                    mHandler.sendEmptyMessageDelayed(GET_TIME_AD_SHOW,15000);
+//                    mHandler.sendEmptyMessageDelayed(GET_TIME_AD_REPEAT,5000);
+                    break;
+                case GET_TIME_AD_FALSE:
+                    mGetTimeAdTask = new GetTimeAdTask();
+                    mGetTimeAdTask.execute();
+                    break;
+                case GET_TIME_AD_REPEAT:
+                    mGetTimeAdTask = new GetTimeAdTask();
+                    mGetTimeAdTask.execute();
+                    break;
+                case GET_TIME_AD_SHOW:
+                    //计算时间整点差展示新广告，同时加个锁，如果已经进入广告中，那么不需要理会
+                    Intent intent = new Intent();
+                    intent.setAction(KareApplication.ACTION_UPDATE_TIME_AD);
+                    sendBroadcast(intent);
+                    break;
                 case TIME_ADD:
                     LogUtil.println("adSearch TIME_ADD mConnectTime:" + mConnectTime + "|CONNECT_REPEAT_TIME:" + KareApplication.CONNECT_REPEAT_TIME);
                     mConnectTime = mConnectTime + 1000;
@@ -307,7 +337,7 @@ public class KaerService extends Service {
                     break;
                 case APP_DEAD:
                     try {
-                        if(!isBackgroundRunning()){
+                        if (!isBackgroundRunning()) {
                             LogUtil.println("NewTest  退出操作");
                             logout();
                         }
@@ -361,7 +391,7 @@ public class KaerService extends Service {
                     != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                     KaerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 LogUtil.println("initLocation 缺少权限");
-            }else {
+            } else {
                 try {
                     if (KareApplication.locationProvider != null) {
                         LogUtil.println("initLocation KareApplication.locationProvider!=null");
@@ -380,14 +410,14 @@ public class KaerService extends Service {
                                 KareApplication.mLatitude = String.valueOf(location.getLatitude());
                                 KareApplication.mLongitude = String.valueOf(location.getLongitude());
                                 LogUtil.println("initLocation ad NETWORK_PROVIDER location:" + string);
-                            }else {
+                            } else {
                                 LogUtil.println("initLocation location==null");
                             }
                         }
                     } else {
                         LogUtil.println("initLocation KareApplication.locationProvider==null");
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -495,14 +525,14 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
-            LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd："+KareApplication.mGetAd);
-            if(KareApplication.mGetAd) {
+            LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd：" + KareApplication.mGetAd);
+            if (KareApplication.mGetAd) {
                 //获取Location
                 if (ActivityCompat.checkSelfPermission(KaerService.this, Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                         KaerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     LogUtil.println("initLocation 缺少权限");
-                }else {
+                } else {
                     try {
                         if (KareApplication.locationProvider != null) {
                             LogUtil.println("initLocation KareApplication.locationProvider!=null");
@@ -521,14 +551,14 @@ public class KaerService extends Service {
                                     KareApplication.mLatitude = String.valueOf(location.getLatitude());
                                     KareApplication.mLongitude = String.valueOf(location.getLongitude());
                                     LogUtil.println("initLocation ad NETWORK_PROVIDER location:" + string);
-                                }else {
+                                } else {
                                     LogUtil.println("initLocation location==null");
                                 }
                             }
                         } else {
                             LogUtil.println("initLocation KareApplication.locationProvider==null");
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -555,7 +585,7 @@ public class KaerService extends Service {
                     LogUtil.println("adSearch GetFristAdTask GET_AD_FRIST_FALSE");
                     mHandler.sendEmptyMessageDelayed(GET_AD_FRIST_FALSE, 30000);
                 }
-            }else{
+            } else {
                 mHandler.sendEmptyMessageDelayed(GET_AD_FRIST_FALSE, 30000);
             }
             return null;
@@ -568,14 +598,14 @@ public class KaerService extends Service {
 
         @Override
         protected Void doInBackground(String... params) {
-            LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd："+KareApplication.mGetAd);
-            if(KareApplication.mGetAd) {
+            LogUtil.println("adSearch mGetAdTask KareApplication.mGetAd：" + KareApplication.mGetAd);
+            if (KareApplication.mGetAd) {
                 //获取Location
                 if (ActivityCompat.checkSelfPermission(KaerService.this, Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                         KaerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     LogUtil.println("initLocation 缺少权限");
-                }else {
+                } else {
                     try {
                         if (KareApplication.locationProvider != null) {
                             LogUtil.println("initLocation KareApplication.locationProvider!=null");
@@ -595,14 +625,14 @@ public class KaerService extends Service {
                                     KareApplication.mLatitude = String.valueOf(location.getLatitude());
                                     KareApplication.mLongitude = String.valueOf(location.getLongitude());
                                     LogUtil.println("initLocation ad NETWORK_PROVIDER location:" + string);
-                                }else {
+                                } else {
                                     LogUtil.println("initLocation location==null");
                                 }
                             }
                         } else {
                             LogUtil.println("initLocation KareApplication.locationProvider==null");
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -629,7 +659,7 @@ public class KaerService extends Service {
                     LogUtil.println("adSearch GetAdTask GET_AD_FALSE");
                     mHandler.sendEmptyMessageDelayed(GET_AD_FALSE, 30000);
                 }
-            }else{
+            } else {
                 mHandler.sendEmptyMessageDelayed(GET_AD_FALSE, 30000);
             }
             return null;
@@ -646,8 +676,8 @@ public class KaerService extends Service {
             LogUtil.println("deviceUpload doInBackground");
 
             ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
-            LogUtil.println("deviceUpload KareApplication.mAdRemarkMap.size()："+KareApplication.mAdRemarkMap.size());
-            if(KareApplication.mAdRemarkMap!=null&&KareApplication.mAdRemarkMap.size()!=0) {
+            LogUtil.println("deviceUpload KareApplication.mAdRemarkMap.size()：" + KareApplication.mAdRemarkMap.size());
+            if (KareApplication.mAdRemarkMap != null && KareApplication.mAdRemarkMap.size() != 0) {
                 for (String key : KareApplication.mAdRemarkMap.keySet()) {
                     AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
                     list.add(adRemarkData);
@@ -666,7 +696,7 @@ public class KaerService extends Service {
 
     private static final String PackageName = "com.kaer.more";
     private final Timer timerMail = new Timer();
-    private ActivityManager activityManager=null;
+    private ActivityManager activityManager = null;
 
     private boolean isBackgroundRunning() {
         activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
@@ -681,10 +711,79 @@ public class KaerService extends Service {
         }
         return false;
     }
+
     public void logout() {
         mNoticeDeviceTask = new NoticeDeviceTask();
         mNoticeDeviceTask.execute(STATE_CLOSE);
         mDeviceUploadTask = new DeviceUploadTask();
         mDeviceUploadTask.execute();
+    }
+
+
+    private GetTimeAdTask mGetTimeAdTask;
+
+    private class GetTimeAdTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            LogUtil.println("adSearch mGetTimeAdTask KareApplication.GetTimeAdTask：" + KareApplication.mGetAd);
+            //获取Location
+            if (ActivityCompat.checkSelfPermission(KaerService.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    KaerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                LogUtil.println("initLocation 缺少权限");
+            } else {
+                try {
+                    if (KareApplication.locationProvider != null) {
+                        LogUtil.println("initLocation KareApplication.locationProvider!=null");
+                        Location location = KareApplication.locationManager.getLastKnownLocation(KareApplication.locationProvider);
+                        if (location != null) {
+                            String string = "纬度为：" + location.getLatitude() + ",经度为："
+                                    + location.getLongitude();
+                            KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                            KareApplication.mLongitude = String.valueOf(location.getLongitude());
+
+                            LogUtil.println("initLocation ad locationProvider location:" + string);
+                        } else {
+                            location = KareApplication.locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                            if (location != null) {
+                                String string = "纬度为：" + location.getLatitude() + ",经度为："
+                                        + location.getLongitude();
+                                KareApplication.mLatitude = String.valueOf(location.getLatitude());
+                                KareApplication.mLongitude = String.valueOf(location.getLongitude());
+                                LogUtil.println("initLocation ad NETWORK_PROVIDER location:" + string);
+                            } else {
+                                LogUtil.println("initLocation location==null");
+                            }
+                        }
+                    } else {
+                        LogUtil.println("initLocation KareApplication.locationProvider==null");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            String deviceID = KareApplication.default_imei;
+            ArrayList<AdRemarkData> list = new ArrayList<AdRemarkData>();
+//            for (String key : KareApplication.mAdRemarkMap.keySet()) {
+//                AdRemarkData adRemarkData = KareApplication.mAdRemarkMap.get(key);
+//                list.add(adRemarkData);
+//            }
+            LogUtil.println("adSearch mGetTimeAdTask list:" + list.toString());
+            AdvertisementListData advertisementListData = HttpSendJsonManager.timeAdSearch(KareApplication.mInstance, deviceID, KareApplication.mLongitude, KareApplication.mLatitude, list);
+            LogUtil.println("adSearch mGetTimeAdTask advertisementListData:" + advertisementListData.toString());
+            //如果失败重新获取
+            //如果成功那么推送刷新广告
+            if (advertisementListData.isOK()) {
+                LogUtil.println("adSearch mGetTimeAdTask GET_AD_SUCCESS");
+                KareApplication.mTimeAdvertisementList = advertisementListData.getAdList();
+                //KareApplication.mAdRemarkMap = new HashMap<String, AdRemarkData>();
+                mHandler.sendEmptyMessage(GET_TIME_AD_SUCCESS);
+            } else {
+                LogUtil.println("adSearch mGetTimeAdTask GET_AD_FALSE");
+                mHandler.sendEmptyMessageDelayed(GET_TIME_AD_FALSE, 30000);
+            }
+            return null;
+        }
     }
 }
