@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                                 option.fallback(R.mipmap.ad_001);
                                 option.placeholder(new ColorDrawable(Color.BLACK));
                                 option.error(R.mipmap.ad_001);
-                                Glide.with(MainActivity.this) .load(advertisementData.getMedia()) .apply(option) .into(mIvTextPic);
+                                Glide.with(getApplicationContext()) .load(advertisementData.getMedia()) .apply(option) .into(mIvTextPic);
                             //ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic,options);
 //                            Glide.with(MainActivity.this).load(advertisementData.getMedia()).listener(new RequestListener<Drawable>() {
 //                                @Override
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                                 option.placeholder(new ColorDrawable(Color.BLACK));
                                 option.fallback(R.mipmap.ad_001);
                                 option.error(R.mipmap.ad_001);
-                                Glide.with(mIvTextPic.getContext()) .load(advertisementData.getMedia()) .apply(option) .into(mIvTextPic);
+                                Glide.with(getApplicationContext()) .load(advertisementData.getMedia()) .apply(option) .into(mIvTextPic);
                                 //ImageLoader.getInstance().displayImage(advertisementData.getMedia(), mIvTextPic,options);
 //                                Glide.with(MainActivity.this).load(advertisementData.getMedia()).listener(new RequestListener<Drawable>() {
 //                                    @Override
@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
                         option.placeholder(new ColorDrawable(Color.BLACK));
                         option.fallback(R.mipmap.ad_001);
                         option.error(R.mipmap.ad_001);
-                        Glide.with(mIvTimeAd.getContext()).load(advertisementData.getMedia()).apply(option).into(mIvTimeAd);
+                        Glide.with(getApplicationContext()).load(advertisementData.getMedia()).apply(option).into(mIvTimeAd);
                         mIvTimeAd.setVisibility(View.VISIBLE);
                         mHandler.sendEmptyMessageDelayed(SHOW_TIME_AD_END, 30000);
                     }else{

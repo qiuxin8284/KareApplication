@@ -91,6 +91,8 @@ public class KareApplication extends Application {
     private static final int BIND_DEVICE_FALSE = 4;
     private static final int ADD_DEVICE_SUCCESS = 5;
     private static final int ADD_DEVICE_FALSE = 6;
+    private static final int INIT_DEVICE = 7;
+    private static final int DELAY_INIT = 60*1000;
     public static final int REPEAT_CONNECT_TIME = 30000;//30s重试
     public static final String ACTION_TUISONG_JSON = "com.kaer.tuisong.action.json";
     public static final String ACTION_UPDATE_AD = "com.kaer.update.action.ad";
@@ -117,11 +119,15 @@ public class KareApplication extends Application {
                 case BIND_DEVICE_SUCCESS:
                     break;
                 case BIND_DEVICE_FALSE:
-                    mHandler.sendEmptyMessageDelayed(CHECK_DEVICE_SUCCESS,REPEAT_CONNECT_TIME);
+                    //mHandler.sendEmptyMessageDelayed(CHECK_DEVICE_SUCCESS,REPEAT_CONNECT_TIME);
                     break;
                 case ADD_DEVICE_SUCCESS:
                     break;
                 case ADD_DEVICE_FALSE:
+                    break;
+                case INIT_DEVICE:
+                    initDevice();
+                    addDevice();
                     break;
             }
         }
@@ -144,8 +150,7 @@ public class KareApplication extends Application {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(KareApplication.ACTION_CHECK_TOKEN);
         registerReceiver(mKareReceiver, intentFilter);
-        initDevice();
-        addDevice();
+        mHandler.sendEmptyMessageDelayed(INIT_DEVICE,DELAY_INIT);
     }
 
     private void addDevice() {
@@ -188,9 +193,9 @@ public class KareApplication extends Application {
             boolean flag = HttpSendJsonManager.addDevice(mInstance,deviceID,deviceID,mDeviceUtil.getToken());
             LogUtil.println("addDevice flag:" + flag);
             if (flag) {
-                mHandler.sendEmptyMessage(CHECK_DEVICE_SUCCESS);
+                mHandler.sendEmptyMessage(ADD_DEVICE_SUCCESS);
             } else {
-                mHandler.sendEmptyMessage(CHECK_DEVICE_FALSE);
+                mHandler.sendEmptyMessage(ADD_DEVICE_FALSE);
             }
             return null;
         }
@@ -234,9 +239,9 @@ public class KareApplication extends Application {
                 boolean flag = HttpSendJsonManager.bindDevice(mInstance, deviceID,token);
                 LogUtil.println("bindDevice flag:" + flag);
                 if (flag) {
-                    mHandler.sendEmptyMessage(CHECK_DEVICE_SUCCESS);
+                    mHandler.sendEmptyMessage(BIND_DEVICE_SUCCESS);
                 } else {
-                    mHandler.sendEmptyMessage(CHECK_DEVICE_FALSE);
+                    mHandler.sendEmptyMessage(BIND_DEVICE_FALSE);
                 }
             }
             return null;
